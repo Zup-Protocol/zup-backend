@@ -1,0 +1,16 @@
+overwrite: true
+schema: 'https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest'
+documents: 'src/graphql/**/*.graphql'
+generates:
+  src/graphql/types/generated.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-graphql-request'
+    config:
+      documentMode: documentNode
+      scalars:
+        Bytes: string
+        BigInt: string
+        BigDecimal: string
+        Int8: number

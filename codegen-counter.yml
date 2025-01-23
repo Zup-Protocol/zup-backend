@@ -1,0 +1,14 @@
+overwrite: true
+schema: 'https://api.studio.thegraph.com/query/91276/zup-counter-subgraph/version/latest'
+documents: 'src/graphql/**/*.ts'
+generates:
+  src/graphql/types/generated.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+    config:
+      scalars:
+        Bytes: string
+        BigInt: string
+        BigDecimal: string
+        Int8: number
