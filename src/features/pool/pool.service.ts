@@ -113,6 +113,7 @@ export class PoolService {
       yield24hs: calculateHourlyAnualizedApr,
       yield7d: calculateDailyAnualizedApr.apr7d,
       yield30d: calculateDailyAnualizedApr.apr30d,
+      yield90d: calculateDailyAnualizedApr.apr90d,
     };
   }
 
