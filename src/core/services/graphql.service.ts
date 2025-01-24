@@ -3,15 +3,24 @@ import { GraphQLClient } from 'graphql-request';
 
 @Injectable()
 export class GraphQLService {
-  private readonly client: GraphQLClient;
+  private readonly clients: Map<string, GraphQLClient> = new Map();
 
-  constructor() {
-    this.client = new GraphQLClient(
-      'https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest',
-    );
+  constructor(endpoints: Record<string, string>) {
+    // Initialize a client for each endpoint
+    Object.entries(endpoints).forEach(([name, url]) => {
+      this.clients.set(name, new GraphQLClient(url));
+    });
   }
 
-  async query<T>(query: string, variables?: Record<string, any>): Promise<T> {
-    return this.client.request<T>(query, variables);
+  async query<T>(
+    clientName: string,
+    query: string,
+    variables?: Record<string, any>,
+  ): Promise<T> {
+    const client = this.clients.get(clientName);
+    if (!client) {
+      throw new Error(`GraphQL client "${clientName}" not found`);
+    }
+    return client.request<T>(query, variables);
   }
 }
