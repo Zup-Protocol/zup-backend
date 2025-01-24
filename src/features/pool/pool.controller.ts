@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PoolService } from './pool.service';
 import { Networks } from '../tokens/network.enum';
+import { TokenMetadata } from '../tokens/dto/token.dto';
 
 @Controller('pools')
 export class PoolController {
@@ -24,6 +25,11 @@ export class PoolController {
 
   @Get(':poolId')
   async findBestYieldsByPool(@Param('poolId') poolId: string): Promise<any> {
-    return this.poolService.findBestYieldsByPool(poolId);
+    return this.poolService.findBestYieldsByPool(
+      poolId,
+      Networks.SEPOLIA,
+      {} as TokenMetadata,
+      {} as TokenMetadata,
+    );
   }
 }
