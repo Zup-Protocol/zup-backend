@@ -60,16 +60,20 @@ $ yarn run test:cov
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Build the image
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g mau
-$ mau deploy
+```
+docker build -t zup-backend .
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Run the container
+
+```
+docker run -p 3000:3000 \
+  -e GRAPHQL_URL_SEPOLIA="https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest" \
+  -e NODE_ENV="production" \
+  zup-backend
+```
 
 ## Resources
 
@@ -107,19 +111,20 @@ We used `codegen` library in order to map schemas from the graph to the code.
 
 1. First you will have to copy your **queries & mutations** to a `*.graphql` file.
 2. Then execute this cml:
+
 ```shell
   yarn cache clean
   rm -rf node_modules
   yarn install
   yarn codegen
 ```
+
 3. You are all set to use your generated types in your code.
 
-
-
 ## Endpoints
+
 - Request best yield pools for a pair of tokens
-http://localhost:3000/pools?token0=0x1c7d4b196cb0c7b01d743fbc6116a902379c7238&token1=0xfff9976782d46cc05630d1f6ebab18b2324d6b14&network=sepolia
+  http://localhost:3000/pools?token0=0x1c7d4b196cb0c7b01d743fbc6116a902379c7238&token1=0xfff9976782d46cc05630d1f6ebab18b2324d6b14&network=sepolia
 
 - Request yields for an specific pool
-http://localhost:3000/pools/0x3289680dd4d6c10bb19b899729cda5eef58aeff1
+  http://localhost:3000/pools/0x3289680dd4d6c10bb19b899729cda5eef58aeff1
