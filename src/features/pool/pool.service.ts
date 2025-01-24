@@ -13,6 +13,7 @@ import { Networks } from '../tokens/network.enum';
 import { PoolMetadata } from './dto/pool-metadata.dto';
 import { TokenService } from '../tokens/token.service';
 import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
+import { BestPoolYieldByTimeframe } from './dto/best-pool-yield-by-timeframe.dto';
 
 @Injectable()
 export class PoolService {
@@ -30,19 +31,56 @@ export class PoolService {
     token0Symbol: string,
     token1Symbol: string,
     network: Networks = Networks.SEPOLIA,
-  ): Promise<PoolMetadataByNetwork[]> {
+  ): Promise<{
+    bestYieldsByFrame: BestPoolYieldByTimeframe;
+    poolsMetadataByNetwork: PoolMetadataByNetwork[];
+  }> {
     console.log('Starting calculation of best yields ...');
     if (network === Networks.ALL) {
       // TODO: Process all networks
     }
-    const poolsMetadata = await this.processSingleNetworkPoolsMetadata(
+    const poolsMetadataByNetwork = await this.processSingleNetworkPoolsMetadata(
       token0Symbol,
       token1Symbol,
       network,
     );
-
+    const bestYieldsByFrame = this.calculateBestYieldsFromPoolsMetadata(
+      poolsMetadataByNetwork[0].poolsMetadata,
+    );
     console.log('Finishing calculation of best yields ...');
-    return poolsMetadata;
+    return { bestYieldsByFrame, poolsMetadataByNetwork };
+  }
+
+  calculateBestYieldsFromPoolsMetadata(poolsMetadata: PoolMetadata[]) {
+    // Get pools ordered by 24h yield (descending)
+    const pools24hs = poolsMetadata
+      .sort((a, b) => b.yield24hs - a.yield24hs)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ yield7d, yield30d, yield90d, ...rest }) => rest);
+    // Get pools ordered by 7d yield (descending)
+    const pools7d = poolsMetadata
+      .sort((a, b) => b.yield7d - a.yield7d)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ yield24hs, yield30d, yield90d, ...rest }) => rest);
+
+    // Get pools ordered by 30d yield (descending)
+    const pools30d = poolsMetadata
+      .sort((a, b) => b.yield30d - a.yield30d)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ yield24hs, yield7d, yield90d, ...rest }) => rest);
+
+    // Get pools ordered by 90d yield (descending)
+    const pools90d = poolsMetadata
+      .sort((a, b) => b.yield90d - a.yield90d)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ yield24hs, yield7d, yield30d, ...rest }) => rest);
+
+    return {
+      bestYield24hs: pools24hs,
+      bestYield7d: pools7d,
+      bestYield30d: pools30d,
+      bestYield90d: pools90d,
+    };
   }
 
   // TODO: Hardcoded token address and networks
@@ -106,6 +144,7 @@ export class PoolService {
         id: pool.protocol.id,
         positionManager: pool.protocol.positionManager,
       },
+      network,
       token0Address: pool.token0.id,
       token1Address: pool.token1.id,
       feeTier: pool.feeTier,
@@ -121,7 +160,6 @@ export class PoolService {
     return poolDailyData.reduce((sum, day) => sum + parseFloat(day.feesUSD), 0);
   }
 
-  // TODO: Fix the hourly APR to consider items between dates instead of first 24 items
   calculateHourlyAnualizedApr(
     poolHourlyData: Array<PoolHourlyData>,
     totalValueLockedUSD: string,
@@ -137,7 +175,6 @@ export class PoolService {
     );
   }
 
-  // TODO: Fix the hourly APR to consider items between dates instead of first X number of items
   calculateDailyAnualizedApr(
     poolDailyData: Array<PoolDailyData>,
     currentTimeInSeconds: number,
