@@ -1,4 +1,7 @@
 export class PoolProtocol {
   name: string;
-  logoUrl: string;
+  logo: string;
+  url: string;
+  id: string;
+  positionManager: string;
 }
