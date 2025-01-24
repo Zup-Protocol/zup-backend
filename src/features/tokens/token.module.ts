@@ -7,5 +7,6 @@ import { CoreModule } from '@/core/core.module';
   imports: [CoreModule],
   controllers: [TokenController],
   providers: [TokenService],
+  exports: [TokenService],
 })
 export class TokenModule {}
