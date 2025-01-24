@@ -1,0 +1,12 @@
+query GetPoolsByTokenIds($token0Id: Bytes!, $token1Id: Bytes!) {
+  pools(
+    where: {
+      or: [
+        { token0_: { id: $token0Id }, token1_: { id: $token1Id } }
+        { token0_: { id: $token1Id }, token1_: { id: $token0Id } }
+      ]
+    }
+  ) {
+    id
+  }
+}

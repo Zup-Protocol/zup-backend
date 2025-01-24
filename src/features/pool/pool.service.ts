@@ -17,6 +17,8 @@ import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
 @Injectable()
 export class PoolService {
   ONE_DAY_IN_SECONDS = 86400;
+  ONE_WEEK_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 7;
+  ONE_MONTH_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 30;
 
   constructor(
     private graphqlService: GraphQLService,
@@ -57,6 +59,7 @@ export class PoolService {
     const token1Id = '0xfff9976782d46cc05630d1f6ebab18b2324d6b14';
 
     console.debug('*** network ***', network);
+
     const { pools } = await this.graphqlService.query<GetPoolsByTokenIdsQuery>(
       network,
       print(GetPoolsByTokenIdsDocument),
@@ -67,21 +70,26 @@ export class PoolService {
     const poolsMetadata: PoolMetadata[] = await Promise.all(
       poolIds.map((id) => this.findBestYieldsByPool(id, network)),
     );
-    return [{ poolsMetadata, network, token0, token1 }];
+    return [{ network, token0, token1, poolsMetadata }];
   }
 
   async findBestYieldsByPool(
     poolId: string,
     network: Networks = Networks.SEPOLIA,
   ): Promise<PoolMetadata> {
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+    const hourStartTimestamp = currentTimeInSeconds - this.ONE_DAY_IN_SECONDS;
+    const dayStartTimestamp =
+      currentTimeInSeconds - this.ONE_DAY_IN_SECONDS * 30;
     const { pool } = await this.graphqlService.query<GetPoolDataQuery>(
       network,
       print(GetPoolDataDocument),
-      { poolId },
+      { poolId, hourStartTimestamp, dayStartTimestamp },
     );
 
     const calculateDailyAnualizedApr = this.calculateDailyAnualizedApr(
       pool.dailyData as PoolDailyData[],
+      currentTimeInSeconds,
     );
 
     const calculateHourlyAnualizedApr = this.calculateHourlyAnualizedApr(
@@ -90,12 +98,18 @@ export class PoolService {
     );
     return {
       poolAddress: poolId,
-      protocol: { name: '', logoUrl: '' },
+      protocol: {
+        name: pool.protocol.name,
+        logo: pool.protocol.logo,
+        url: pool.protocol.url,
+        id: pool.protocol.id,
+        positionManager: pool.protocol.positionManager,
+      },
       feeTier: pool.feeTier,
       tickSpacing: pool.tickSpacing,
       yield24hs: calculateHourlyAnualizedApr,
-      yield7d: calculateDailyAnualizedApr,
-      yield30d: 100,
+      yield7d: calculateDailyAnualizedApr.apr7d,
+      yield30d: calculateDailyAnualizedApr.apr30d,
     };
   }
 
@@ -120,14 +134,40 @@ export class PoolService {
   }
 
   // TODO: Fix the hourly APR to consider items between dates instead of first X number of items
-  calculateDailyAnualizedApr(poolDailyData: Array<PoolDailyData>): number {
-    const dailyAPRs = poolDailyData.map((day: PoolDailyData) => {
-      const { totalValueLockedUSD, feesUSD } = day;
-      return this.calculateAnualizedApr(feesUSD, totalValueLockedUSD);
-    });
-    const averageDailyAPR =
-      dailyAPRs.reduce((sum, apr) => sum + apr, 0) / dailyAPRs.length;
-    return parseFloat(averageDailyAPR.toFixed(2));
+  calculateDailyAnualizedApr(
+    poolDailyData: Array<PoolDailyData>,
+    currentTimeInSeconds: number,
+  ): { apr7d: number; apr30d: number } {
+    const timestampSevenDaysAgo =
+      currentTimeInSeconds - this.ONE_WEEK_IN_SECONDS;
+    const timestampThirtyDaysAgo =
+      currentTimeInSeconds - this.ONE_MONTH_IN_SECONDS;
+
+    // Filter data points for 7 days and 30 days
+    const last7DaysData = poolDailyData.filter(
+      (day) => parseFloat(day.dayStartTimestamp) >= timestampSevenDaysAgo,
+    );
+
+    const last30DaysData = poolDailyData.filter(
+      (day) => parseFloat(day.dayStartTimestamp) >= timestampThirtyDaysAgo,
+    );
+
+    const calculateAverageAPR = (data: PoolDailyData[]): number => {
+      if (data.length === 0) return 0;
+      const dailyAPRs = data.map((day: PoolDailyData) => {
+        const { totalValueLockedUSD, feesUSD } = day;
+        return this.calculateAnualizedApr(feesUSD, totalValueLockedUSD);
+      });
+
+      const averageAPR =
+        dailyAPRs.reduce((sum, apr) => sum + apr, 0) / dailyAPRs.length;
+      return parseFloat(averageAPR.toFixed(2));
+    };
+
+    return {
+      apr7d: calculateAverageAPR(last7DaysData),
+      apr30d: calculateAverageAPR(last30DaysData),
+    };
   }
 
   calculateAnualizedApr(feesUSD: string, tvlUSD: string): number {
