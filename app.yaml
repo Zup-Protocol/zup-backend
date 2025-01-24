@@ -4,9 +4,12 @@ services:
     github:
       branch: main
       deploy_on_push: true
-      repo: your-username/your-repo
+      repo: Zup-Protocol/zup-backend
     envs:
       - key: NODE_ENV
         value: production
       - key: GRAPHQL_URL_SEPOLIA
         value: https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest
+    instance_size_slug: basic-xxs # Specifies the instance size
+    instance_count: 1 # Number of instances
+    http_port: 3000 # Port your app listens on
