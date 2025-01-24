@@ -1,6 +1,17 @@
-query GetPoolData($poolId: ID!) {
+query GetPoolData(
+  $poolId: ID!, 
+  $dayStartTimestamp: BigInt!, 
+  $hourStartTimestamp: BigInt!
+) {
   pool(id: $poolId) {
     id
+    protocol {
+      name
+      logo
+      url
+      id
+      positionManager
+    }
     totalValueLockedUSD
     totalValueLockedToken0
     totalValueLockedToken1
@@ -15,20 +26,24 @@ query GetPoolData($poolId: ID!) {
       id
       usdPrice
     }
-    dailyData(first: 2, orderDirection: desc, orderBy: dayStartTimestamp) {
+    dailyData(
+      orderDirection: desc
+      orderBy: dayStartTimestamp
+      where: {
+        dayStartTimestamp_gte: $dayStartTimestamp
+      }
+    ) {
       feesUSD
       totalValueLockedUSD
+      dayStartTimestamp
     }
-    hourlyData(first: 24, orderDirection: desc, orderBy: hourStartTimestamp) {
+    hourlyData(
+      orderDirection: desc
+      orderBy: hourStartTimestamp
+      where: {hourStartTimestamp_gte: $hourStartTimestamp}
+    ) {
       feesUSD
+      hourStartTimestamp
     }
-  }
-}
-
-query GetPoolsByTokenIds($token0Id: Bytes!, $token1Id: Bytes!) {
-  pools(
-    where: {or: [{token0_: {id: $token0Id}, token1_: {id: $token1Id}}, {token0_: {id: $token1Id}, token1_: {id: $token0Id}}]}
-  ) {
-    id
   }
 }
