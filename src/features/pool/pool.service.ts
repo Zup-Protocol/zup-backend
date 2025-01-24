@@ -107,7 +107,7 @@ export class PoolService {
         positionManager: pool.protocol.positionManager,
       },
       token0Address: pool.token0.id,
-      token1Address: pool.token0.id,
+      token1Address: pool.token1.id,
       feeTier: pool.feeTier,
       tickSpacing: pool.tickSpacing,
       yield24hs: calculateHourlyAnualizedApr,
