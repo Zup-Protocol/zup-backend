@@ -14,6 +14,7 @@ import { PoolMetadata } from './dto/pool-metadata.dto';
 import { TokenService } from '../tokens/token.service';
 import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
 import { BestPoolYieldByTimeframe } from './dto/best-pool-yield-by-timeframe.dto';
+import { TokenMetadata } from '../tokens/dto/token.dto';
 
 @Injectable()
 export class PoolService {
@@ -56,24 +57,37 @@ export class PoolService {
     const pools24hs = poolsMetadata
       .sort((a, b) => b.yield24hs - a.yield24hs)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ yield7d, yield30d, yield90d, ...rest }) => rest);
+      .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
+        ...rest,
+        yield: yield24hs,
+      }));
+
     // Get pools ordered by 7d yield (descending)
     const pools7d = poolsMetadata
       .sort((a, b) => b.yield7d - a.yield7d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ yield24hs, yield30d, yield90d, ...rest }) => rest);
+      .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
+        ...rest,
+        yield: yield7d,
+      }));
 
     // Get pools ordered by 30d yield (descending)
     const pools30d = poolsMetadata
       .sort((a, b) => b.yield30d - a.yield30d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ yield24hs, yield7d, yield90d, ...rest }) => rest);
+      .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
+        ...rest,
+        yield: yield30d,
+      }));
 
     // Get pools ordered by 90d yield (descending)
     const pools90d = poolsMetadata
       .sort((a, b) => b.yield90d - a.yield90d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ yield24hs, yield7d, yield30d, ...rest }) => rest);
+      .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
+        ...rest,
+        yield: yield90d,
+      }));
 
     return {
       bestYield24hs: pools24hs,
@@ -107,7 +121,9 @@ export class PoolService {
     const poolIds = [...new Set([...pools.map((pool) => pool.id)])];
     console.debug('pool ids:', poolIds);
     const poolsMetadata: PoolMetadata[] = await Promise.all(
-      poolIds.map((id) => this.findBestYieldsByPool(id, network)),
+      poolIds.map((id) =>
+        this.findBestYieldsByPool(id, network, token0, token1),
+      ),
     );
     return [{ network, token0, token1, poolsMetadata }];
   }
@@ -115,6 +131,8 @@ export class PoolService {
   async findBestYieldsByPool(
     poolId: string,
     network: Networks = Networks.SEPOLIA,
+    token0: TokenMetadata,
+    token1: TokenMetadata,
   ): Promise<PoolMetadata> {
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
     const hourStartTimestamp = currentTimeInSeconds - this.ONE_DAY_IN_SECONDS;
@@ -145,8 +163,8 @@ export class PoolService {
         positionManager: pool.protocol.positionManager,
       },
       network,
-      token0Address: pool.token0.id,
-      token1Address: pool.token1.id,
+      token0,
+      token1,
       feeTier: pool.feeTier,
       tickSpacing: pool.tickSpacing,
       yield24hs: calculateHourlyAnualizedApr,

@@ -1,3 +1,4 @@
+import { TokenMetadata } from '@/features/tokens/dto/token.dto';
 import { PoolProtocol } from './pool-protocol.dto';
 
 export class PoolMetadata {
@@ -9,7 +10,7 @@ export class PoolMetadata {
   yield7d: number;
   yield30d: number;
   yield90d: number;
-  token0Address: string;
-  token1Address: string;
+  token0: TokenMetadata;
+  token1: TokenMetadata;
   network: string;
 }
