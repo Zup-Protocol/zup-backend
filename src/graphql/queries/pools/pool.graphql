@@ -1,6 +1,6 @@
 query GetPoolData(
-  $poolId: ID!, 
-  $dayStartTimestamp: BigInt!, 
+  $poolId: ID!
+  $dayStartTimestamp: BigInt!
   $hourStartTimestamp: BigInt!
 ) {
   pool(id: $poolId) {
@@ -20,18 +20,14 @@ query GetPoolData(
     createdAtTimestamp
     token0 {
       id
-      usdPrice
     }
     token1 {
       id
-      usdPrice
     }
     dailyData(
       orderDirection: desc
       orderBy: dayStartTimestamp
-      where: {
-        dayStartTimestamp_gte: $dayStartTimestamp
-      }
+      where: { dayStartTimestamp_gte: $dayStartTimestamp }
     ) {
       feesUSD
       totalValueLockedUSD
@@ -40,7 +36,7 @@ query GetPoolData(
     hourlyData(
       orderDirection: desc
       orderBy: hourStartTimestamp
-      where: {hourStartTimestamp_gte: $hourStartTimestamp}
+      where: { hourStartTimestamp_gte: $hourStartTimestamp }
     ) {
       feesUSD
       hourStartTimestamp

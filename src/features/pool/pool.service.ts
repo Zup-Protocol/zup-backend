@@ -17,8 +17,9 @@ import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
 @Injectable()
 export class PoolService {
   ONE_DAY_IN_SECONDS = 86400;
-  ONE_WEEK_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 7;
-  ONE_MONTH_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 30;
+  SEVEN_DAYS_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 7;
+  THIRY_DAYS_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 30;
+  NINETY_DAYS_IN_SECONDS = this.ONE_DAY_IN_SECONDS * 90;
 
   constructor(
     private graphqlService: GraphQLService,
@@ -80,7 +81,7 @@ export class PoolService {
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
     const hourStartTimestamp = currentTimeInSeconds - this.ONE_DAY_IN_SECONDS;
     const dayStartTimestamp =
-      currentTimeInSeconds - this.ONE_DAY_IN_SECONDS * 30;
+      currentTimeInSeconds - this.NINETY_DAYS_IN_SECONDS;
     const { pool } = await this.graphqlService.query<GetPoolDataQuery>(
       network,
       print(GetPoolDataDocument),
@@ -105,6 +106,8 @@ export class PoolService {
         id: pool.protocol.id,
         positionManager: pool.protocol.positionManager,
       },
+      token0Address: pool.token0.id,
+      token1Address: pool.token0.id,
       feeTier: pool.feeTier,
       tickSpacing: pool.tickSpacing,
       yield24hs: calculateHourlyAnualizedApr,
@@ -137,19 +140,25 @@ export class PoolService {
   calculateDailyAnualizedApr(
     poolDailyData: Array<PoolDailyData>,
     currentTimeInSeconds: number,
-  ): { apr7d: number; apr30d: number } {
+  ): { apr7d: number; apr30d: number; apr90d: number } {
     const timestampSevenDaysAgo =
-      currentTimeInSeconds - this.ONE_WEEK_IN_SECONDS;
+      currentTimeInSeconds - this.SEVEN_DAYS_IN_SECONDS;
     const timestampThirtyDaysAgo =
-      currentTimeInSeconds - this.ONE_MONTH_IN_SECONDS;
+      currentTimeInSeconds - this.THIRY_DAYS_IN_SECONDS;
+    const timestampNinetyDaysAgo =
+      currentTimeInSeconds - this.NINETY_DAYS_IN_SECONDS;
 
-    // Filter data points for 7 days and 30 days
+    // Filter data points for 7 days, 30 days and 90 days
     const last7DaysData = poolDailyData.filter(
       (day) => parseFloat(day.dayStartTimestamp) >= timestampSevenDaysAgo,
     );
 
     const last30DaysData = poolDailyData.filter(
       (day) => parseFloat(day.dayStartTimestamp) >= timestampThirtyDaysAgo,
+    );
+
+    const last90DaysData = poolDailyData.filter(
+      (day) => parseFloat(day.dayStartTimestamp) >= timestampNinetyDaysAgo,
     );
 
     const calculateAverageAPR = (data: PoolDailyData[]): number => {
@@ -167,6 +176,7 @@ export class PoolService {
     return {
       apr7d: calculateAverageAPR(last7DaysData),
       apr30d: calculateAverageAPR(last30DaysData),
+      apr90d: calculateAverageAPR(last90DaysData),
     };
   }
 
