@@ -1,42 +1,48 @@
-import { Token } from './token.dto';
+import { TokenMetadata } from './dto/token.dto';
 
-export const supportedTokens: Record<string, Token[]> = {
+export const supportedTokens: Record<string, TokenMetadata[]> = {
   mainnet: [
     {
       symbol: 'ETH',
       name: 'Ethereum',
       address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WETH',
       name: 'Wrapped Ethereum',
       address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WBTC',
       name: 'Wrapped Bitcoin',
       address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
       decimals: 8,
+      logoUrl: '',
     },
     {
       symbol: 'USDC',
       name: 'USD Coin',
       address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
       decimals: 6,
+      logoUrl: '',
     },
     {
       symbol: 'USDT',
       name: 'Tether USD',
       address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
       decimals: 6,
+      logoUrl: '',
     },
     {
       symbol: 'DAI',
       name: 'Dai Stablecoin',
       address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       decimals: 18,
+      logoUrl: '',
     },
   ],
   arbitrum: [
@@ -45,36 +51,42 @@ export const supportedTokens: Record<string, Token[]> = {
       name: 'Ethereum',
       address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WETH',
       name: 'Wrapped Ethereum',
       address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WBTC',
       name: 'Wrapped Bitcoin',
       address: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
       decimals: 8,
+      logoUrl: '',
     },
     {
       symbol: 'USDC',
       name: 'USD Coin',
       address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
       decimals: 6,
+      logoUrl: '',
     },
     {
       symbol: 'USDT',
       name: 'Tether USD',
       address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
       decimals: 6,
+      logoUrl: '',
     },
     {
       symbol: 'DAI',
       name: 'Dai Stablecoin',
       address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
       decimals: 18,
+      logoUrl: '',
     },
   ],
   base: [
@@ -83,18 +95,21 @@ export const supportedTokens: Record<string, Token[]> = {
       name: 'Ethereum',
       address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WETH',
       name: 'Wrapped Ethereum',
       address: '0x4200000000000000000000000000000000000006',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'USDC',
       name: 'USD Coin',
       address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
       decimals: 6,
+      logoUrl: '',
     },
   ],
   scroll: [
@@ -103,18 +118,21 @@ export const supportedTokens: Record<string, Token[]> = {
       name: 'Ethereum',
       address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'WETH',
       name: 'Wrapped Ethereum',
       address: '0x5300000000000000000000000000000000000004',
       decimals: 18,
+      logoUrl: '',
     },
     {
       symbol: 'USDC',
       name: 'USD Coin',
       address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
       decimals: 6,
+      logoUrl: '',
     },
   ],
   // bsc: [
