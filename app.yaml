@@ -1,0 +1,12 @@
+name: zup-backend
+services:
+  - name: web
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: your-username/your-repo
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: GRAPHQL_URL_SEPOLIA
+        value: https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest

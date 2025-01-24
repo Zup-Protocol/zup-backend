@@ -8,6 +8,7 @@ export class GraphQLService {
   constructor(endpoints: Record<string, string>) {
     // Initialize a client for each endpoint
     Object.entries(endpoints).forEach(([name, url]) => {
+      console.debug('*** GraphQLService url ***', url);
       this.clients.set(name, new GraphQLClient(url));
     });
   }
