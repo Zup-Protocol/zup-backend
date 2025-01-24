@@ -1,10 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLService } from './services/graphql.service';
 import { Networks } from '@/features/tokens/network.enum';
 
 @Global()
 @Module({
+  imports: [ConfigModule],
   providers: [
     {
       provide: GraphQLService,
