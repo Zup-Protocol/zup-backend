@@ -11,4 +11,5 @@ export class PoolMetadata {
   yield90d: number;
   token0Address: string;
   token1Address: string;
+  network: string;
 }
