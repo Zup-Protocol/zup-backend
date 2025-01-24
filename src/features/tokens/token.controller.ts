@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { TokenService } from './token.service';
 import { Networks } from './network.enum';
-import { Token } from './token.dto';
+import { TokenMetadata } from './dto/token.dto';
 
 @Controller('tokens')
 export class TokenController {
@@ -10,7 +10,7 @@ export class TokenController {
   @Get('/tokens/popular')
   getPopularTokens(
     @Query('network') network: Networks,
-  ): Record<string, Token[]> {
+  ): Record<string, TokenMetadata[]> {
     return this.tokenService.getPopularTokens(network);
   }
 
@@ -22,7 +22,7 @@ export class TokenController {
   @Get('/tokens')
   getTokens(
     @Query('network') network: Networks,
-  ): Array<Record<string, Token[]>> {
+  ): Array<Record<string, TokenMetadata[]>> {
     return this.tokenService.getUserTokens(network);
   }
 }
