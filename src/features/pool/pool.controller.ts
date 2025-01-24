@@ -12,7 +12,13 @@ export class PoolController {
     @Query('token1') token1: string,
     @Query('network') network: Networks,
   ): Promise<any> {
-    return this.poolService.findBestYieldsForTokenPair(token0, token1, network);
+    return {
+      bestYields: this.poolService.findBestYieldsForTokenPair(
+        token0,
+        token1,
+        network,
+      ),
+    };
   }
 
   @Get(':poolId')
