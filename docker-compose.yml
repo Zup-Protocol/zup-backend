@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      GRAPHQL_URL_SEPOLIA: 'https://api.studio.thegraph.com/query/98435/zup-dexs-sepolia/version/latest'
+      GRAPHQL_URL_SCROLL: 'https://api.studio.thegraph.com/query/98435/zup-dexs-scroll/version/latest'
+      GRAPHQL_URL_MAINNET: 'https://api.studio.thegraph.com/query/98435/zup-dexs-ethereum/version/latest'
+      ALLOWED_ORIGINS: 'http://localhost:3000'
