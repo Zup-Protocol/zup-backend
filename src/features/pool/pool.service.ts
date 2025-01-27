@@ -34,7 +34,7 @@ export class PoolService {
     network: Networks = Networks.SEPOLIA,
   ): Promise<{
     bestYieldsByFrame: BestPoolYieldByTimeframe;
-    poolsMetadataByNetwork: PoolMetadataByNetwork[];
+    poolsMetadataByNetwork: Record<string, PoolMetadataByNetwork[]>;
   }> {
     console.log('Starting calculation of best yields ...');
     if (network === Networks.ALL) {
@@ -45,8 +45,9 @@ export class PoolService {
       token1Symbol,
       network,
     );
+
     const bestYieldsByFrame = this.calculateBestYieldsFromPoolsMetadata(
-      poolsMetadataByNetwork[0].poolsMetadata,
+      poolsMetadataByNetwork[network][0].poolsMetadata,
     );
     console.log('Finishing calculation of best yields ...');
     return { bestYieldsByFrame, poolsMetadataByNetwork };
@@ -102,7 +103,7 @@ export class PoolService {
     token0Symbol: string,
     token1Symbol: string,
     network: Networks = Networks.SEPOLIA,
-  ): Promise<PoolMetadataByNetwork[]> {
+  ): Promise<Record<string, PoolMetadataByNetwork[]>> {
     const token0 =
       await this.tokenService.getTokenMetadataBySymbol(token0Symbol);
     const token1 =
@@ -125,7 +126,10 @@ export class PoolService {
         this.findBestYieldsByPool(id, network, token0, token1),
       ),
     );
-    return [{ network, token0, token1, poolsMetadata }];
+    const poolMetadataByNetwork: Record<string, PoolMetadataByNetwork[]> = {
+      [network]: [{ network, token0, token1, poolsMetadata }],
+    };
+    return poolMetadataByNetwork;
   }
 
   async findBestYieldsByPool(
