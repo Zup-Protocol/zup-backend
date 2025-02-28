@@ -39,10 +39,8 @@ export class TokenService {
     };
   }
 
-  getPopularTokens(network: Networks): Record<string, TokenMetadata[]> {
-    if (network !== Networks.ALL) {
-      return { [network]: supportedTokens[network.toString()] };
-    } else return supportedTokens;
+  getPopularTokens(network: Networks): TokenMetadata[] {
+    return supportedTokens[network.toString()];
   }
 
   async getRecentTokens(): Promise<string[]> {
