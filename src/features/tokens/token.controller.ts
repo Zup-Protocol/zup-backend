@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { TokenMetadata } from './dto/token.dto';
 import { Networks } from './network.enum';
 import { TokenService } from './token.service';
@@ -11,6 +11,12 @@ export class TokenController {
   getPopularTokens(
     @Query('network') network: Networks,
   ): Record<string, TokenMetadata[]> {
+    console.log('dale');
+
+    if (!network) {
+      throw new BadRequestException('No network specified');
+    }
+
     return this.tokenService.getPopularTokens(network);
   }
 
