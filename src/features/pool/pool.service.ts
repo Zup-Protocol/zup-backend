@@ -98,7 +98,6 @@ export class PoolService {
     };
   }
 
-  // TODO: Hardcoded token address and networks
   async processSingleNetworkPoolsMetadata(
     token0Address: string,
     token1Address: string,
@@ -134,6 +133,7 @@ export class PoolService {
         this.findBestYieldsByPool(id, network, token0, token1),
       ),
     );
+
     const poolMetadataByNetwork: Record<string, PoolMetadataByNetwork[]> = {
       [network]: [{ network, token0, token1, poolsMetadata }],
     };
@@ -175,8 +175,14 @@ export class PoolService {
         positionManager: pool.protocol.positionManager,
       },
       network,
-      token0,
-      token1,
+      token0:
+        pool.token0.id.toLowerCase() === token0.address.toLowerCase()
+          ? token0
+          : token1,
+      token1:
+        pool.token1.id.toLowerCase() === token1.address.toLowerCase()
+          ? token1
+          : token0,
       feeTier: pool.feeTier,
       tickSpacing: pool.tickSpacing,
       yield24hs: calculateHourlyAnualizedApr,
