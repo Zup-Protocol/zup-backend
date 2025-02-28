@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { GraphQLService } from '@/core/services/graphql.service';
 import {
   GetPoolDataDocument,
@@ -8,13 +7,14 @@ import {
   PoolDailyData,
   PoolHourlyData,
 } from '@/graphql/types/generated';
+import { Injectable } from '@nestjs/common';
 import { print } from 'graphql';
-import { Networks } from '../tokens/network.enum';
-import { PoolMetadata } from './dto/pool-metadata.dto';
-import { TokenService } from '../tokens/token.service';
-import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
-import { BestPoolYieldByTimeframe } from './dto/best-pool-yield-by-timeframe.dto';
 import { TokenMetadata } from '../tokens/dto/token.dto';
+import { Networks } from '../tokens/network.enum';
+import { TokenService } from '../tokens/token.service';
+import { BestPoolYieldByTimeframe } from './dto/best-pool-yield-by-timeframe.dto';
+import { PoolMetadataByNetwork } from './dto/pool-metadata-by-network.dto';
+import { PoolMetadata } from './dto/pool-metadata.dto';
 
 @Injectable()
 export class PoolService {
@@ -29,8 +29,8 @@ export class PoolService {
   ) {}
 
   async findBestYieldsForTokenPair(
-    token0Symbol: string,
-    token1Symbol: string,
+    token0Address: string,
+    token1Address: string,
     network: Networks = Networks.SEPOLIA,
   ): Promise<{
     bestYieldsByFrame: BestPoolYieldByTimeframe;
@@ -41,8 +41,8 @@ export class PoolService {
       // TODO: Process all networks
     }
     const poolsMetadataByNetwork = await this.processSingleNetworkPoolsMetadata(
-      token0Symbol,
-      token1Symbol,
+      token0Address,
+      token1Address,
       network,
     );
 
@@ -100,25 +100,33 @@ export class PoolService {
 
   // TODO: Hardcoded token address and networks
   async processSingleNetworkPoolsMetadata(
-    token0Symbol: string,
-    token1Symbol: string,
+    token0Address: string,
+    token1Address: string,
     network: Networks = Networks.SEPOLIA,
   ): Promise<Record<string, PoolMetadataByNetwork[]>> {
-    const token0 =
-      await this.tokenService.getTokenMetadataBySymbol(token0Symbol);
-    const token1 =
-      await this.tokenService.getTokenMetadataBySymbol(token1Symbol);
+    const token0 = await this.tokenService.getTokenMetadataByAddress(
+      token0Address,
+      network,
+    );
 
-    const token0Id = '0x1c7d4b196cb0c7b01d743fbc6116a902379c7238';
-    const token1Id = '0xfff9976782d46cc05630d1f6ebab18b2324d6b14';
+    const token1 = await this.tokenService.getTokenMetadataByAddress(
+      token1Address,
+      network,
+    );
 
     console.debug('*** network ***', network);
 
     const { pools } = await this.graphqlService.query<GetPoolsByTokenIdsQuery>(
       network,
       print(GetPoolsByTokenIdsDocument),
-      { token0Id, token1Id },
+      {
+        token0Id: token0Address,
+        token1Id: token1Address,
+      },
     );
+
+    console.debug('*** pools ***', pools);
+
     const poolIds = [...new Set([...pools.map((pool) => pool.id)])];
     console.debug('pool ids:', poolIds);
     const poolsMetadata: PoolMetadata[] = await Promise.all(

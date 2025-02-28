@@ -1,21 +1,41 @@
 import { Injectable } from '@nestjs/common';
+import { Alchemy } from 'alchemy-sdk';
+import { TokenMetadata } from './dto/token.dto';
 import { Networks } from './network.enum';
 import { supportedTokens } from './supported-tokens';
-import { TokenMetadata } from './dto/token.dto';
 
 @Injectable()
 export class TokenService {
   constructor() {}
 
-  // TODO: Get with Alchemy
-  async getTokenMetadataBySymbol(tokenSymbol: string): Promise<TokenMetadata> {
-    console.log(`Getting token metadata for symbol: ${tokenSymbol}`);
+  async getTokenMetadataByAddress(
+    tokenAddress: string,
+    network: Networks,
+  ): Promise<TokenMetadata> {
+    console.log(`Getting token metadata for address: ${tokenAddress}`);
+
+    const tokenInSupportedTokens = supportedTokens[network.toString()].find(
+      (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+    );
+
+    if (tokenInSupportedTokens !== undefined) {
+      return tokenInSupportedTokens;
+    }
+
+    const alchemy = new Alchemy({
+      apiKey: process.env.ALCHEMY_API_KEY,
+      network: Networks.getAlchemyNetwork(network),
+    });
+
+    const alchemyTokenMetadata =
+      await alchemy.core.getTokenMetadata(tokenAddress);
+
     return {
-      name: 'TEST',
-      symbol: 'TST',
-      address: '0xabc',
-      decimals: 18,
-      logoUrl: 'www.xxx.xyz',
+      name: alchemyTokenMetadata.name,
+      symbol: alchemyTokenMetadata.symbol,
+      address: tokenAddress,
+      decimals: alchemyTokenMetadata.decimals,
+      logoUrl: alchemyTokenMetadata.logo,
     };
   }
 

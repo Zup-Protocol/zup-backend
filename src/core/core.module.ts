@@ -1,7 +1,7 @@
+import { Networks } from '@/features/tokens/network.enum';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLService } from './services/graphql.service';
-import { Networks } from '@/features/tokens/network.enum';
 
 @Global()
 @Module({
@@ -14,6 +14,7 @@ import { Networks } from '@/features/tokens/network.enum';
         // Define multiple endpoints
         const endpoints = {
           [Networks.SEPOLIA]: configService.get<string>('GRAPHQL_URL_SEPOLIA'),
+          [Networks.MAINNET]: configService.get<string>('GRAPHQL_URL_MAINNET'),
           [Networks.SCROLL]: configService.get<string>('GRAPHQL_URL_SCROLL'),
         };
         return new GraphQLService(endpoints);

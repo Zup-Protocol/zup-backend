@@ -2,42 +2,29 @@ import { GraphQLClient, RequestOptions } from 'graphql-request';
 import { DocumentNode } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  BigDecimal: { input: string; output: string };
-  BigInt: { input: string; output: string };
-  Bytes: { input: string; output: string };
-  Int8: { input: number; output: number };
-  Timestamp: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigDecimal: { input: string; output: string; }
+  BigInt: { input: string; output: string; }
+  Bytes: { input: string; output: string; }
+  Int8: { input: number; output: number; }
+  Timestamp: { input: any; output: any; }
 };
 
 export enum Aggregation_Interval {
   Day = 'day',
-  Hour = 'hour',
+  Hour = 'hour'
 }
 
 export type BlockChangedFilter = {
@@ -53,7 +40,7 @@ export type Block_Height = {
 /** Defines the order direction, either ascending or descending */
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc',
+  Desc = 'desc'
 }
 
 export type Pool = {
@@ -72,6 +59,7 @@ export type Pool = {
   totalValueLockedUSD: Scalars['BigDecimal']['output'];
 };
 
+
 export type PoolDailyDataArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PoolDailyData_OrderBy>;
@@ -79,6 +67,7 @@ export type PoolDailyDataArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PoolDailyData_Filter>;
 };
+
 
 export type PoolHourlyDataArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -176,9 +165,7 @@ export type PoolDailyData_Filter = {
   totalValueLockedToken0_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken0_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken0_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedToken0_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedToken0_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   totalValueLockedToken1?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -186,9 +173,7 @@ export type PoolDailyData_Filter = {
   totalValueLockedToken1_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedToken1_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedToken1_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   totalValueLockedUSD?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -196,9 +181,7 @@ export type PoolDailyData_Filter = {
   totalValueLockedUSD_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedUSD_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedUSD_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
 };
 
 export enum PoolDailyData_OrderBy {
@@ -217,7 +200,7 @@ export enum PoolDailyData_OrderBy {
   PoolTotalValueLockedUsd = 'pool__totalValueLockedUSD',
   TotalValueLockedToken0 = 'totalValueLockedToken0',
   TotalValueLockedToken1 = 'totalValueLockedToken1',
-  TotalValueLockedUsd = 'totalValueLockedUSD',
+  TotalValueLockedUsd = 'totalValueLockedUSD'
 }
 
 export type PoolHourlyData = {
@@ -313,7 +296,7 @@ export enum PoolHourlyData_OrderBy {
   PoolTickSpacing = 'pool__tickSpacing',
   PoolTotalValueLockedToken0 = 'pool__totalValueLockedToken0',
   PoolTotalValueLockedToken1 = 'pool__totalValueLockedToken1',
-  PoolTotalValueLockedUsd = 'pool__totalValueLockedUSD',
+  PoolTotalValueLockedUsd = 'pool__totalValueLockedUSD'
 }
 
 export type Pool_Filter = {
@@ -427,9 +410,7 @@ export type Pool_Filter = {
   totalValueLockedToken0_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken0_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken0_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedToken0_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedToken0_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   totalValueLockedToken1?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -437,9 +418,7 @@ export type Pool_Filter = {
   totalValueLockedToken1_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedToken1_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedToken1_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedToken1_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   totalValueLockedUSD?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -447,9 +426,7 @@ export type Pool_Filter = {
   totalValueLockedUSD_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalValueLockedUSD_not?: InputMaybe<Scalars['BigDecimal']['input']>;
-  totalValueLockedUSD_not_in?: InputMaybe<
-    Array<Scalars['BigDecimal']['input']>
-  >;
+  totalValueLockedUSD_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
 };
 
 export enum Pool_OrderBy {
@@ -468,14 +445,22 @@ export enum Pool_OrderBy {
   Token0 = 'token0',
   Token0Decimals = 'token0__decimals',
   Token0Id = 'token0__id',
+  Token0Name = 'token0__name',
+  Token0Symbol = 'token0__symbol',
+  Token0TotalTokenPooledAmount = 'token0__totalTokenPooledAmount',
+  Token0TotalValuePooledUsd = 'token0__totalValuePooledUsd',
   Token0UsdPrice = 'token0__usdPrice',
   Token1 = 'token1',
   Token1Decimals = 'token1__decimals',
   Token1Id = 'token1__id',
+  Token1Name = 'token1__name',
+  Token1Symbol = 'token1__symbol',
+  Token1TotalTokenPooledAmount = 'token1__totalTokenPooledAmount',
+  Token1TotalValuePooledUsd = 'token1__totalValuePooledUsd',
   Token1UsdPrice = 'token1__usdPrice',
   TotalValueLockedToken0 = 'totalValueLockedToken0',
   TotalValueLockedToken1 = 'totalValueLockedToken1',
-  TotalValueLockedUsd = 'totalValueLockedUSD',
+  TotalValueLockedUsd = 'totalValueLockedUSD'
 }
 
 export type Protocol = {
@@ -589,7 +574,7 @@ export enum Protocol_OrderBy {
   Logo = 'logo',
   Name = 'name',
   PositionManager = 'positionManager',
-  Url = 'url',
+  Url = 'url'
 }
 
 export type Query = {
@@ -608,9 +593,11 @@ export type Query = {
   tokens: Array<Token>;
 };
 
+
 export type Query_MetaArgs = {
   block?: InputMaybe<Block_Height>;
 };
+
 
 export type QueryPoolArgs = {
   block?: InputMaybe<Block_Height>;
@@ -618,11 +605,13 @@ export type QueryPoolArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
+
 export type QueryPoolDailyDataArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryPoolDailyDatasArgs = {
   block?: InputMaybe<Block_Height>;
@@ -634,11 +623,13 @@ export type QueryPoolDailyDatasArgs = {
   where?: InputMaybe<PoolDailyData_Filter>;
 };
 
+
 export type QueryPoolHourlyDataArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryPoolHourlyDatasArgs = {
   block?: InputMaybe<Block_Height>;
@@ -650,6 +641,7 @@ export type QueryPoolHourlyDatasArgs = {
   where?: InputMaybe<PoolHourlyData_Filter>;
 };
 
+
 export type QueryPoolsArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -660,11 +652,13 @@ export type QueryPoolsArgs = {
   where?: InputMaybe<Pool_Filter>;
 };
 
+
 export type QueryProtocolArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryProtocolsArgs = {
   block?: InputMaybe<Block_Height>;
@@ -676,11 +670,13 @@ export type QueryProtocolsArgs = {
   where?: InputMaybe<Protocol_Filter>;
 };
 
+
 export type QueryTokenArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryTokensArgs = {
   block?: InputMaybe<Block_Height>;
@@ -708,9 +704,11 @@ export type Subscription = {
   tokens: Array<Token>;
 };
 
+
 export type Subscription_MetaArgs = {
   block?: InputMaybe<Block_Height>;
 };
+
 
 export type SubscriptionPoolArgs = {
   block?: InputMaybe<Block_Height>;
@@ -718,11 +716,13 @@ export type SubscriptionPoolArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
+
 export type SubscriptionPoolDailyDataArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionPoolDailyDatasArgs = {
   block?: InputMaybe<Block_Height>;
@@ -734,11 +734,13 @@ export type SubscriptionPoolDailyDatasArgs = {
   where?: InputMaybe<PoolDailyData_Filter>;
 };
 
+
 export type SubscriptionPoolHourlyDataArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionPoolHourlyDatasArgs = {
   block?: InputMaybe<Block_Height>;
@@ -750,6 +752,7 @@ export type SubscriptionPoolHourlyDatasArgs = {
   where?: InputMaybe<PoolHourlyData_Filter>;
 };
 
+
 export type SubscriptionPoolsArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -760,11 +763,13 @@ export type SubscriptionPoolsArgs = {
   where?: InputMaybe<Pool_Filter>;
 };
 
+
 export type SubscriptionProtocolArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionProtocolsArgs = {
   block?: InputMaybe<Block_Height>;
@@ -776,11 +781,13 @@ export type SubscriptionProtocolsArgs = {
   where?: InputMaybe<Protocol_Filter>;
 };
 
+
 export type SubscriptionTokenArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionTokensArgs = {
   block?: InputMaybe<Block_Height>;
@@ -796,6 +803,10 @@ export type Token = {
   __typename?: 'Token';
   decimals: Scalars['Int']['output'];
   id: Scalars['Bytes']['output'];
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
+  totalTokenPooledAmount: Scalars['BigDecimal']['output'];
+  totalValuePooledUsd: Scalars['BigDecimal']['output'];
   usdPrice: Scalars['BigDecimal']['output'];
 };
 
@@ -821,7 +832,63 @@ export type Token_Filter = {
   id_not?: InputMaybe<Scalars['Bytes']['input']>;
   id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
   id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  name_gt?: InputMaybe<Scalars['String']['input']>;
+  name_gte?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  name_lt?: InputMaybe<Scalars['String']['input']>;
+  name_lte?: InputMaybe<Scalars['String']['input']>;
+  name_not?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
   or?: InputMaybe<Array<InputMaybe<Token_Filter>>>;
+  symbol?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  symbol_gt?: InputMaybe<Scalars['String']['input']>;
+  symbol_gte?: InputMaybe<Scalars['String']['input']>;
+  symbol_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  symbol_lt?: InputMaybe<Scalars['String']['input']>;
+  symbol_lte?: InputMaybe<Scalars['String']['input']>;
+  symbol_not?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  symbol_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
+  symbol_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  totalTokenPooledAmount?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
+  totalTokenPooledAmount_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_not?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalTokenPooledAmount_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
+  totalValuePooledUsd?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
+  totalValuePooledUsd_lt?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_lte?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_not?: InputMaybe<Scalars['BigDecimal']['input']>;
+  totalValuePooledUsd_not_in?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   usdPrice?: InputMaybe<Scalars['BigDecimal']['input']>;
   usdPrice_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   usdPrice_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -835,7 +902,11 @@ export type Token_Filter = {
 export enum Token_OrderBy {
   Decimals = 'decimals',
   Id = 'id',
-  UsdPrice = 'usdPrice',
+  Name = 'name',
+  Symbol = 'symbol',
+  TotalTokenPooledAmount = 'totalTokenPooledAmount',
+  TotalValuePooledUsd = 'totalValuePooledUsd',
+  UsdPrice = 'usdPrice'
 }
 
 export type _Block_ = {
@@ -871,7 +942,7 @@ export enum _SubgraphErrorPolicy_ {
   /** Data will be returned even if the subgraph has indexing errors */
   Allow = 'allow',
   /** If the subgraph has indexing errors, data will be omitted. The default. */
-  Deny = 'deny',
+  Deny = 'deny'
 }
 
 export type GetPoolDataQueryVariables = Exact<{
@@ -880,508 +951,34 @@ export type GetPoolDataQueryVariables = Exact<{
   hourStartTimestamp: Scalars['BigInt']['input'];
 }>;
 
-export type GetPoolDataQuery = {
-  __typename?: 'Query';
-  pool?: {
-    __typename?: 'Pool';
-    id: string;
-    totalValueLockedUSD: string;
-    totalValueLockedToken0: string;
-    totalValueLockedToken1: string;
-    feeTier: number;
-    tickSpacing: number;
-    createdAtTimestamp: string;
-    protocol: {
-      __typename?: 'Protocol';
-      name: string;
-      logo: string;
-      url: string;
-      id: string;
-      positionManager: string;
-    };
-    token0: { __typename?: 'Token'; id: string; usdPrice: string };
-    token1: { __typename?: 'Token'; id: string; usdPrice: string };
-    dailyData: Array<{
-      __typename?: 'PoolDailyData';
-      feesUSD: string;
-      totalValueLockedUSD: string;
-      dayStartTimestamp: string;
-    } | null>;
-    hourlyData: Array<{
-      __typename?: 'PoolHourlyData';
-      feesUSD: string;
-      hourStartTimestamp: string;
-    } | null>;
-  } | null;
-};
+
+export type GetPoolDataQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', id: string, totalValueLockedUSD: string, totalValueLockedToken0: string, totalValueLockedToken1: string, feeTier: number, tickSpacing: number, createdAtTimestamp: string, protocol: { __typename?: 'Protocol', name: string, logo: string, url: string, id: string, positionManager: string }, token0: { __typename?: 'Token', id: string }, token1: { __typename?: 'Token', id: string }, dailyData: Array<{ __typename?: 'PoolDailyData', feesUSD: string, totalValueLockedUSD: string, dayStartTimestamp: string } | null>, hourlyData: Array<{ __typename?: 'PoolHourlyData', feesUSD: string, hourStartTimestamp: string } | null> } | null };
 
 export type GetPoolsByTokenIdsQueryVariables = Exact<{
   token0Id: Scalars['Bytes']['input'];
   token1Id: Scalars['Bytes']['input'];
 }>;
 
-export type GetPoolsByTokenIdsQuery = {
-  __typename?: 'Query';
-  pools: Array<{ __typename?: 'Pool'; id: string }>;
-};
 
-export const GetPoolDataDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetPoolData' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'poolId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'dayStartTimestamp' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'BigInt' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'hourStartTimestamp' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'BigInt' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'pool' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'poolId' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'protocol' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'logo' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'url' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'positionManager' },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalValueLockedUSD' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalValueLockedToken0' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalValueLockedToken1' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'feeTier' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'tickSpacing' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'createdAtTimestamp' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'token0' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'usdPrice' },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'token1' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'usdPrice' },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'dailyData' },
-                  arguments: [
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'orderDirection' },
-                      value: { kind: 'EnumValue', value: 'desc' },
-                    },
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'orderBy' },
-                      value: { kind: 'EnumValue', value: 'dayStartTimestamp' },
-                    },
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'where' },
-                      value: {
-                        kind: 'ObjectValue',
-                        fields: [
-                          {
-                            kind: 'ObjectField',
-                            name: {
-                              kind: 'Name',
-                              value: 'dayStartTimestamp_gte',
-                            },
-                            value: {
-                              kind: 'Variable',
-                              name: {
-                                kind: 'Name',
-                                value: 'dayStartTimestamp',
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'feesUSD' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'totalValueLockedUSD' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'dayStartTimestamp' },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'hourlyData' },
-                  arguments: [
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'orderDirection' },
-                      value: { kind: 'EnumValue', value: 'desc' },
-                    },
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'orderBy' },
-                      value: { kind: 'EnumValue', value: 'hourStartTimestamp' },
-                    },
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'where' },
-                      value: {
-                        kind: 'ObjectValue',
-                        fields: [
-                          {
-                            kind: 'ObjectField',
-                            name: {
-                              kind: 'Name',
-                              value: 'hourStartTimestamp_gte',
-                            },
-                            value: {
-                              kind: 'Variable',
-                              name: {
-                                kind: 'Name',
-                                value: 'hourStartTimestamp',
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'feesUSD' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'hourStartTimestamp' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode;
-export const GetPoolsByTokenIdsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetPoolsByTokenIds' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'token0Id' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Bytes' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'token1Id' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Bytes' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'pools' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'where' },
-                value: {
-                  kind: 'ObjectValue',
-                  fields: [
-                    {
-                      kind: 'ObjectField',
-                      name: { kind: 'Name', value: 'or' },
-                      value: {
-                        kind: 'ListValue',
-                        values: [
-                          {
-                            kind: 'ObjectValue',
-                            fields: [
-                              {
-                                kind: 'ObjectField',
-                                name: { kind: 'Name', value: 'token0_' },
-                                value: {
-                                  kind: 'ObjectValue',
-                                  fields: [
-                                    {
-                                      kind: 'ObjectField',
-                                      name: { kind: 'Name', value: 'id' },
-                                      value: {
-                                        kind: 'Variable',
-                                        name: {
-                                          kind: 'Name',
-                                          value: 'token0Id',
-                                        },
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                              {
-                                kind: 'ObjectField',
-                                name: { kind: 'Name', value: 'token1_' },
-                                value: {
-                                  kind: 'ObjectValue',
-                                  fields: [
-                                    {
-                                      kind: 'ObjectField',
-                                      name: { kind: 'Name', value: 'id' },
-                                      value: {
-                                        kind: 'Variable',
-                                        name: {
-                                          kind: 'Name',
-                                          value: 'token1Id',
-                                        },
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                            ],
-                          },
-                          {
-                            kind: 'ObjectValue',
-                            fields: [
-                              {
-                                kind: 'ObjectField',
-                                name: { kind: 'Name', value: 'token0_' },
-                                value: {
-                                  kind: 'ObjectValue',
-                                  fields: [
-                                    {
-                                      kind: 'ObjectField',
-                                      name: { kind: 'Name', value: 'id' },
-                                      value: {
-                                        kind: 'Variable',
-                                        name: {
-                                          kind: 'Name',
-                                          value: 'token1Id',
-                                        },
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                              {
-                                kind: 'ObjectField',
-                                name: { kind: 'Name', value: 'token1_' },
-                                value: {
-                                  kind: 'ObjectValue',
-                                  fields: [
-                                    {
-                                      kind: 'ObjectField',
-                                      name: { kind: 'Name', value: 'id' },
-                                      value: {
-                                        kind: 'Variable',
-                                        name: {
-                                          kind: 'Name',
-                                          value: 'token0Id',
-                                        },
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode;
+export type GetPoolsByTokenIdsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string }> };
 
-export type SdkFunctionWrapper = <T>(
-  action: (requestHeaders?: Record<string, string>) => Promise<T>,
-  operationName: string,
-  operationType?: string,
-  variables?: any,
-) => Promise<T>;
 
-const defaultWrapper: SdkFunctionWrapper = (
-  action,
-  _operationName,
-  _operationType,
-  _variables,
-) => action();
+export const GetPoolDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPoolData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dayStartTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hourStartTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BigInt"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pool"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"poolId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"protocol"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"positionManager"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalValueLockedUSD"}},{"kind":"Field","name":{"kind":"Name","value":"totalValueLockedToken0"}},{"kind":"Field","name":{"kind":"Name","value":"totalValueLockedToken1"}},{"kind":"Field","name":{"kind":"Name","value":"feeTier"}},{"kind":"Field","name":{"kind":"Name","value":"tickSpacing"}},{"kind":"Field","name":{"kind":"Name","value":"createdAtTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"token0"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token1"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dailyData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"EnumValue","value":"desc"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"dayStartTimestamp"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"dayStartTimestamp_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dayStartTimestamp"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"feesUSD"}},{"kind":"Field","name":{"kind":"Name","value":"totalValueLockedUSD"}},{"kind":"Field","name":{"kind":"Name","value":"dayStartTimestamp"}}]}},{"kind":"Field","name":{"kind":"Name","value":"hourlyData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"EnumValue","value":"desc"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"hourStartTimestamp"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"hourStartTimestamp_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hourStartTimestamp"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"feesUSD"}},{"kind":"Field","name":{"kind":"Name","value":"hourStartTimestamp"}}]}}]}}]}}]} as unknown as DocumentNode;
+export const GetPoolsByTokenIdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPoolsByTokenIds"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token0Id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Bytes"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token1Id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Bytes"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pools"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"token0_"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token0Id"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"token1_"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token1Id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"token0_"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token1Id"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"token1_"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token0Id"}}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode;
 
-export function getSdk(
-  client: GraphQLClient,
-  withWrapper: SdkFunctionWrapper = defaultWrapper,
-) {
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
+
+
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
+
+export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    GetPoolData(
-      variables: GetPoolDataQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<GetPoolDataQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<GetPoolDataQuery>(GetPoolDataDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'GetPoolData',
-        'query',
-        variables,
-      );
+    GetPoolData(variables: GetPoolDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetPoolDataQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetPoolDataQuery>(GetPoolDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetPoolData', 'query', variables);
     },
-    GetPoolsByTokenIds(
-      variables: GetPoolsByTokenIdsQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<GetPoolsByTokenIdsQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<GetPoolsByTokenIdsQuery>(
-            GetPoolsByTokenIdsDocument,
-            variables,
-            { ...requestHeaders, ...wrappedRequestHeaders },
-          ),
-        'GetPoolsByTokenIds',
-        'query',
-        variables,
-      );
-    },
+    GetPoolsByTokenIds(variables: GetPoolsByTokenIdsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetPoolsByTokenIdsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetPoolsByTokenIdsQuery>(GetPoolsByTokenIdsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetPoolsByTokenIds', 'query', variables);
+    }
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
