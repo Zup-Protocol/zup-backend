@@ -39,24 +39,71 @@ export class TokenService {
     };
   }
 
+  async getTokenMetadataByName(
+    tokenName: string,
+    network: Networks,
+  ): Promise<Array<TokenMetadata> | null> {
+    console.log(`Getting token metadata for name: ${tokenName}`);
+
+    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
+      (token) => token.name.toLowerCase().includes(tokenName.toLowerCase()),
+    );
+
+    return tokensInSupportedTokens;
+  }
+
+  async getTokenMetadataBySymbol(
+    tokenSymbol: string,
+    network: Networks,
+  ): Promise<Array<TokenMetadata> | null> {
+    console.log(`Getting token metadata for symbol: ${tokenSymbol}`);
+
+    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
+      (token) => token.symbol.toLowerCase().includes(tokenSymbol.toLowerCase()),
+    );
+
+    console.log(tokensInSupportedTokens);
+
+    return tokensInSupportedTokens;
+  }
+
+  async getTokenMetadataBySymbolOrName(
+    tokenSymbolOrName: string,
+    network: Networks,
+  ): Promise<Array<TokenMetadata> | null> {
+    console.log(
+      `Getting token metadata for symbol or name: ${tokenSymbolOrName}`,
+    );
+
+    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
+      (token) =>
+        token.symbol.toLowerCase().includes(tokenSymbolOrName.toLowerCase()) ||
+        token.name.toLowerCase().includes(tokenSymbolOrName.toLowerCase()),
+    );
+
+    console.log(tokensInSupportedTokens);
+
+    return tokensInSupportedTokens;
+  }
+
   getPopularTokens(network: Networks): TokenMetadata[] {
     return supportedTokens[network.toString()];
   }
 
-  async getRecentTokens(): Promise<string[]> {
-    return ['token1', 'token2', 'token3'];
-  }
+  // async getRecentTokens(): Promise<string[]> {
+  //   return ['token1', 'token2', 'token3'];
+  // }
 
   // TODO: get tokens from user wallet
-  getUserTokens(network: Networks): Array<Record<string, TokenMetadata[]>> {
-    const searchNetworks = [];
-    if (network !== Networks.ALL) {
-      searchNetworks.push(
-        Object.values(network)
-          .map((network) => network.toString())
-          .filter((network) => network !== 'all'),
-      );
-    } else searchNetworks.push(network.toString());
-    return searchNetworks;
-  }
+  // getUserTokens(network: Networks): Array<Record<string, TokenMetadata[]>> {
+  //   const searchNetworks = [];
+  //   if (network !== Networks.ALL) {
+  //     searchNetworks.push(
+  //       Object.values(network)
+  //         .map((network) => network.toString())
+  //         .filter((network) => network !== 'all'),
+  //     );
+  //   } else searchNetworks.push(network.toString());
+  //   return searchNetworks;
+  // }
 }

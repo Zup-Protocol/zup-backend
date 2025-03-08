@@ -37,9 +37,9 @@ export class PoolService {
     poolsMetadataByNetwork: Record<string, PoolMetadataByNetwork[]>;
   }> {
     console.log('Starting calculation of best yields ...');
-    if (network === Networks.ALL) {
-      // TODO: Process all networks
-    }
+    // if (network === Networks.ALL) {
+    // TODO: Process all networks
+    // }
     const poolsMetadataByNetwork = await this.processSingleNetworkPoolsMetadata(
       token0Address,
       token1Address,

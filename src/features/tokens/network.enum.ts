@@ -1,7 +1,6 @@
 import { Network as AlchemyNetwork } from 'alchemy-sdk';
 
 export enum Networks {
-  ALL = 'all',
   MAINNET = 'mainnet',
   SEPOLIA = 'sepolia',
   SCROLL = 'scroll',

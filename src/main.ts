@@ -15,7 +15,7 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests) only in development mode
-      if (!origin && process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
         return callback(null, true);
       }
 
