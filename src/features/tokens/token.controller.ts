@@ -27,13 +27,19 @@ export class TokenController {
   }
 
   @Get('/')
-  getTokens(@Query('network') network: Networks): any {
+  async getTokens(
+    @Query('network') network: Networks,
+    @Query('userAddress') userAddress: string,
+  ): Promise<any> {
     if (!network) {
       throw new BadRequestException('No network specified');
     }
 
     return {
       popularTokens: this.tokenService.getPopularTokens(network),
+      ...(userAddress && {
+        userTokens: await this.tokenService.getUserTokens(network, userAddress),
+      }),
     };
   }
 }

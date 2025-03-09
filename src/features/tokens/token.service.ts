@@ -90,20 +90,27 @@ export class TokenService {
     return supportedTokens[network.toString()];
   }
 
-  // async getRecentTokens(): Promise<string[]> {
-  //   return ['token1', 'token2', 'token3'];
-  // }
+  async getUserTokens(
+    network: Networks,
+    userAddress: string,
+  ): Promise<TokenMetadata[]> {
+    console.log(`Getting user tokens for address: ${userAddress}`);
 
-  // TODO: get tokens from user wallet
-  // getUserTokens(network: Networks): Array<Record<string, TokenMetadata[]>> {
-  //   const searchNetworks = [];
-  //   if (network !== Networks.ALL) {
-  //     searchNetworks.push(
-  //       Object.values(network)
-  //         .map((network) => network.toString())
-  //         .filter((network) => network !== 'all'),
-  //     );
-  //   } else searchNetworks.push(network.toString());
-  //   return searchNetworks;
-  // }
+    const alchemy = new Alchemy({
+      apiKey: process.env.ALCHEMY_API_KEY,
+      network: Networks.getAlchemyNetwork(network),
+    });
+
+    const alchemyTokens = await alchemy.core.getTokensForOwner(userAddress);
+
+    console.log(alchemyTokens);
+
+    return alchemyTokens.tokens.map((token) => ({
+      name: token.name,
+      symbol: token.symbol,
+      address: token.contractAddress,
+      decimals: token.decimals,
+      logoUrl: token.logo,
+    }));
+  }
 }
