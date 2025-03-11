@@ -29,6 +29,7 @@ export class TokenController {
   @Get('/')
   async getTokens(
     @Query('network') network: Networks,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Query('userAddress') userAddress: string,
   ): Promise<any> {
     if (!network) {
@@ -37,9 +38,6 @@ export class TokenController {
 
     return {
       popularTokens: this.tokenService.getPopularTokens(network),
-      ...(userAddress && {
-        userTokens: await this.tokenService.getUserTokens(network, userAddress),
-      }),
     };
   }
 }

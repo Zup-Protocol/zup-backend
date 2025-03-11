@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Alchemy } from 'alchemy-sdk';
+import axios from 'axios';
 import { TokenMetadata } from './dto/token.dto';
 import { Networks } from './network.enum';
 import { supportedTokens } from './supported-tokens';
@@ -39,34 +40,6 @@ export class TokenService {
     };
   }
 
-  async getTokenMetadataByName(
-    tokenName: string,
-    network: Networks,
-  ): Promise<Array<TokenMetadata> | null> {
-    console.log(`Getting token metadata for name: ${tokenName}`);
-
-    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
-      (token) => token.name.toLowerCase().includes(tokenName.toLowerCase()),
-    );
-
-    return tokensInSupportedTokens;
-  }
-
-  async getTokenMetadataBySymbol(
-    tokenSymbol: string,
-    network: Networks,
-  ): Promise<Array<TokenMetadata> | null> {
-    console.log(`Getting token metadata for symbol: ${tokenSymbol}`);
-
-    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
-      (token) => token.symbol.toLowerCase().includes(tokenSymbol.toLowerCase()),
-    );
-
-    console.log(tokensInSupportedTokens);
-
-    return tokensInSupportedTokens;
-  }
-
   async getTokenMetadataBySymbolOrName(
     tokenSymbolOrName: string,
     network: Networks,
@@ -75,19 +48,44 @@ export class TokenService {
       `Getting token metadata for symbol or name: ${tokenSymbolOrName}`,
     );
 
-    const tokensInSupportedTokens = supportedTokens[network.toString()].filter(
+    const tokensMatchingInRemoteList = (
+      await this.getRemoteTokenList(network)
+    ).filter(
       (token) =>
         token.symbol.toLowerCase().includes(tokenSymbolOrName.toLowerCase()) ||
         token.name.toLowerCase().includes(tokenSymbolOrName.toLowerCase()),
     );
 
-    console.log(tokensInSupportedTokens);
+    if (tokensMatchingInRemoteList.length === 0) {
+      return supportedTokens[network.toString()].filter(
+        (token) =>
+          token.symbol
+            .toLowerCase()
+            .includes(tokenSymbolOrName.toLowerCase()) ||
+          token.name.toLowerCase().includes(tokenSymbolOrName.toLowerCase()),
+      );
+    }
 
-    return tokensInSupportedTokens;
+    return tokensMatchingInRemoteList;
   }
 
   getPopularTokens(network: Networks): TokenMetadata[] {
     return supportedTokens[network.toString()];
+  }
+
+  async getRemoteTokenList(network: Networks): Promise<TokenMetadata[]> {
+    const response = await axios.get('https://tokens.uniswap.org/');
+    const tokensResponse = response.data.tokens as Array<any>;
+
+    return tokensResponse
+      .filter((token) => token.chainId === Networks.getChainId(network))
+      .map((token) => ({
+        name: token.name,
+        symbol: token.symbol,
+        address: token.address,
+        decimals: token.decimals,
+        logoUrl: token.logoURI,
+      }));
   }
 
   async getUserTokens(
@@ -101,16 +99,20 @@ export class TokenService {
       network: Networks.getAlchemyNetwork(network),
     });
 
-    const alchemyTokens = await alchemy.core.getTokensForOwner(userAddress);
+    const alchemyTokens = await alchemy.core.getTokensForOwner(userAddress, {
+      contractAddresses: supportedTokens[network.toString()].map(
+        (token) => token.address,
+      ),
+    });
 
-    console.log(alchemyTokens);
-
-    return alchemyTokens.tokens.map((token) => ({
-      name: token.name,
-      symbol: token.symbol,
-      address: token.contractAddress,
-      decimals: token.decimals,
-      logoUrl: token.logo,
-    }));
+    return alchemyTokens.tokens
+      .filter((token) => token.rawBalance !== '0')
+      .map((token) => ({
+        name: token.name,
+        symbol: token.symbol,
+        address: token.contractAddress,
+        decimals: token.decimals,
+        logoUrl: token.logo,
+      }));
   }
 }

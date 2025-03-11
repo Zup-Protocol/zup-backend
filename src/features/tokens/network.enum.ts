@@ -16,6 +16,21 @@ export namespace Networks {
         return AlchemyNetwork.ETH_SEPOLIA;
       case Networks.SCROLL:
         return AlchemyNetwork.SCROLL_MAINNET;
+      default:
+        throw new Error(`Network ${network} not mapped to Alchemy network yet`);
+    }
+  }
+
+  export function getChainId(network: Networks): number {
+    switch (network) {
+      case Networks.MAINNET:
+        return 1;
+      case Networks.SEPOLIA:
+        return 11155111;
+      case Networks.SCROLL:
+        return 534351;
+      default:
+        throw new Error(`Network ${network} not mapped to chain id yet`);
     }
   }
 }
