@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Alchemy } from 'alchemy-sdk';
-import axios from 'axios';
 import { TokenMetadata } from './dto/token.dto';
 import { Networks } from './network.enum';
 import { supportedTokens } from './supported-tokens';
@@ -74,8 +73,11 @@ export class TokenService {
   }
 
   async getRemoteTokenList(network: Networks): Promise<TokenMetadata[]> {
-    const response = await axios.get('https://tokens.uniswap.org/');
-    const tokensResponse = response.data.tokens as Array<any>;
+    const response = await fetch('https://ipfs.io/ipns/tokens.uniswap.org', {
+      method: 'GET',
+    }).then((response) => response.json());
+
+    const tokensResponse = response.tokens as Array<any>;
 
     return tokensResponse
       .filter((token) => token.chainId === Networks.getChainId(network))
