@@ -14,6 +14,10 @@ async function bootstrap() {
   // Enable CORS with origin validation
   app.enableCors({
     origin: (origin, callback) => {
+      if (process.env.NODE_ENV === 'development') {
+        return callback(null, true);
+      }
+
       if (allowedDomains.length === 0) {
         return callback(
           new InternalServerErrorException('CORS policy not configured'),
