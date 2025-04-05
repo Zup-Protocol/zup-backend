@@ -9,7 +9,14 @@ export class GraphQLService {
     // Initialize a client for each endpoint
     Object.entries(endpoints).forEach(([name, url]) => {
       console.debug('*** GraphQLService url ***', url);
-      this.clients.set(name, new GraphQLClient(url));
+      this.clients.set(
+        name,
+        new GraphQLClient(url, {
+          headers: {
+            authorization: `Bearer ${process.env.GRAPHQL_API_KEY}`,
+          },
+        }),
+      );
     });
   }
 
