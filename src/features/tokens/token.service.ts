@@ -73,21 +73,28 @@ export class TokenService {
   }
 
   async getRemoteTokenList(network: Networks): Promise<TokenMetadata[]> {
+    const alchemy = new Alchemy({
+      apiKey: process.env.ALCHEMY_API_KEY,
+      network: Networks.getAlchemyNetwork(network),
+    });
+
     const response = await fetch('https://ipfs.io/ipns/tokens.uniswap.org', {
       method: 'GET',
     }).then((response) => response.json());
 
     const tokensResponse = response.tokens as Array<any>;
 
-    return tokensResponse
+    const promises = tokensResponse
       .filter((token) => token.chainId === Networks.getChainId(network))
-      .map((token) => ({
+      .map(async (token) => ({
         name: token.name,
         symbol: token.symbol,
         address: token.address,
         decimals: token.decimals,
-        logoUrl: token.logoURI,
+        logoUrl: (await alchemy.core.getTokenMetadata(token.address)).logo,
       }));
+
+    return await Promise.all(promises);
   }
 
   async getUserTokens(
