@@ -21,6 +21,21 @@ export namespace Networks {
     }
   }
 
+  export function getTrustWalletAssetsNetwork(network: Networks): string {
+    switch (network) {
+      case Networks.MAINNET:
+        return 'ethereum';
+      case Networks.SEPOLIA:
+        return 'sepolia';
+      case Networks.SCROLL:
+        return 'scroll';
+      default:
+        throw new Error(
+          `Network ${network} not mapped to Trust Wallet Assets network yet`,
+        );
+    }
+  }
+
   export function getChainId(network: Networks): number {
     switch (network) {
       case Networks.MAINNET:
