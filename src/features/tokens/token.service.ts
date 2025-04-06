@@ -1,3 +1,4 @@
+import { imageExists } from '@/core/utils/image-utils';
 import { Injectable } from '@nestjs/common';
 import { Alchemy } from 'alchemy-sdk';
 import { TokenMetadata } from './dto/token.dto';
@@ -73,11 +74,6 @@ export class TokenService {
   }
 
   async getRemoteTokenList(network: Networks): Promise<TokenMetadata[]> {
-    const alchemy = new Alchemy({
-      apiKey: process.env.ALCHEMY_API_KEY,
-      network: Networks.getAlchemyNetwork(network),
-    });
-
     const response = await fetch('https://ipfs.io/ipns/tokens.uniswap.org', {
       method: 'GET',
     }).then((response) => response.json());
@@ -86,13 +82,21 @@ export class TokenService {
 
     const promises = tokensResponse
       .filter((token) => token.chainId === Networks.getChainId(network))
-      .map(async (token) => ({
-        name: token.name,
-        symbol: token.symbol,
-        address: token.address,
-        decimals: token.decimals,
-        logoUrl: (await alchemy.core.getTokenMetadata(token.address)).logo,
-      }));
+      .map(async (token) => {
+        const logoUrlTrustWallet = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${Networks.getTrustWalletAssetsNetwork(network)}/assets/${token.address}/logo.png`;
+
+        const logoUrl = (await imageExists(logoUrlTrustWallet))
+          ? logoUrlTrustWallet
+          : token.logoURI;
+
+        return {
+          name: token.name,
+          symbol: token.symbol,
+          address: token.address,
+          decimals: token.decimals,
+          logoUrl: logoUrl,
+        };
+      });
 
     return await Promise.all(promises);
   }
