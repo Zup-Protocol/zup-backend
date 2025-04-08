@@ -32,7 +32,9 @@ export class PoolService {
     token0Address: string,
     token1Address: string,
     network: Networks = Networks.SEPOLIA,
+    minTvlUSD: number,
   ): Promise<{
+    minTvlUSD: number;
     bestYieldsByFrame: BestPoolYieldByTimeframe;
     poolsMetadataByNetwork: Record<string, PoolMetadataByNetwork[]>;
   }> {
@@ -48,14 +50,24 @@ export class PoolService {
 
     const bestYieldsByFrame = this.calculateBestYieldsFromPoolsMetadata(
       poolsMetadataByNetwork[network][0].poolsMetadata,
+      minTvlUSD,
     );
+
     console.log('Finishing calculation of best yields ...');
-    return { bestYieldsByFrame, poolsMetadataByNetwork };
+    return {
+      minTvlUSD: minTvlUSD,
+      bestYieldsByFrame,
+      poolsMetadataByNetwork,
+    };
   }
 
-  calculateBestYieldsFromPoolsMetadata(poolsMetadata: PoolMetadata[]) {
+  calculateBestYieldsFromPoolsMetadata(
+    poolsMetadata: PoolMetadata[],
+    minTvlUSD: number,
+  ) {
     // Get pools ordered by 24h yield (descending)
     const pools24hs = poolsMetadata
+      .filter((pool) => pool.totalValueLockedUSD >= minTvlUSD)
       .sort((a, b) => b.yield24hs - a.yield24hs)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
@@ -65,6 +77,7 @@ export class PoolService {
 
     // Get pools ordered by 7d yield (descending)
     const pools7d = poolsMetadata
+      .filter((pool) => pool.totalValueLockedUSD >= minTvlUSD)
       .sort((a, b) => b.yield7d - a.yield7d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
@@ -74,6 +87,7 @@ export class PoolService {
 
     // Get pools ordered by 30d yield (descending)
     const pools30d = poolsMetadata
+      .filter((pool) => pool.totalValueLockedUSD >= minTvlUSD)
       .sort((a, b) => b.yield30d - a.yield30d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
@@ -83,6 +97,7 @@ export class PoolService {
 
     // Get pools ordered by 90d yield (descending)
     const pools90d = poolsMetadata
+      .filter((pool) => pool.totalValueLockedUSD >= minTvlUSD)
       .sort((a, b) => b.yield90d - a.yield90d)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ yield24hs, yield7d, yield30d, yield90d, ...rest }) => ({
@@ -166,6 +181,7 @@ export class PoolService {
       pool.totalValueLockedUSD,
     );
     return {
+      totalValueLockedUSD: Number.parseFloat(pool.totalValueLockedUSD),
       poolAddress: poolId,
       protocol: {
         name: pool.protocol.name,

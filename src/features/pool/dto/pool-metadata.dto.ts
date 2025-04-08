@@ -13,4 +13,5 @@ export class PoolMetadata {
   token0: TokenMetadata;
   token1: TokenMetadata;
   network: string;
+  totalValueLockedUSD: number;
 }
