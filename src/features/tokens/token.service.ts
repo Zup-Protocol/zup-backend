@@ -74,9 +74,12 @@ export class TokenService {
   }
 
   async getRemoteTokenList(network: Networks): Promise<TokenMetadata[]> {
-    const response = await fetch('https://ipfs.io/ipns/tokens.uniswap.org', {
-      method: 'GET',
-    }).then((response) => response.json());
+    const response = await fetch(
+      'https://wispy-bird-88a7.uniswap.workers.dev/?url=http://t2crtokens.eth.link',
+      {
+        method: 'GET',
+      },
+    ).then((response) => response.json());
 
     const tokensResponse = response.tokens as Array<any>;
 
