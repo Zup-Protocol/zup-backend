@@ -3,7 +3,7 @@ import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { tokenList } from 'src/core/token-list';
 
 import { TokenDTO } from 'src/core/dtos/token.dto';
-import { Networks } from 'src/core/networks';
+import { Networks, NetworksUtils } from 'src/core/enums/networks';
 
 export class TokensService {
   constructor(
@@ -37,7 +37,9 @@ export class TokensService {
     network: Networks,
     address: string,
   ): Promise<TokenDTO> {
-    const alchemy = this.alchemyFactory(Networks.getAlchemyNetwork(network));
+    const alchemy = this.alchemyFactory(
+      NetworksUtils.getAlchemyNetwork(network),
+    );
     const tokenMetadata = await alchemy.core.getTokenMetadata(address);
 
     return {

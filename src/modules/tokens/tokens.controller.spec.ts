@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { Networks } from 'src/core/networks';
+import { Networks } from 'src/core/enums/networks';
 import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
 

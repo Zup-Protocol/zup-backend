@@ -6,7 +6,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { TokenDTO } from 'src/core/dtos/token.dto';
-import { Networks } from 'src/core/networks';
+import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { isEthereumAddress } from 'src/core/utils/string-utils';
 import { TokensService } from './tokens.service';
 
@@ -32,7 +32,7 @@ export class TokensController {
   ): Promise<TokenDTO[]> {
     const isSearchByAddress = isEthereumAddress(query);
 
-    if (network !== undefined && !Networks.isValidChainId(network)) {
+    if (network !== undefined && !NetworksUtils.isValidChainId(network)) {
       throw new BadRequestException(
         `The provided chain id (${network}) is not supported. Please provide a valid chain id`,
       );

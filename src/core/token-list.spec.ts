@@ -1,10 +1,11 @@
-import { Networks } from './networks';
+import { Networks } from './enums/networks';
 import { tokenList } from './token-list';
 
 describe('tokenList', () => {
   it('should match the token list', () => {
     const expectedList = [
       {
+        id: '1',
         name: 'Ethereum',
         symbol: 'ETH',
         address: {
@@ -17,11 +18,12 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
       },
       {
+        id: '2',
         name: 'Wrapped Ethereum',
         symbol: 'WETH',
         address: {
           [Networks.ETHEREUM]: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-          [Networks.SCROLL]: '0xd29687c813d741e2f938f4ac377128810e217b1b',
+          [Networks.SCROLL]: '0x5300000000000000000000000000000000000004',
           [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
         },
         decimals: 18,
@@ -29,6 +31,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
       },
       {
+        id: '3',
         name: 'Tether',
         symbol: 'USDT',
         address: {
@@ -41,6 +44,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
       },
       {
+        id: '4',
         name: 'USDC',
         symbol: 'USDC',
         address: {
@@ -53,6 +57,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
       },
       {
+        id: '5',
         name: 'Wrapped Bitcoin',
         symbol: 'WBTC',
         address: {
@@ -65,6 +70,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
       },
       {
+        id: '6',
         name: 'Coinbase Wrapped Bitcoin',
         symbol: 'cbBTC',
         address: {
@@ -77,6 +83,7 @@ describe('tokenList', () => {
           'https://s2.coinmarketcap.com/static/img/coins/200x200/32994.png',
       },
       {
+        id: '7',
         name: 'DAI',
         symbol: 'DAI',
         address: {
@@ -89,6 +96,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
       },
       {
+        id: '8',
         name: 'tBTC',
         symbol: 'tBTC',
         address: {
@@ -101,6 +109,7 @@ describe('tokenList', () => {
           'https://s2.coinmarketcap.com/static/img/coins/200x200/26133.png',
       },
       {
+        id: '9',
         name: 'Lombard Staked BTC',
         symbol: 'LBTC',
         address: {
@@ -113,6 +122,7 @@ describe('tokenList', () => {
           'https://img.cryptorank.io/coins/lombard_staked_btc1725876587975.png',
       },
       {
+        id: '10',
         name: 'Uniswap',
         symbol: 'UNI',
         address: {
@@ -125,6 +135,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
       },
       {
+        id: '11',
         name: 'Chainlink',
         symbol: 'LINK',
         address: {
@@ -137,6 +148,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
       },
       {
+        id: '12',
         name: 'Aave',
         symbol: 'AAVE',
         address: {
@@ -149,6 +161,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png',
       },
       {
+        id: '13',
         name: 'Scroll',
         symbol: 'SCR',
         address: {

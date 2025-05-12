@@ -1,0 +1,54 @@
+query GetPools(
+  $token0Id: Bytes!
+  $token1Id: Bytes!
+  $hourlyDataStartTimestamp: BigInt!
+  $dailyDataStartTimestamp: BigInt!
+) {
+  pools(
+    where: {
+      or: [
+        { token0_: { id: $token0Id }, token1_: { id: $token1Id } }
+        { token0_: { id: $token1Id }, token1_: { id: $token0Id } }
+      ]
+    }
+  ) {
+    id
+    protocol {
+      name
+      logo
+      url
+      id
+      positionManager
+    }
+    totalValueLockedUSD
+    feeTier
+    tickSpacing
+    token0 {
+      id
+      name
+      symbol
+      decimals
+    }
+    token1 {
+      id
+      name
+      symbol
+      decimals
+    }
+    dailyData(
+      orderDirection: desc
+      orderBy: dayStartTimestamp
+      where: { dayStartTimestamp_gte: $dailyDataStartTimestamp }
+    ) {
+      feesUSD
+      totalValueLockedUSD
+    }
+    hourlyData(
+      orderDirection: desc
+      orderBy: hourStartTimestamp
+      where: { hourStartTimestamp_gte: $hourlyDataStartTimestamp }
+    ) {
+      feesUSD
+    }
+  }
+}

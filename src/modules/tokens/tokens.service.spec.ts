@@ -1,5 +1,5 @@
 import { Alchemy } from 'alchemy-sdk';
-import { Networks } from 'src/core/networks';
+import { Networks } from 'src/core/enums/networks';
 import { tokenList } from 'src/core/token-list';
 import { TokensService } from './tokens.service';
 
