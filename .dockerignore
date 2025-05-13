@@ -12,3 +12,6 @@ coverage
 test
 *.spec.ts
 *.test.ts
+*.gen.ts
+*.gen.js
+!graphql-codegen.config.ts
