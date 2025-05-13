@@ -7,30 +7,34 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 
-# Install dependencies
+# Install all dependencies (including dev dependencies)
 RUN yarn install --frozen-lockfile
 
 # Copy the rest of the source code
 COPY . .
 
-# Generate code and build the application
+# Run code generation
 RUN yarn gen
+
+# Build the application
 RUN yarn build
 
-# Stage 2: Production stage
+# Stage 2: Production stage with dev dependencies for codegen
 FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Copy only the built application from the builder stage
+# Copy the built application from the builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy package files for production dependencies
-COPY package.json .
-COPY yarn.lock .
+# Copy the source code and package files
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/yarn.lock .
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/graphql-codegen.config.ts ./graphql-codegen.config.ts
 
-# Install only production dependencies
-RUN yarn install --frozen-lockfile --production
+# Install all dependencies (including dev dependencies)
+RUN yarn install --frozen-lockfile
 
 # Expose the application port
 EXPOSE 3000
