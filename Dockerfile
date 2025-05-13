@@ -9,6 +9,8 @@ COPY . .
 RUN yarn install --frozen-lockfile
 RUN yarn gen
 
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
 CMD ["yarn", "start:prod"]
