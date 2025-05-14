@@ -2,7 +2,10 @@ import { Inject } from '@nestjs/common';
 import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { tokenList } from 'src/core/token-list';
 
-import { TokenDTO } from 'src/core/dtos/token.dto';
+import {
+  MultichainTokenDTO,
+  SinglechainTokenDTO,
+} from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 
 export class TokensService {
@@ -10,20 +13,23 @@ export class TokensService {
     @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
   ) {}
 
-  getPopularTokens(network?: Networks): TokenDTO[] {
+  getPopularTokens(network?: Networks): MultichainTokenDTO[] {
     if (network === undefined) return tokenList;
 
     return tokenList.filter((token) => {
-      const tokenAddress = token.address[network];
+      const tokenAddress = token.addresses[network];
       return tokenAddress !== undefined && tokenAddress !== null;
     });
   }
 
-  searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
+  searchTokensByNameOrSymbol(
+    query: string,
+    network?: Networks,
+  ): MultichainTokenDTO[] {
     const _tokenList =
       network === undefined
         ? tokenList
-        : tokenList.filter((token) => token.address[network] !== null);
+        : tokenList.filter((token) => token.addresses[network] !== null);
 
     return _tokenList.filter((token) => {
       return (
@@ -36,7 +42,7 @@ export class TokensService {
   async getTokenByAddress(
     network: Networks,
     address: string,
-  ): Promise<TokenDTO> {
+  ): Promise<SinglechainTokenDTO> {
     const alchemy = this.alchemyFactory(
       NetworksUtils.getAlchemyNetwork(network),
     );

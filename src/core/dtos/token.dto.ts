@@ -1,10 +1,17 @@
 import { Networks } from '../enums/networks';
 
-export interface TokenDTO {
+interface _TokenDTO {
   id?: string;
   name: string;
   symbol: string;
-  address: string | Record<Networks, string | null>;
   decimals: number;
   logoUrl?: string;
+}
+
+export interface MultichainTokenDTO extends _TokenDTO {
+  addresses: Record<Networks, string | null>;
+}
+
+export interface SinglechainTokenDTO extends _TokenDTO {
+  address: string;
 }

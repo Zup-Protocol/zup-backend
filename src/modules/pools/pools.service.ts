@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
-import { TokenDTO } from 'src/core/dtos/token.dto';
+import { SinglechainTokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { PoolType } from 'src/core/enums/pool-type';
 import 'src/core/extensions/date.extension';
@@ -55,8 +55,8 @@ export class PoolsService {
 
     const networksWithTokens = allSupportedNetworks.filter((network) => {
       return (
-        token0InTokenList?.address[network] !== null &&
-        token1InTokenList?.address[network] !== null
+        token0InTokenList?.addresses[network] !== null &&
+        token1InTokenList?.addresses[network] !== null
       );
     });
 
@@ -70,8 +70,8 @@ export class PoolsService {
       networksWithTokens.map((network) => {
         return {
           network: network,
-          token0Address: token0InTokenList!.address[network]!,
-          token1Address: token1InTokenList!.address[network]!,
+          token0Address: token0InTokenList!.addresses[network]!,
+          token1Address: token1InTokenList!.addresses[network]!,
         };
       }),
     );
@@ -83,8 +83,8 @@ export class PoolsService {
         return this._processPoolsDataFromQuery({
           queryResponse,
           network,
-          token0Address: token0InTokenList!.address[network]!,
-          token1Address: token1InTokenList!.address[network]!,
+          token0Address: token0InTokenList!.addresses[network]!,
+          token1Address: token1InTokenList!.addresses[network]!,
         });
       }),
     );
@@ -139,8 +139,8 @@ export class PoolsService {
     token0Address: string;
     token1Address: string;
   }): Promise<SupportedPoolType[]> {
-    let remoteToken0Metadata: TokenDTO;
-    let remoteToken1Metadata: TokenDTO;
+    let remoteToken0Metadata: SinglechainTokenDTO;
+    let remoteToken1Metadata: SinglechainTokenDTO;
 
     try {
       remoteToken0Metadata = await this.tokensService.getTokenByAddress(
