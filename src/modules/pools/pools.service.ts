@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
-import { SinglechainTokenDTO } from 'src/core/dtos/token.dto';
+import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { PoolType } from 'src/core/enums/pool-type';
 import 'src/core/extensions/date.extension';
@@ -22,36 +22,52 @@ export class PoolsService {
     private readonly graphqlClients: Record<Networks, GraphQLClient>,
   ) {}
 
-  async searchPoolsInChain(
-    token0Address: string,
-    token1Address: string,
-    network: Networks,
-  ): Promise<MatchedPoolsDTO> {
+  async searchPoolsInChain(params: {
+    token0Address: string;
+    token1Address: string;
+    network: Networks;
+    minTvlUsd: number;
+  }): Promise<MatchedPoolsDTO> {
     const poolsQueryResponse = await this._getPoolsForSingleNetwork(
-      token0Address,
-      token1Address,
-      network,
+      params.token0Address,
+      params.token1Address,
+      params.network,
+      params.minTvlUsd,
     );
 
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
-      network,
-      token0Address,
-      token1Address,
+      network: params.network,
+      token0Address: params.token0Address,
+      token1Address: params.token1Address,
     });
 
     return {
       pools: matchedPools,
+      minTvlUsd: params.minTvlUsd,
     };
   }
 
-  async searchPoolsCrossChain(
-    token0Id: string,
-    token1Id: string,
-  ): Promise<MatchedPoolsDTO> {
-    const allSupportedNetworks = NetworksUtils.values();
-    const token0InTokenList = tokenList.find((token) => token.id === token0Id);
-    const token1InTokenList = tokenList.find((token) => token.id === token1Id);
+  async searchPoolsCrossChain(params: {
+    token0Id: string;
+    token1Id: string;
+    minTvlUsd: number;
+    testnetMode: boolean;
+  }): Promise<MatchedPoolsDTO> {
+    const allSupportedNetworks = params.testnetMode
+      ? NetworksUtils.values().filter((network) =>
+          NetworksUtils.isTestnet(network),
+        )
+      : NetworksUtils.values().filter(
+          (network) => !NetworksUtils.isTestnet(network),
+        );
+
+    const token0InTokenList = tokenList.find(
+      (token) => token.id === params.token0Id,
+    );
+    const token1InTokenList = tokenList.find(
+      (token) => token.id === params.token1Id,
+    );
 
     const networksWithTokens = allSupportedNetworks.filter((network) => {
       return (
@@ -63,6 +79,7 @@ export class PoolsService {
     if (networksWithTokens.length === 0) {
       return {
         pools: [],
+        minTvlUsd: params.minTvlUsd,
       };
     }
 
@@ -74,6 +91,7 @@ export class PoolsService {
           token1Address: token1InTokenList!.addresses[network]!,
         };
       }),
+      params.minTvlUsd,
     );
 
     const matchedPools = await Promise.all(
@@ -89,22 +107,27 @@ export class PoolsService {
       }),
     );
 
+    const flatMatchedPools = matchedPools.flat();
+
     return {
-      pools: matchedPools.flat(),
+      pools: flatMatchedPools,
+      minTvlUsd: params.minTvlUsd,
     };
   }
 
   private async _getPoolsForSingleNetwork(
-    token0: string,
-    token1: string,
+    token0Address: string,
+    token1Address: string,
     network: Networks,
+    minTvlUsd: number,
   ): Promise<GetPoolsQuery> {
     const response = await this.graphqlClients[network].request<
       GetPoolsQuery,
       GetPoolsQueryVariables
     >(GetPoolsDocument, {
-      token0Id: token0,
-      token1Id: token1,
+      token0Id: token0Address,
+      token1Id: token1Address,
+      minTVLUSD: minTvlUsd.toString(),
       hourlyDataStartTimestamp:
         Date.yesterdayStartSecondsTimestamp().toString(),
       dailyDataStartTimestamp: Date.getDaysAgoTimestamp(90).toString(),
@@ -119,6 +142,7 @@ export class PoolsService {
       token0Address: string;
       token1Address: string;
     }[],
+    minTvlUSD: number,
   ): Promise<GetPoolsQuery[]> {
     const responses = await Promise.all(
       networks.map((searchNetworkData) => {
@@ -126,6 +150,7 @@ export class PoolsService {
           searchNetworkData.token0Address,
           searchNetworkData.token1Address,
           searchNetworkData.network,
+          minTvlUSD,
         );
       }),
     );
@@ -139,16 +164,16 @@ export class PoolsService {
     token0Address: string;
     token1Address: string;
   }): Promise<SupportedPoolType[]> {
-    let remoteToken0Metadata: SinglechainTokenDTO;
-    let remoteToken1Metadata: SinglechainTokenDTO;
+    let token0Metadata: TokenDTO;
+    let token1Metadata: TokenDTO;
 
     try {
-      remoteToken0Metadata = await this.tokensService.getTokenByAddress(
+      token0Metadata = await this.tokensService.getTokenByAddress(
         params.network,
         params.token0Address,
       );
 
-      remoteToken1Metadata = await this.tokensService.getTokenByAddress(
+      token1Metadata = await this.tokensService.getTokenByAddress(
         params.network,
         params.token1Address,
       );
@@ -160,6 +185,18 @@ export class PoolsService {
       let pool24hFees: number = 0;
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
+
+      const poolToken0Metadata: TokenDTO =
+        token0Metadata.addresses[params.network]?.toLowerCase() ===
+        pool.token0.id.toLowerCase()
+          ? token0Metadata
+          : token1Metadata;
+
+      const poolToken1Metadata: TokenDTO =
+        token1Metadata.addresses[params.network]?.toLowerCase() ===
+        pool.token1.id.toLowerCase()
+          ? token1Metadata
+          : token0Metadata;
 
       pool.hourlyData.forEach((hourlyData) => {
         if (hourlyData) pool24hFees += Number(hourlyData.feesUSD);
@@ -198,21 +235,25 @@ export class PoolsService {
           url: pool.protocol.url,
         },
         token0: {
-          address: pool.token0.id,
+          addresses: {
+            [params.network]: pool.token0.id,
+          } as Record<Networks, string>,
           decimals: pool.token0.decimals,
           name: pool.token0.name,
           symbol: pool.token0.symbol,
-          ...(remoteToken0Metadata.logoUrl && {
-            logoUrl: remoteToken0Metadata.logoUrl,
+          ...(poolToken0Metadata.logoUrl && {
+            logoUrl: poolToken0Metadata.logoUrl,
           }),
         },
         token1: {
-          address: pool.token1.id,
+          addresses: {
+            [params.network]: pool.token1.id,
+          } as Record<Networks, string>,
           decimals: pool.token1.decimals,
           name: pool.token1.name,
           symbol: pool.token1.symbol,
-          ...(remoteToken1Metadata.logoUrl && {
-            logoUrl: remoteToken1Metadata.logoUrl,
+          ...(poolToken1Metadata.logoUrl && {
+            logoUrl: poolToken1Metadata.logoUrl,
           }),
         },
         positionManagerAddress: pool.protocol.positionManager,

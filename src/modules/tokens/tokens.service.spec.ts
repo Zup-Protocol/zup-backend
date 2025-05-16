@@ -37,7 +37,7 @@ describe('TokensService', () => {
     const tokens = tokensService.getPopularTokens(network);
 
     expect(tokens).toEqual(
-      tokenList.filter((token) => token.address[network] !== null),
+      tokenList.filter((token) => token.addresses[network] !== null),
     );
   });
 
@@ -65,7 +65,7 @@ describe('TokensService', () => {
 
     expect(tokens).toEqual(
       tokenList
-        .filter((token) => token.address[network] !== null)
+        .filter((token) => token.addresses[network] !== null)
         .filter((token) => {
           return (
             token.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -82,19 +82,5 @@ describe('TokensService', () => {
     await tokensService.getTokenByAddress(network, address);
 
     expect(alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
-  });
-
-  it('should not have the logoUrl param when calling getTokenByAddress method if alchemy returns no logo', async () => {
-    const address = '0x1234567890123456789012345678901234567890';
-    const network = Networks.SEPOLIA;
-
-    const token = await tokensService.getTokenByAddress(network, address);
-
-    expect(token).toEqual({
-      address: address,
-      name: alchemyTokenMetadataWithoutLogo.name,
-      symbol: alchemyTokenMetadataWithoutLogo.symbol,
-      decimals: alchemyTokenMetadataWithoutLogo.decimals,
-    });
   });
 });

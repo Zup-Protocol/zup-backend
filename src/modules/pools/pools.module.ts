@@ -11,7 +11,6 @@ const graphqlClients = () =>
   NetworksUtils.values().reduce(
     (acc, network) => {
       const graphqlClientUrl = NetworksUtils.getSubgraphUrl(network);
-      console.log('New graphQL client', graphqlClientUrl);
 
       acc[network] = new GraphQLClient(graphqlClientUrl, {
         headers: {

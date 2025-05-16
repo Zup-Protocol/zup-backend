@@ -5,7 +5,11 @@ import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { PoolType } from 'src/core/enums/pool-type';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
-import { GetPoolsDocument, GetPoolsQuery } from 'src/gen/graphql.gen';
+import {
+  GetPoolsDocument,
+  GetPoolsQuery,
+  GetPoolsQueryVariables,
+} from 'src/gen/graphql.gen';
 import { TokensService } from '../tokens/tokens.service';
 import { PoolsService } from './pools.service';
 
@@ -19,7 +23,15 @@ describe('PoolsController', () => {
       getPopularTokens: jest.fn(),
       searchTokensByNameOrSymbol: jest.fn(),
       getTokenByAddress: jest.fn().mockReturnValue(<TokenDTO>{
-        address: '0x0000000000000000000000000000000000000000',
+        id: '0x0000000000000000000000000000000000000000',
+        logoUrl: '',
+        addresses: NetworksUtils.values().reduce(
+          (acc, network) => {
+            acc[network] = '0x0000000000000000000000000000000000000000';
+            return acc;
+          },
+          {} as unknown as Record<Networks, string>,
+        ),
         name: 'Test Token',
         symbol: 'TT',
         decimals: 18,
@@ -48,13 +60,19 @@ describe('PoolsController', () => {
     const token1Address = '0x0000000000000000000000000000000000000001';
     const network = Networks.ETHEREUM;
 
-    await sut.searchPoolsInChain(token0Address, token1Address, network);
+    await sut.searchPoolsInChain({
+      token0Address,
+      token1Address,
+      network,
+      minTvlUsd: 0,
+    });
 
     expect(graphqlClients[network].request).toHaveBeenCalledWith(
       GetPoolsDocument,
-      {
+      <GetPoolsQueryVariables>{
         token0Id: token0Address,
         token1Id: token1Address,
+        minTVLUSD: '0',
         hourlyDataStartTimestamp:
           Date.yesterdayStartSecondsTimestamp().toString(),
         dailyDataStartTimestamp: Date.getDaysAgoTimestamp(90).toString(),
@@ -65,13 +83,17 @@ describe('PoolsController', () => {
   it('Should process and return the pool data got from the graphQL query correctly when calling the searchPoolsInChain method', async () => {
     const expectedPoolResult: SupportedPoolType = {
       token0: {
-        address: tokenList[0].address,
+        addresses: {
+          [Networks.ETHEREUM]: tokenList[0].addresses[Networks.ETHEREUM],
+        } as unknown as Record<Networks, string>,
         name: tokenList[0].name,
         symbol: tokenList[0].symbol,
         decimals: tokenList[0].decimals,
       },
       token1: {
-        address: tokenList[1].address,
+        addresses: {
+          [Networks.ETHEREUM]: tokenList[1].addresses[Networks.ETHEREUM],
+        } as unknown as Record<Networks, string>,
         name: tokenList[1].name,
         symbol: tokenList[1].symbol,
         decimals: tokenList[1].decimals,
@@ -113,13 +135,17 @@ describe('PoolsController', () => {
           tickSpacing: expectedPoolResult.tickSpacing,
           token0: {
             decimals: expectedPoolResult.token0.decimals,
-            id: expectedPoolResult.token0.address as string,
+            id: expectedPoolResult.token0.addresses[
+              Networks.ETHEREUM
+            ] as string,
             name: expectedPoolResult.token0.name,
             symbol: expectedPoolResult.token0.symbol,
           },
           token1: {
             decimals: expectedPoolResult.token1.decimals,
-            id: expectedPoolResult.token1.address as string,
+            id: expectedPoolResult.token1.addresses[
+              Networks.ETHEREUM
+            ] as string,
             name: expectedPoolResult.token1.name,
             symbol: expectedPoolResult.token1.symbol,
           },
@@ -138,23 +164,25 @@ describe('PoolsController', () => {
 
     const sut = new PoolsService(tokensService, graphqlClients);
 
-    const result = await sut.searchPoolsInChain(
-      expectedPoolResult.token0.address as string,
-      expectedPoolResult.token1.address as string,
-      expectedPoolResult.chainId,
-    );
+    const result = await sut.searchPoolsInChain({
+      token0Address: expectedPoolResult.token0.addresses[0] as string,
+      token1Address: expectedPoolResult.token1.addresses[0] as string,
+      network: expectedPoolResult.chainId,
+      minTvlUsd: 0,
+    });
 
     expect(result).toEqual(<MatchedPoolsDTO>{
       pools: [expectedPoolResult],
+      minTvlUsd: 0,
     });
   });
 
   it('Should match liquidity pools from different networks with the same tokens when calling searchPoolsCrossChain', async () => {
     const token0 = <TokenDTO>{
-      address: {
-        [Networks.ETHEREUM]: tokenList[0].address[Networks.ETHEREUM],
-        [Networks.SCROLL]: tokenList[0].address[Networks.SCROLL],
-        [Networks.SEPOLIA]: tokenList[0].address[Networks.SEPOLIA],
+      addresses: {
+        [Networks.ETHEREUM]: tokenList[0].addresses[Networks.ETHEREUM],
+        [Networks.SCROLL]: tokenList[0].addresses[Networks.SCROLL],
+        [Networks.SEPOLIA]: tokenList[0].addresses[Networks.SEPOLIA],
       },
       name: tokenList[0].name,
       symbol: tokenList[0].symbol,
@@ -162,10 +190,10 @@ describe('PoolsController', () => {
       id: tokenList[0].id,
     };
     const token1 = <TokenDTO>{
-      address: {
-        [Networks.ETHEREUM]: tokenList[3].address[Networks.ETHEREUM],
-        [Networks.SCROLL]: tokenList[3].address[Networks.SCROLL],
-        [Networks.SEPOLIA]: tokenList[3].address[Networks.SEPOLIA],
+      addresses: {
+        [Networks.ETHEREUM]: tokenList[3].addresses[Networks.ETHEREUM],
+        [Networks.SCROLL]: tokenList[3].addresses[Networks.SCROLL],
+        [Networks.SEPOLIA]: tokenList[3].addresses[Networks.SEPOLIA],
       },
       name: tokenList[3].name,
       symbol: tokenList[3].symbol,
@@ -175,13 +203,17 @@ describe('PoolsController', () => {
 
     const poolResult1: SupportedPoolType = {
       token0: {
-        address: token0.address,
+        addresses: {
+          [Networks.ETHEREUM]: token0.addresses[Networks.ETHEREUM] as string,
+        } as Record<Networks, string>,
         name: token0.name,
         symbol: token0.symbol,
         decimals: token0.decimals,
       },
       token1: {
-        address: token1.address,
+        addresses: {
+          [Networks.ETHEREUM]: token1.addresses[Networks.ETHEREUM] as string,
+        } as Record<Networks, string>,
         name: token1.name,
         symbol: token1.symbol,
         decimals: token1.decimals,
@@ -205,13 +237,17 @@ describe('PoolsController', () => {
 
     const poolResult2: SupportedPoolType = {
       token0: {
-        address: token0.address,
+        addresses: {
+          [Networks.SCROLL]: token0.addresses[Networks.SCROLL] as string,
+        } as Record<Networks, string>,
         name: token0.name,
         symbol: token0.symbol,
         decimals: token0.decimals,
       },
       token1: {
-        address: token1.address,
+        addresses: {
+          [Networks.SCROLL]: token1.addresses[Networks.SCROLL] as string,
+        } as Record<Networks, string>,
         name: token1.name,
         symbol: token1.symbol,
         decimals: token1.decimals,
@@ -253,13 +289,13 @@ describe('PoolsController', () => {
           tickSpacing: poolResult1.tickSpacing,
           token0: {
             decimals: poolResult1.token0.decimals,
-            id: poolResult1.token0.address as string,
+            id: poolResult1.token0.addresses[Networks.ETHEREUM] as string,
             name: poolResult1.token0.name,
             symbol: poolResult1.token0.symbol,
           },
           token1: {
             decimals: poolResult1.token1.decimals,
-            id: poolResult1.token1.address as string,
+            id: poolResult1.token1.addresses[Networks.ETHEREUM] as string,
             name: poolResult1.token1.name,
             symbol: poolResult1.token1.symbol,
           },
@@ -289,13 +325,13 @@ describe('PoolsController', () => {
           tickSpacing: poolResult2.tickSpacing,
           token0: {
             decimals: poolResult2.token0.decimals,
-            id: poolResult2.token0.address as string,
+            id: poolResult2.token0.addresses[Networks.SCROLL] as string,
             name: poolResult2.token0.name,
             symbol: poolResult2.token0.symbol,
           },
           token1: {
             decimals: poolResult2.token1.decimals,
-            id: poolResult2.token1.address as string,
+            id: poolResult2.token1.addresses[Networks.SCROLL] as string,
             name: poolResult2.token1.name,
             symbol: poolResult2.token1.symbol,
           },
@@ -331,13 +367,16 @@ describe('PoolsController', () => {
 
     const sut = new PoolsService(tokensService, graphqlClients);
 
-    const result = await sut.searchPoolsCrossChain(
-      token0.id as string,
-      token1.id as string,
-    );
+    const result = await sut.searchPoolsCrossChain({
+      token0Id: token0.id!,
+      token1Id: token1.id!,
+      minTvlUsd: 0,
+      testnetMode: false,
+    });
 
     expect(result).toEqual(<MatchedPoolsDTO>{
       pools: [poolResult1, poolResult2],
+      minTvlUsd: 0,
     });
   });
 });

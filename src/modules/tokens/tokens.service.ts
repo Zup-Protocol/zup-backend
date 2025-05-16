@@ -2,10 +2,7 @@ import { Inject } from '@nestjs/common';
 import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { tokenList } from 'src/core/token-list';
 
-import {
-  MultichainTokenDTO,
-  SinglechainTokenDTO,
-} from 'src/core/dtos/token.dto';
+import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 
 export class TokensService {
@@ -13,7 +10,7 @@ export class TokensService {
     @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
   ) {}
 
-  getPopularTokens(network?: Networks): MultichainTokenDTO[] {
+  getPopularTokens(network?: Networks): TokenDTO[] {
     if (network === undefined) return tokenList;
 
     return tokenList.filter((token) => {
@@ -22,10 +19,7 @@ export class TokensService {
     });
   }
 
-  searchTokensByNameOrSymbol(
-    query: string,
-    network?: Networks,
-  ): MultichainTokenDTO[] {
+  searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
     const _tokenList =
       network === undefined
         ? tokenList
@@ -42,18 +36,26 @@ export class TokensService {
   async getTokenByAddress(
     network: Networks,
     address: string,
-  ): Promise<SinglechainTokenDTO> {
+  ): Promise<TokenDTO> {
     const alchemy = this.alchemyFactory(
       NetworksUtils.getAlchemyNetwork(network),
     );
-    const tokenMetadata = await alchemy.core.getTokenMetadata(address);
+
+    const alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
+
+    const internalTokenMetadata = tokenList.find((token) => {
+      return token.addresses[network]?.toLowerCase() === address.toLowerCase();
+    });
 
     return {
-      address: address,
-      name: tokenMetadata.name ?? '',
-      symbol: tokenMetadata.symbol ?? '',
-      decimals: tokenMetadata.decimals ?? 0,
-      ...(tokenMetadata.logo && { logoUrl: tokenMetadata.logo }),
+      addresses: {
+        [network]: address,
+      } as Record<Networks, string>,
+      name: alchemyTokenMetadata.name ?? '',
+      symbol: alchemyTokenMetadata.symbol ?? '',
+      decimals: alchemyTokenMetadata.decimals ?? 0,
+      logoUrl:
+        internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata.logo ?? '',
     };
   }
 }

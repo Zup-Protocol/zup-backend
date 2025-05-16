@@ -6,10 +6,7 @@ import {
   Query,
 } from '@nestjs/common';
 
-import {
-  MultichainTokenDTO,
-  SinglechainTokenDTO,
-} from 'src/core/dtos/token.dto';
+import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { isEthereumAddress } from 'src/core/utils/string-utils';
 import { TokensService } from './tokens.service';
@@ -19,7 +16,7 @@ export class TokensController {
   constructor(private readonly tokensService: TokensService) {}
 
   @Get('/popular')
-  getPopularTokens(@Query('chainId') chainId?: Networks): MultichainTokenDTO[] {
+  getPopularTokens(@Query('chainId') chainId?: Networks): TokenDTO[] {
     return this.tokensService.getPopularTokens(chainId);
   }
 
@@ -33,7 +30,7 @@ export class TokensController {
       }),
     )
     network?: number,
-  ): Promise<Array<SinglechainTokenDTO | MultichainTokenDTO>> {
+  ): Promise<TokenDTO[]> {
     const isSearchByAddress = isEthereumAddress(query);
 
     if (network !== undefined && !NetworksUtils.isValidChainId(network)) {

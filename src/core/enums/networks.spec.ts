@@ -43,4 +43,10 @@ describe('Networks', () => {
   it('should return false if the passed chainId is not in the enum', () => {
     expect(NetworksUtils.isValidChainId(82791865)).toBe(false);
   });
+
+  it('should return if the network is a testnet', () => {
+    expect(NetworksUtils.isTestnet(Networks.ETHEREUM)).toBe(false);
+    expect(NetworksUtils.isTestnet(Networks.SEPOLIA)).toBe(true);
+    expect(NetworksUtils.isTestnet(Networks.SCROLL)).toBe(false);
+  });
 });

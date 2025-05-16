@@ -1,15 +1,15 @@
-import { MultichainTokenDTO } from './dtos/token.dto';
+import { TokenDTO } from './dtos/token.dto';
 import { Networks } from './enums/networks';
 
-export const tokenList: MultichainTokenDTO[] = [
+export const tokenList: TokenDTO[] = [
   {
     id: '1',
     name: 'Ethereum',
     symbol: 'ETH',
     addresses: {
-      [Networks.ETHEREUM]: '0x0000000000000000000000000000000000000000',
-      [Networks.SCROLL]: '0x0000000000000000000000000000000000000000',
-      [Networks.SEPOLIA]: '0x0000000000000000000000000000000000000000',
+      [Networks.ETHEREUM]: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      [Networks.SCROLL]: '0x5300000000000000000000000000000000000004',
+      [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
     },
     decimals: 18,
     logoUrl:

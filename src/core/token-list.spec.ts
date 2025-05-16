@@ -8,10 +8,10 @@ describe('tokenList', () => {
         id: '1',
         name: 'Ethereum',
         symbol: 'ETH',
-        address: {
-          [Networks.ETHEREUM]: '0x0000000000000000000000000000000000000000',
-          [Networks.SCROLL]: '0x0000000000000000000000000000000000000000',
-          [Networks.SEPOLIA]: '0x0000000000000000000000000000000000000000',
+        addresses: {
+          [Networks.ETHEREUM]: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+          [Networks.SCROLL]: '0x5300000000000000000000000000000000000004',
+          [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
         },
         decimals: 18,
         logoUrl:
@@ -21,7 +21,7 @@ describe('tokenList', () => {
         id: '2',
         name: 'Wrapped Ethereum',
         symbol: 'WETH',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
           [Networks.SCROLL]: '0x5300000000000000000000000000000000000004',
           [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
@@ -34,7 +34,7 @@ describe('tokenList', () => {
         id: '3',
         name: 'Tether',
         symbol: 'USDT',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
           [Networks.SCROLL]: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
           [Networks.SEPOLIA]: null,
@@ -47,7 +47,7 @@ describe('tokenList', () => {
         id: '4',
         name: 'USDC',
         symbol: 'USDC',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
           [Networks.SCROLL]: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
           [Networks.SEPOLIA]: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
@@ -60,7 +60,7 @@ describe('tokenList', () => {
         id: '5',
         name: 'Wrapped Bitcoin',
         symbol: 'WBTC',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
           [Networks.SCROLL]: '0x3c1bca5a656e69edcd0d4e36bebb3fcdaca60cf1',
           [Networks.SEPOLIA]: null,
@@ -73,7 +73,7 @@ describe('tokenList', () => {
         id: '6',
         name: 'Coinbase Wrapped Bitcoin',
         symbol: 'cbBTC',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
@@ -86,7 +86,7 @@ describe('tokenList', () => {
         id: '7',
         name: 'DAI',
         symbol: 'DAI',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x6b175474e89094c44da98b954eedeac495271d0f',
           [Networks.SCROLL]: '0xca77eb3fefe3725dc33bccb54edefc3d9f764f97',
           [Networks.SEPOLIA]: null,
@@ -99,7 +99,7 @@ describe('tokenList', () => {
         id: '8',
         name: 'tBTC',
         symbol: 'tBTC',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x18084fbA666a33d37592fA2633fD49a74DD93a88',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
@@ -112,7 +112,7 @@ describe('tokenList', () => {
         id: '9',
         name: 'Lombard Staked BTC',
         symbol: 'LBTC',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x8236a87084f8B84306f72007F36F2618A5634494',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
@@ -125,7 +125,7 @@ describe('tokenList', () => {
         id: '10',
         name: 'Uniswap',
         symbol: 'UNI',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
           [Networks.SCROLL]: '0x434cdA25E8a2CA5D9c1C449a8Cb6bCbF719233E8',
           [Networks.SEPOLIA]: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
@@ -138,7 +138,7 @@ describe('tokenList', () => {
         id: '11',
         name: 'Chainlink',
         symbol: 'LINK',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x514910771af9ca656af840dff83e8264ecf986ca',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: '0x779877A7B0D9E8603169DdbD7836e478b4624789',
@@ -151,7 +151,7 @@ describe('tokenList', () => {
         id: '12',
         name: 'Aave',
         symbol: 'AAVE',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
           [Networks.SCROLL]: '0x79379c0e09a41d7978f883a56246290ee9a8c4d3',
           [Networks.SEPOLIA]: '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
@@ -164,7 +164,7 @@ describe('tokenList', () => {
         id: '13',
         name: 'Scroll',
         symbol: 'SCR',
-        address: {
+        addresses: {
           [Networks.ETHEREUM]: null,
           [Networks.SCROLL]: '0xd29687c813D741E2F938F4aC377128810E217b1b',
           [Networks.SEPOLIA]: null,

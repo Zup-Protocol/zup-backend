@@ -24,6 +24,17 @@ export class NetworksUtils {
     }
   }
 
+  static isTestnet(network: Networks): boolean {
+    switch (network) {
+      case Networks.ETHEREUM:
+        return false;
+      case Networks.SCROLL:
+        return false;
+      case Networks.SEPOLIA:
+        return true;
+    }
+  }
+
   static getSubgraphUrl(network: Networks): string {
     switch (network) {
       case Networks.ETHEREUM:
