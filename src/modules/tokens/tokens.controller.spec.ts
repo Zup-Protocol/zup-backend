@@ -12,6 +12,7 @@ describe('TokensController', () => {
       getPopularTokens: jest.fn(),
       searchTokensByNameOrSymbol: jest.fn(),
       getTokenByAddress: jest.fn(),
+      getTokenPrice: jest.fn(),
     } as unknown as TokensService;
 
     sut = new TokensController(tokensService);
@@ -80,5 +81,34 @@ describe('TokensController', () => {
       network,
       query,
     );
+  });
+
+  it('should throw 400 if an invalid address is provided to /price', async () => {
+    const invalidAddress = 'invalid_address';
+    const chainId = Networks.SEPOLIA;
+
+    await expect(sut.getTokenPrice(invalidAddress, chainId)).rejects.toThrow(
+      new BadRequestException('A valid address should be provided'),
+    );
+  });
+
+  it('should throw 400 if an invalid chain id is provided to /price', async () => {
+    const address = '0x1234567890123456789012345678901234567890';
+    const invalidChainId = 99999999;
+
+    await expect(sut.getTokenPrice(address, invalidChainId)).rejects.toThrow(
+      new BadRequestException(
+        `The provided chain id (${invalidChainId}) is not supported. Please provide a valid chain id`,
+      ),
+    );
+  });
+
+  it('should call the service method to get token price with the provided address and chain id', async () => {
+    const address = '0x1234567890123456789012345678901234567890';
+    const chainId = Networks.SEPOLIA;
+
+    await sut.getTokenPrice(address, chainId);
+
+    expect(tokensService.getTokenPrice).toHaveBeenCalledWith(address, chainId);
   });
 });

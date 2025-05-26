@@ -40,17 +40,16 @@ describe('PoolsController', () => {
 
     const graphQLRequestMock = jest.fn().mockReturnValue({ pools: [] });
 
-    graphqlClients = {
-      [Networks.ETHEREUM]: {
-        request: graphQLRequestMock,
-      } as unknown as GraphQLClient,
-      [Networks.SCROLL]: {
-        request: graphQLRequestMock,
-      } as unknown as GraphQLClient,
-      [Networks.SEPOLIA]: {
-        request: graphQLRequestMock,
-      } as unknown as GraphQLClient,
-    };
+    graphqlClients = NetworksUtils.values().reduce(
+      (acc, network) => {
+        acc[network] = {
+          request: graphQLRequestMock,
+        } as unknown as GraphQLClient;
+
+        return acc;
+      },
+      {} as Record<Networks, GraphQLClient>,
+    );
 
     sut = new PoolsService(tokensService, graphqlClients);
   });

@@ -20,6 +20,10 @@ describe('Networks', () => {
     expect(NetworksUtils.getAlchemyNetwork(Networks.SCROLL)).toBe(
       AlchemyNetwork.SCROLL_MAINNET,
     );
+
+    expect(NetworksUtils.getAlchemyNetwork(Networks.BASE)).toBe(
+      AlchemyNetwork.BASE_MAINNET,
+    );
   });
 
   it('should return the correct subgraph url for a valid mapped network', () => {
@@ -32,6 +36,9 @@ describe('Networks', () => {
     expect(NetworksUtils.getSubgraphUrl(Networks.SCROLL)).toBe(
       'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW',
     );
+    // expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
+    //   'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW',
+    // );
   });
 
   it("should return true if the passed chainId is in the enum's values", () => {
@@ -48,5 +55,6 @@ describe('Networks', () => {
     expect(NetworksUtils.isTestnet(Networks.ETHEREUM)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.SEPOLIA)).toBe(true);
     expect(NetworksUtils.isTestnet(Networks.SCROLL)).toBe(false);
+    expect(NetworksUtils.isTestnet(Networks.BASE)).toBe(false);
   });
 });

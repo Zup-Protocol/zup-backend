@@ -4,6 +4,7 @@ export enum Networks {
   ETHEREUM = 1,
   SCROLL = 534352,
   SEPOLIA = 11155111,
+  BASE = 8453,
 }
 
 export class NetworksUtils {
@@ -21,6 +22,8 @@ export class NetworksUtils {
         return AlchemyNetwork.SCROLL_MAINNET;
       case Networks.SEPOLIA:
         return AlchemyNetwork.ETH_SEPOLIA;
+      case Networks.BASE:
+        return AlchemyNetwork.BASE_MAINNET;
     }
   }
 
@@ -32,6 +35,8 @@ export class NetworksUtils {
         return false;
       case Networks.SEPOLIA:
         return true;
+      case Networks.BASE:
+        return false;
     }
   }
 
@@ -43,6 +48,8 @@ export class NetworksUtils {
         return 'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW';
       case Networks.SEPOLIA:
         return 'https://gateway.thegraph.com/api/subgraphs/id/ELdPgMnFSt3caHSQrwPMGpSpPwVq3Ue2MiHKic94m2LY';
+      case Networks.BASE:
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-base/version/latest';
     }
   }
 

@@ -1,13 +1,21 @@
 import { Inject } from '@nestjs/common';
+import { GraphQLClient } from 'graphql-request';
 import { AlchemyFactory } from 'src/core/alchemy.factory';
-import { tokenList } from 'src/core/token-list';
-
+import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { tokenList } from 'src/core/token-list';
+import {
+  GetTokenDocument,
+  GetTokenQuery,
+  GetTokenQueryVariables,
+} from 'src/gen/graphql.gen';
 
 export class TokensService {
   constructor(
     @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
+    @Inject('GraphqlClients')
+    private readonly graphqlClients: Record<Networks, GraphQLClient>,
   ) {}
 
   getPopularTokens(network?: Networks): TokenDTO[] {
@@ -56,6 +64,23 @@ export class TokensService {
       decimals: alchemyTokenMetadata.decimals ?? 0,
       logoUrl:
         internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata.logo ?? '',
+    };
+  }
+
+  async getTokenPrice(
+    tokenAddress: string,
+    network: Networks,
+  ): Promise<TokenPriceDTO> {
+    const request = await this.graphqlClients[network].request<
+      GetTokenQuery,
+      GetTokenQueryVariables
+    >(GetTokenDocument, {
+      tokenId: tokenAddress,
+    });
+
+    return {
+      address: tokenAddress,
+      usdPrice: Number.parseFloat(request.token?.usdPrice ?? '0'),
     };
   }
 }

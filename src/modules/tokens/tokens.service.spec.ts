@@ -1,6 +1,8 @@
 import { Alchemy } from 'alchemy-sdk';
+import { GraphQLClient } from 'graphql-request';
 import { Networks } from 'src/core/enums/networks';
 import { tokenList } from 'src/core/token-list';
+import { GetTokenDocument, GetTokenQueryVariables } from 'src/gen/graphql.gen';
 import { TokensService } from './tokens.service';
 
 describe('TokensService', () => {
@@ -23,7 +25,10 @@ describe('TokensService', () => {
 
     const alchemyFactoryMock = jest.fn().mockReturnValue(alchemy);
 
-    tokensService = new TokensService(alchemyFactoryMock);
+    tokensService = new TokensService(
+      alchemyFactoryMock,
+      {} as Record<Networks, GraphQLClient>,
+    );
   });
 
   it('should return the token list if no network is provided to the getPopularTokens method', () => {
@@ -82,5 +87,46 @@ describe('TokensService', () => {
     await tokensService.getTokenByAddress(network, address);
 
     expect(alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
+  });
+
+  it('should request the right query to the GraphQL client when calling getTokenPrice method and return the token price from the response', async () => {
+    const tokenAddress = '0x1234567890123456789012345678901234567890';
+    const network = Networks.SEPOLIA;
+    const expectedPrice = 120.312;
+
+    const graphqlClient = {
+      request: jest.fn(),
+    } as unknown as { request: jest.Mock };
+
+    tokensService = new TokensService(jest.fn(), {
+      [network]: graphqlClient as unknown as GraphQLClient,
+    } as Record<Networks, GraphQLClient>);
+
+    const expectedQuery = GetTokenDocument;
+
+    const expectedVariables = <GetTokenQueryVariables>{
+      tokenId: tokenAddress,
+    };
+
+    graphqlClient.request.mockReturnValue({
+      token: {
+        address: tokenAddress,
+        decimals: 18,
+        symbol: 'TEST',
+        name: 'Test Token',
+        usdPrice: expectedPrice,
+      },
+    });
+    const result = await tokensService.getTokenPrice(tokenAddress, network);
+
+    expect(graphqlClient.request).toHaveBeenCalledWith(
+      expectedQuery,
+      expectedVariables,
+    );
+
+    expect(result).toEqual({
+      address: tokenAddress,
+      usdPrice: expectedPrice,
+    });
   });
 });

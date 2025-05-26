@@ -20,6 +20,7 @@ const config: CodegenConfig = {
       Bytes: 'string',
       BigDecimal: 'string',
       BigInt: 'string',
+      ID: 'string',
     },
     documentMode: 'documentNode',
   },
