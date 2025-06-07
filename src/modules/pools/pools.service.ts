@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
+import { zeroEthereumAddress } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
-import { PoolType } from 'src/core/enums/pool-type';
 import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
@@ -12,7 +12,9 @@ import {
   GetPoolsDocument,
   GetPoolsQuery,
   GetPoolsQueryVariables,
+  PoolType,
 } from 'src/gen/graphql.gen';
+import '../../core/extensions/string.extension';
 import { TokensService } from '../tokens/tokens.service';
 
 export class PoolsService {
@@ -62,11 +64,11 @@ export class PoolsService {
           (network) => !NetworksUtils.isTestnet(network),
         );
 
-    const token0InTokenList = tokenList.find(
-      (token) => token.id === params.token0Id,
+    const token0InTokenList = tokenList.find((token) =>
+      token.id?.lowercasedEquals(params.token0Id),
     );
-    const token1InTokenList = tokenList.find(
-      (token) => token.id === params.token1Id,
+    const token1InTokenList = tokenList.find((token) =>
+      token.id?.lowercasedEquals(params.token1Id),
     );
 
     const networksWithTokens = allSupportedNetworks.filter((network) => {
@@ -121,16 +123,61 @@ export class PoolsService {
     network: Networks,
     minTvlUsd: number,
   ): Promise<GetPoolsQuery> {
+    const wrappedNativeAddress = NetworksUtils.wrappedNativeAddress(network);
+
+    const isNativeTokenSearch =
+      token0Address === zeroEthereumAddress ||
+      token1Address === zeroEthereumAddress;
+
     const response = await this.graphqlClients[network].request<
       GetPoolsQuery,
       GetPoolsQueryVariables
     >(GetPoolsDocument, {
-      token0Id: token0Address,
-      token1Id: token1Address,
-      minTVLUSD: minTvlUsd.toString(),
-      hourlyDataStartTimestamp:
-        Date.yesterdayStartSecondsTimestamp().toString(),
-      dailyDataStartTimestamp: Date.getDaysAgoTimestamp(90).toString(),
+      poolsFilter: {
+        or: [
+          {
+            token0: token0Address,
+            token1: token1Address,
+            totalValueLockedUSD_gt: minTvlUsd.toString(),
+          },
+          {
+            token0: token1Address,
+            token1: token0Address,
+            totalValueLockedUSD_gt: minTvlUsd.toString(),
+          },
+          // as V3 pools don't have the native token, we need to search for the wrapped native token
+          ...(isNativeTokenSearch
+            ? [
+                {
+                  token0: token0Address,
+                  token1: wrappedNativeAddress,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                },
+                {
+                  token0: token1Address,
+                  token1: wrappedNativeAddress,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                },
+                {
+                  token0: wrappedNativeAddress,
+                  token1: token0Address,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                },
+                {
+                  token0: wrappedNativeAddress,
+                  token1: token1Address,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                },
+              ]
+            : []),
+        ],
+      },
+      dailyDataFilter: {
+        dayStartTimestamp_gt: Date.getDaysAgoTimestamp(90).toString(),
+      },
+      hourlyDataFilter: {
+        hourStartTimestamp_gt: Date.yesterdayStartSecondsTimestamp().toString(),
+      },
     });
 
     return response;
@@ -186,17 +233,17 @@ export class PoolsService {
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
 
-      const poolToken0Metadata: TokenDTO =
-        token0Metadata.addresses[params.network]?.toLowerCase() ===
-        pool.token0.id.toLowerCase()
-          ? token0Metadata
-          : token1Metadata;
+      const poolToken0Metadata: TokenDTO = token0Metadata.addresses[
+        params.network
+      ]?.lowercasedEquals(pool.token0.id)
+        ? token0Metadata
+        : token1Metadata;
 
-      const poolToken1Metadata: TokenDTO =
-        token1Metadata.addresses[params.network]?.toLowerCase() ===
-        pool.token1.id.toLowerCase()
-          ? token1Metadata
-          : token0Metadata;
+      const poolToken1Metadata: TokenDTO = token1Metadata.addresses[
+        params.network
+      ]?.lowercasedEquals(pool.token1.id)
+        ? token1Metadata
+        : token0Metadata;
 
       pool.hourlyData.forEach((hourlyData) => {
         if (hourlyData) pool24hFees += Number(hourlyData.feesUSD);
@@ -228,37 +275,18 @@ export class PoolsService {
         ),
         yield30d: poolYield30d,
         yield90d: poolYield90d,
-        poolType: PoolType.v3,
+        poolType: pool.type,
         protocol: {
           logo: pool.protocol.logo,
           name: pool.protocol.name,
           url: pool.protocol.url,
         },
-        token0: {
-          addresses: {
-            [params.network]: pool.token0.id,
-          } as Record<Networks, string>,
-          decimals: pool.token0.decimals,
-          name: pool.token0.name,
-          symbol: pool.token0.symbol,
-          ...(poolToken0Metadata.logoUrl && {
-            logoUrl: poolToken0Metadata.logoUrl,
-          }),
-        },
-        token1: {
-          addresses: {
-            [params.network]: pool.token1.id,
-          } as Record<Networks, string>,
-          decimals: pool.token1.decimals,
-          name: pool.token1.name,
-          symbol: pool.token1.symbol,
-          ...(poolToken1Metadata.logoUrl && {
-            logoUrl: poolToken1Metadata.logoUrl,
-          }),
-        },
+        token0: poolToken0Metadata,
+        token1: poolToken1Metadata,
         positionManagerAddress: pool.protocol.positionManager,
         tickSpacing: pool.tickSpacing,
         feeTier: pool.feeTier,
+        ...(pool.type === PoolType.V4 ? { hooks: pool.v4Hooks } : {}),
       };
     });
   }

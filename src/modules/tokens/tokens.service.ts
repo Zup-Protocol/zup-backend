@@ -1,6 +1,8 @@
 import { Inject } from '@nestjs/common';
+import { TokenMetadataResponse } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
 import { AlchemyFactory } from 'src/core/alchemy.factory';
+import { zeroEthereumAddress } from 'src/core/constants';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
@@ -10,6 +12,7 @@ import {
   GetTokenQuery,
   GetTokenQueryVariables,
 } from 'src/gen/graphql.gen';
+import '../../core/extensions/string.extension';
 
 export class TokensService {
   constructor(
@@ -45,25 +48,35 @@ export class TokensService {
     network: Networks,
     address: string,
   ): Promise<TokenDTO> {
+    if (address === zeroEthereumAddress) {
+      return this._getNativeTokenData(network);
+    }
+
     const alchemy = this.alchemyFactory(
       NetworksUtils.getAlchemyNetwork(network),
     );
+    let alchemyTokenMetadata: TokenMetadataResponse | undefined;
 
-    const alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
-
+    try {
+      alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
+    } catch {
+      // ignore
+    }
     const internalTokenMetadata = tokenList.find((token) => {
-      return token.addresses[network]?.toLowerCase() === address.toLowerCase();
+      return token.addresses[network]?.lowercasedEquals(address);
     });
 
     return {
       addresses: {
         [network]: address,
       } as Record<Networks, string>,
-      name: alchemyTokenMetadata.name ?? '',
-      symbol: alchemyTokenMetadata.symbol ?? '',
-      decimals: alchemyTokenMetadata.decimals ?? 0,
+      name: alchemyTokenMetadata?.name ?? internalTokenMetadata?.name ?? '',
+      symbol:
+        alchemyTokenMetadata?.symbol ?? internalTokenMetadata?.symbol ?? '',
+      decimals:
+        alchemyTokenMetadata?.decimals ?? internalTokenMetadata?.decimals ?? 18,
       logoUrl:
-        internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata.logo ?? '',
+        internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata!.logo ?? '', // using internal token logo if available to match the token list
     };
   }
 
@@ -82,5 +95,13 @@ export class TokensService {
       address: tokenAddress,
       usdPrice: Number.parseFloat(request.token?.usdPrice ?? '0'),
     };
+  }
+
+  _getNativeTokenData(network: Networks): TokenDTO {
+    const internalTokenMetadata = tokenList.find((token) => {
+      return token.addresses[network]?.lowercasedEquals(zeroEthereumAddress);
+    });
+
+    return internalTokenMetadata!; // Assuming the native token is always present in the tokenList (Should be!)
   }
 }

@@ -32,7 +32,13 @@ export class PoolsController {
   async searchPoolsInChain(
     @Query('token0Address') token0: string,
     @Query('token1Address') token1: string,
-    @Query('minTvlUsd', ParseFloatPipe) minTvlUsd: number = 0,
+    @Query(
+      'minTvlUsd',
+      new ParseFloatPipe({
+        optional: true,
+      }),
+    )
+    minTvlUsd: number = 0,
     @Param('chainId', ParseIntPipe) chainId: number,
   ): Promise<MatchedPoolsDTO> {
     return await this.poolsService.searchPoolsInChain({

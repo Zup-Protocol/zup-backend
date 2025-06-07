@@ -5,6 +5,7 @@ export enum Networks {
   SCROLL = 534352,
   SEPOLIA = 11155111,
   BASE = 8453,
+  UNICHAIN = 130,
 }
 
 export class NetworksUtils {
@@ -24,6 +25,8 @@ export class NetworksUtils {
         return AlchemyNetwork.ETH_SEPOLIA;
       case Networks.BASE:
         return AlchemyNetwork.BASE_MAINNET;
+      case Networks.UNICHAIN:
+        return AlchemyNetwork.UNICHAIN_MAINNET;
     }
   }
 
@@ -37,23 +40,43 @@ export class NetworksUtils {
         return true;
       case Networks.BASE:
         return false;
+      case Networks.UNICHAIN:
+        return false;
     }
   }
 
   static getSubgraphUrl(network: Networks): string {
+    // TODO: change to subgraph published urls
     switch (network) {
       case Networks.ETHEREUM:
-        return 'https://gateway.thegraph.com/api/subgraphs/id/9MKMGf1LCYQsMx6RUoBGqQaWNyyhSGxeVPS88q6SujKq';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-ethereum/version/latest';
       case Networks.SCROLL:
-        return 'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-scroll/version/latest';
       case Networks.SEPOLIA:
-        return 'https://gateway.thegraph.com/api/subgraphs/id/ELdPgMnFSt3caHSQrwPMGpSpPwVq3Ue2MiHKic94m2LY';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/version/latest';
       case Networks.BASE:
         return 'https://api.studio.thegraph.com/query/108565/zup-dexs-base/version/latest';
+      case Networks.UNICHAIN:
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-unichain/version/latest';
     }
   }
 
   static isValidChainId(chainId: number): boolean {
     return Object.values(Networks).includes(chainId);
+  }
+
+  static wrappedNativeAddress(network: Networks): string {
+    switch (network) {
+      case Networks.ETHEREUM:
+        return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+      case Networks.SCROLL:
+        return '0x5300000000000000000000000000000000000004';
+      case Networks.SEPOLIA:
+        return '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14';
+      case Networks.BASE:
+        return '0x4200000000000000000000000000000000000006';
+      case Networks.UNICHAIN:
+        return '0x4200000000000000000000000000000000000006';
+    }
   }
 }

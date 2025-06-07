@@ -6,6 +6,7 @@ import {
   Query,
 } from '@nestjs/common';
 
+import { zeroEthereumAddress } from 'src/core/constants';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
@@ -72,6 +73,18 @@ export class TokensController {
       );
     }
 
-    return await this.tokensService.getTokenPrice(address, chainId);
+    const tokenPrice = await this.tokensService.getTokenPrice(address, chainId);
+
+    if (
+      tokenPrice.usdPrice === 0 &&
+      address.lowercasedEquals(zeroEthereumAddress)
+    ) {
+      return await this.tokensService.getTokenPrice(
+        NetworksUtils.wrappedNativeAddress(chainId),
+        chainId,
+      );
+    }
+
+    return tokenPrice;
   }
 }

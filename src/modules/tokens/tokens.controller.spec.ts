@@ -1,19 +1,24 @@
 import { BadRequestException } from '@nestjs/common';
-import { Networks } from 'src/core/enums/networks';
+
+import { mock } from 'jest-mock-extended';
+import { _MockProxy } from 'jest-mock-extended/lib/Mock';
+import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
+import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
 
 describe('TokensController', () => {
   let sut: TokensController;
-  let tokensService: TokensService;
+  let tokensService: _MockProxy<TokensService> & TokensService;
 
   beforeEach(() => {
-    tokensService = {
-      getPopularTokens: jest.fn(),
-      searchTokensByNameOrSymbol: jest.fn(),
-      getTokenByAddress: jest.fn(),
-      getTokenPrice: jest.fn(),
-    } as unknown as TokensService;
+    tokensService = mock<TokensService>();
+
+    tokensService.getTokenPrice.mockResolvedValue(<TokenPriceDTO>{
+      address: '0x1234567890123456789012345678901234567890',
+      usdPrice: 120.312,
+    });
 
     sut = new TokensController(tokensService);
   });
@@ -110,5 +115,53 @@ describe('TokensController', () => {
     await sut.getTokenPrice(address, chainId);
 
     expect(tokensService.getTokenPrice).toHaveBeenCalledWith(address, chainId);
+  });
+
+  it('should call the service method to get token price with the provided address and chain id', async () => {
+    const address = '0x1234567890123456789012345678901234567890';
+    const chainId = Networks.SEPOLIA;
+
+    await sut.getTokenPrice(address, chainId);
+
+    expect(tokensService.getTokenPrice).toHaveBeenCalledWith(address, chainId);
+  });
+
+  it(`should call the service with the wrapped native address to get the price
+    when searching for the zero address and returning zero`, async () => {
+    const _tokensService = mock<TokensService>();
+    const _sut = new TokensController(_tokensService);
+
+    const searchAddress = zeroEthereumAddress;
+    const chainId = Networks.SEPOLIA;
+    const wrappedNativeAddress = NetworksUtils.wrappedNativeAddress(chainId);
+    const expectedReturnedValue = <TokenPriceDTO>{
+      address: wrappedNativeAddress,
+      usdPrice: 328769.43,
+    };
+
+    _tokensService.getTokenPrice
+      .calledWith(wrappedNativeAddress, chainId)
+      .mockResolvedValue(expectedReturnedValue);
+
+    _tokensService.getTokenPrice
+      .calledWith(searchAddress, chainId)
+      .mockResolvedValue(<TokenPriceDTO>{
+        address: searchAddress,
+        usdPrice: 0,
+      });
+
+    const returnedValue = await _sut.getTokenPrice(searchAddress, chainId);
+
+    expect(returnedValue).toEqual(expectedReturnedValue);
+
+    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(
+      wrappedNativeAddress,
+      chainId,
+    );
+
+    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(
+      zeroEthereumAddress,
+      chainId,
+    );
   });
 });
