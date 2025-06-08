@@ -49,15 +49,15 @@ export class NetworksUtils {
     // TODO: change to subgraph published urls
     switch (network) {
       case Networks.ETHEREUM:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-ethereum/version/latest';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-ethereum/1.1.15';
       case Networks.SCROLL:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-scroll/version/latest';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-scroll/1.1.15';
       case Networks.SEPOLIA:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/version/latest';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/1.1.15';
       case Networks.BASE:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-base/version/latest';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-base/1.1.15';
       case Networks.UNICHAIN:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-unichain/version/latest';
+        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-unichain/1.1.15';
     }
   }
 
