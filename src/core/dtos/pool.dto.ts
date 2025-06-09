@@ -14,4 +14,5 @@ export interface PoolDTO {
   chainId: Networks;
   totalValueLockedUSD: number;
   poolType: PoolType;
+  permit2Address?: string | null;
 }

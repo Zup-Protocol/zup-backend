@@ -471,8 +471,10 @@ describe('PoolsController', () => {
     );
   });
 
-  it('should return hook value when the pool type is v4', async () => {
+  it('should return hooks address, pool manager address and state view address when the pool type is v4', async () => {
     const hooksAddress = '0x0000000000000000000000000000000000000111';
+    const poolManagerAddress = '0x0000000000000000000000000000000000000222';
+    const stateViewAddress = '0x0000000000000000000000000000000000000333';
 
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
@@ -490,6 +492,9 @@ describe('PoolsController', () => {
             name: 'Uniswap',
             positionManager: '0x0d4a11d5eeaac28ec3f61d1005ee9b9f5060c61a',
             url: 'https://uniswap.org',
+            permit2: '0x0d4a11d5eeaac28ec3f61d1005ee9b9f5060c61a',
+            v4StateView: stateViewAddress,
+            v4PoolManager: poolManagerAddress,
           },
           tickSpacing: 987,
           token0: {
@@ -506,6 +511,7 @@ describe('PoolsController', () => {
           },
           type: PoolType.V4,
           v4Hooks: hooksAddress,
+
           totalValueLockedUSD: '12231.32',
         },
       ],
@@ -517,7 +523,7 @@ describe('PoolsController', () => {
         {
           chainId: Networks.ETHEREUM,
           feeTier: poolsQueryResponse.pools[0].feeTier,
-          hooks: hooksAddress,
+          hooksAddress: hooksAddress,
           poolAddress: poolsQueryResponse.pools[0].id,
           totalValueLockedUSD: Number.parseFloat(
             poolsQueryResponse.pools[0].totalValueLockedUSD,
@@ -542,6 +548,9 @@ describe('PoolsController', () => {
           yield24h: 7161.941638351379,
           yield30d: 3650,
           yield90d: 3650,
+          stateViewAddress: stateViewAddress,
+          poolManagerAddress: poolManagerAddress,
+          permit2Address: poolsQueryResponse.pools[0].protocol.permit2,
           token1: {
             addresses: {
               [Networks.ETHEREUM]: poolsQueryResponse.pools[0].token1.id,
@@ -583,7 +592,11 @@ describe('PoolsController', () => {
       })
     ).pools[0];
 
-    expect((result as V4PoolDTO).hooks).toEqual(hooksAddress);
+    expect((result as V4PoolDTO).hooksAddress).toEqual(hooksAddress);
+    expect((result as V4PoolDTO).stateViewAddress).toEqual(stateViewAddress);
+    expect((result as V4PoolDTO).poolManagerAddress).toEqual(
+      poolManagerAddress,
+    );
   });
 
   it('should request the graphql provider correctly with the pool type as filter if filter pool types are provided', async () => {

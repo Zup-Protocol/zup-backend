@@ -16,6 +16,9 @@ query GetPools(
       url
       id
       positionManager
+      permit2
+      v4StateView
+      v4PoolManager
     }
     token0 {
       id

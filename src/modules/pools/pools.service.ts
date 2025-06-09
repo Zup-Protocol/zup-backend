@@ -294,7 +294,14 @@ export class PoolsService {
         positionManagerAddress: pool.protocol.positionManager,
         tickSpacing: pool.tickSpacing,
         feeTier: pool.feeTier,
-        ...(pool.type === PoolType.V4 ? { hooks: pool.v4Hooks } : {}),
+        permit2Address: pool.protocol.permit2,
+        ...(pool.type === PoolType.V4 && {
+          hooksAddress: pool.v4Hooks,
+          poolManagerAddress: pool.protocol.v4PoolManager,
+          ...(pool.protocol.v4StateView && {
+            stateViewAddress: pool.protocol.v4StateView,
+          }),
+        }),
       };
     });
   }
