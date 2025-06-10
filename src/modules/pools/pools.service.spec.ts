@@ -99,6 +99,7 @@ describe('PoolsController', () => {
 
   it('Should process and return the pool data got from the graphQL query correctly when calling the searchPoolsInChain method', async () => {
     const expectedPoolResult: SupportedPoolType = {
+      permit2Address: undefined,
       token0: {
         addresses: {
           [Networks.ETHEREUM]: tokenList[0].addresses[Networks.ETHEREUM],
@@ -152,9 +153,7 @@ describe('PoolsController', () => {
           tickSpacing: expectedPoolResult.tickSpacing,
           token0: {
             decimals: expectedPoolResult.token0.decimals,
-            id: expectedPoolResult.token0.addresses[
-              Networks.ETHEREUM
-            ] as string,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
             name: expectedPoolResult.token0.name,
             symbol: expectedPoolResult.token0.symbol,
           },
@@ -237,6 +236,7 @@ describe('PoolsController', () => {
     };
 
     const poolResult1: SupportedPoolType = {
+      permit2Address: undefined,
       token0: token0,
       token1: token1,
       chainId: Networks.ETHEREUM,
@@ -297,7 +297,7 @@ describe('PoolsController', () => {
           tickSpacing: poolResult1.tickSpacing,
           token0: {
             decimals: poolResult1.token0.decimals,
-            id: poolResult1.token0.addresses[Networks.ETHEREUM] as string,
+            id: NetworksUtils.wrappedNativeAddress(poolResult1.chainId),
             name: poolResult1.token0.name,
             symbol: poolResult1.token0.symbol,
           },
@@ -333,7 +333,7 @@ describe('PoolsController', () => {
           tickSpacing: poolResult2.tickSpacing,
           token0: {
             decimals: poolResult2.token0.decimals,
-            id: poolResult2.token0.addresses[Networks.SCROLL] as string,
+            id: NetworksUtils.wrappedNativeAddress(poolResult2.chainId),
             name: poolResult2.token0.name,
             symbol: poolResult2.token0.symbol,
           },

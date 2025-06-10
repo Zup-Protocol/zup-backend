@@ -240,18 +240,27 @@ export class PoolsService {
       let pool24hFees: number = 0;
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
+      const token0MetadataAddress =
+        token0Metadata.addresses[params.network] === zeroEthereumAddress &&
+        pool.type === PoolType.V3
+          ? NetworksUtils.wrappedNativeAddress(params.network)
+          : token0Metadata.addresses[params.network];
 
-      const poolToken0Metadata: TokenDTO = token0Metadata.addresses[
-        params.network
-      ]?.lowercasedEquals(pool.token0.id)
-        ? token0Metadata
-        : token1Metadata;
+      const token1MetadataAddress =
+        token1Metadata.addresses[params.network] === zeroEthereumAddress &&
+        pool.type === PoolType.V3
+          ? NetworksUtils.wrappedNativeAddress(params.network)
+          : token1Metadata.addresses[params.network];
 
-      const poolToken1Metadata: TokenDTO = token1Metadata.addresses[
-        params.network
-      ]?.lowercasedEquals(pool.token1.id)
-        ? token1Metadata
-        : token0Metadata;
+      const poolToken0Metadata: TokenDTO =
+        token0MetadataAddress?.lowercasedEquals(pool.token0.id)
+          ? token0Metadata
+          : token1Metadata;
+
+      const poolToken1Metadata: TokenDTO =
+        token1MetadataAddress?.lowercasedEquals(pool.token1.id)
+          ? token1Metadata
+          : token0Metadata;
 
       pool.hourlyData.forEach((hourlyData) => {
         if (hourlyData) pool24hFees += Number(hourlyData.feesUSD);
