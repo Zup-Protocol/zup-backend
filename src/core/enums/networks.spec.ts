@@ -28,24 +28,33 @@ describe('Networks', () => {
     expect(NetworksUtils.getAlchemyNetwork(Networks.UNICHAIN)).toBe(
       AlchemyNetwork.UNICHAIN_MAINNET,
     );
+
+    expect(NetworksUtils.getAlchemyNetwork(Networks.BNB)).toBe(
+      AlchemyNetwork.BNB_MAINNET,
+    );
   });
 
-  it('should return the correct subgraph url for a valid mapped network', () => {
-    // expect(NetworksUtils.getSubgraphUrl(Networks.ETHEREUM)).toBe(
-    //   'https://gateway.thegraph.com/api/subgraphs/id/9MKMGf1LCYQsMx6RUoBGqQaWNyyhSGxeVPS88q6SujKq',
-    // );
-    // expect(NetworksUtils.getSubgraphUrl(Networks.SEPOLIA)).toBe(
-    //   'https://gateway.thegraph.com/api/subgraphs/id/ELdPgMnFSt3caHSQrwPMGpSpPwVq3Ue2MiHKic94m2LY',
-    // );
-    // expect(NetworksUtils.getSubgraphUrl(Networks.SCROLL)).toBe(
-    //   'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW',
-    // );
-    // expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
-    //   'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW',
-    // );
-    // expect(NetworksUtils.getSubgraphUrl(Networks.UNICHAIN)).toBe(
-    //   'https://gateway.thegraph.com/api/subgraphs/id/CEw9wKwo49yqpiWKD2iZQ9cEzMwZwPSjsCrdJ4NPikzW',
-    // );
+  it('should return the correct subgraph url for a valid mapped network using the correct api key from the env', () => {
+    const apiKey = (process.env.GRAPHQL_API_KEY = 'test');
+
+    expect(NetworksUtils.getSubgraphUrl(Networks.ETHEREUM)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-ethereum/version/1.1.20/api`,
+    );
+    expect(NetworksUtils.getSubgraphUrl(Networks.SEPOLIA)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-sepolia/version/1.1.20/api`,
+    );
+    expect(NetworksUtils.getSubgraphUrl(Networks.SCROLL)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-scroll/version/1.1.20/api`,
+    );
+    expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`,
+    );
+    expect(NetworksUtils.getSubgraphUrl(Networks.UNICHAIN)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`,
+    );
+    expect(NetworksUtils.getSubgraphUrl(Networks.BNB)).toBe(
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-bnb/version/1.1.20/api`,
+    );
   });
 
   it("should return true if the passed chainId is in the enum's values", () => {
@@ -53,6 +62,7 @@ describe('Networks', () => {
     expect(NetworksUtils.isValidChainId(534352)).toBe(true);
     expect(NetworksUtils.isValidChainId(1)).toBe(true);
     expect(NetworksUtils.isValidChainId(130)).toBe(true);
+    expect(NetworksUtils.isValidChainId(56)).toBe(true);
   });
 
   it('should return false if the passed chainId is not in the enum', () => {
@@ -65,6 +75,7 @@ describe('Networks', () => {
     expect(NetworksUtils.isTestnet(Networks.SCROLL)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.BASE)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.UNICHAIN)).toBe(false);
+    expect(NetworksUtils.isTestnet(Networks.BNB)).toBe(false);
   });
 
   it('should return the correct address for the wrapped native token', () => {
@@ -82,6 +93,9 @@ describe('Networks', () => {
     );
     expect(NetworksUtils.wrappedNativeAddress(Networks.UNICHAIN)).toBe(
       '0x4200000000000000000000000000000000000006',
+    );
+    expect(NetworksUtils.wrappedNativeAddress(Networks.BNB)).toBe(
+      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     );
   });
 });

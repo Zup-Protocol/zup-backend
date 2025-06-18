@@ -24,10 +24,19 @@ export class TokensService {
   getPopularTokens(network?: Networks): TokenDTO[] {
     if (network === undefined) return tokenList;
 
-    return tokenList.filter((token) => {
-      const tokenAddress = token.addresses[network];
-      return tokenAddress !== undefined && tokenAddress !== null;
-    });
+    return tokenList
+      .filter((token) => {
+        const tokenAddress = token.addresses[network];
+        return tokenAddress !== undefined && tokenAddress !== null;
+      })
+      .sort((a, b) => {
+        const aIsZero = a.addresses[network] === zeroEthereumAddress;
+        const bIsZero = b.addresses[network] === zeroEthereumAddress;
+
+        if (aIsZero && !bIsZero) return -1;
+        if (!aIsZero && bIsZero) return 1;
+        return 0;
+      });
   }
 
   searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
