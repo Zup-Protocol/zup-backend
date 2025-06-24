@@ -82,8 +82,9 @@ export class TokensService {
       name: alchemyTokenMetadata?.name ?? internalTokenMetadata?.name ?? '',
       symbol:
         alchemyTokenMetadata?.symbol ?? internalTokenMetadata?.symbol ?? '',
-      decimals:
-        alchemyTokenMetadata?.decimals ?? internalTokenMetadata?.decimals ?? 18,
+      decimals: (alchemyTokenMetadata?.decimals
+        ? { [network]: alchemyTokenMetadata?.decimals ?? 18 }
+        : internalTokenMetadata?.decimals) as Record<Networks, number>,
       logoUrl:
         internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata!.logo ?? '', // using internal token logo if available to match the token list
     };

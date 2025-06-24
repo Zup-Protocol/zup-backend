@@ -17,7 +17,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: zeroEthereumAddress,
           [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: 18,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: 18,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
       },
@@ -33,7 +40,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: '0x4200000000000000000000000000000000000006',
           [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: 18,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: 18,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
       },
@@ -49,7 +63,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: '0x588CE4F028D8e7B53B687865d6A67b3A54C75518',
           [Networks.BNB]: '0x55d398326f99059ff775485246999027b3197955',
         },
-        decimals: 6,
+        decimals: {
+          [Networks.ETHEREUM]: 6,
+          [Networks.SCROLL]: 6,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 6,
+          [Networks.UNICHAIN]: 6,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
       },
@@ -65,7 +86,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: '0x078d782b760474a361dda0af3839290b0ef57ad6',
           [Networks.BNB]: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
         },
-        decimals: 6,
+        decimals: {
+          [Networks.ETHEREUM]: 6,
+          [Networks.SCROLL]: 6,
+          [Networks.SEPOLIA]: 6,
+          [Networks.BASE]: 6,
+          [Networks.UNICHAIN]: 6,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
       },
@@ -77,11 +105,18 @@ describe('tokenList', () => {
           [Networks.ETHEREUM]: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
           [Networks.SCROLL]: '0x3c1bca5a656e69edcd0d4e36bebb3fcdaca60cf1',
           [Networks.SEPOLIA]: null,
-          [Networks.BASE]: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+          [Networks.BASE]: null,
           [Networks.UNICHAIN]: '0x927B51f251480a681271180DA4de28D44EC4AfB8',
           [Networks.BNB]: null,
         },
-        decimals: 8,
+        decimals: {
+          [Networks.ETHEREUM]: 8,
+          [Networks.SCROLL]: 8,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: 8,
+          [Networks.BNB]: null,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
       },
@@ -97,7 +132,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: null,
         },
-        decimals: 8,
+        decimals: {
+          [Networks.ETHEREUM]: 8,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 8,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: null,
+        },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/32994.png',
       },
@@ -113,7 +155,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
       },
@@ -129,7 +178,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: null,
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: null,
+        },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/26133.png',
       },
@@ -145,7 +201,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
         },
-        decimals: 8,
+        decimals: {
+          [Networks.ETHEREUM]: 8,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 8,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: 8,
+        },
         logoUrl:
           'https://img.cryptorank.io/coins/lombard_staked_btc1725876587975.png',
       },
@@ -161,7 +224,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: '0x8f187aA05619a017077f5308904739877ce9eA21',
           [Networks.BNB]: '0xbf5140a22578168fd562dccf235e5d43a02ce9b1',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: 18,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: 18,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
       },
@@ -174,10 +244,17 @@ describe('tokenList', () => {
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: '0x779877A7B0D9E8603169DdbD7836e478b4624789',
           [Networks.BASE]: '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196',
-          [Networks.UNICHAIN]: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+          [Networks.UNICHAIN]: '0x5a53B6D19D8EDCb7923F0D840EeBB3f09BBeEfB7',
           [Networks.BNB]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: 18,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: 18,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
       },
@@ -190,10 +267,17 @@ describe('tokenList', () => {
           [Networks.SCROLL]: '0x79379c0e09a41d7978f883a56246290ee9a8c4d3',
           [Networks.SEPOLIA]: '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
           [Networks.BASE]: '0x63706e401c06ac8513145b7687A14804d17f814b',
-          [Networks.UNICHAIN]: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+          [Networks.UNICHAIN]: '0x02a24C380dA560E4032Dc6671d8164cfbEEAAE1e',
           [Networks.BNB]: '0xfb6115445bff7b52feb98650c87f44907e58f802',
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: 18,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: 18,
+          [Networks.BNB]: 18,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png',
       },
@@ -209,7 +293,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: null,
         },
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: null,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: null,
+        },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/26998.png',
       },
@@ -225,7 +316,14 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
           [Networks.BNB]: null,
         },
-        decimals: 6,
+        decimals: {
+          [Networks.ETHEREUM]: 6,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 6,
+          [Networks.UNICHAIN]: null,
+          [Networks.BNB]: null,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c/logo.png',
       },
@@ -233,9 +331,6 @@ describe('tokenList', () => {
         id: '15',
         name: 'First Digital USD',
         symbol: 'FDUSD',
-        decimals: 18,
-        logoUrl:
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
           [Networks.BNB]: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
@@ -244,14 +339,21 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
+        logoUrl:
+          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409/logo.png',
       },
       {
         id: '16',
         name: 'Wrapped BNB',
         symbol: 'WBNB',
-        decimals: 18,
-        logoUrl:
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
           [Networks.BNB]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -260,12 +362,29 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
+        logoUrl:
+          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
       },
       {
         id: '17',
         name: 'BNB',
         symbol: 'BNB',
-        decimals: 18,
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
         addresses: {
@@ -281,9 +400,6 @@ describe('tokenList', () => {
         id: '18',
         name: 'PancakeSwap',
         symbol: 'CAKE',
-        decimals: 18,
-        logoUrl:
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898',
           [Networks.BNB]: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
@@ -292,14 +408,21 @@ describe('tokenList', () => {
           [Networks.BASE]: '0x3055913c90Fcc1A6CE9a358911721eEb942013A1',
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: null,
+        },
+        logoUrl:
+          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898/logo.png',
       },
       {
         id: '19',
         name: 'BTCB Token',
         symbol: 'BTCB',
-        decimals: 18,
-        logoUrl:
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png',
         addresses: {
           [Networks.ETHEREUM]: null,
           [Networks.BNB]: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
@@ -308,14 +431,21 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: null,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
+        logoUrl:
+          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png',
       },
       {
         id: '20',
         name: 'World Liberty Financial USD',
         symbol: 'USD1',
-        decimals: 18,
-        logoUrl:
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
           [Networks.BNB]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
@@ -324,12 +454,21 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
+        logoUrl:
+          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png',
       },
       {
         id: '21',
         name: 'SolvBTC',
         symbol: 'SolvBTC',
-        decimals: 18,
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/33312.png',
         addresses: {
@@ -340,12 +479,19 @@ describe('tokenList', () => {
           [Networks.BASE]: '0x3B86Ad95859b6AB773f55f8d94B4b9d443EE931f',
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: 18,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 18,
+          [Networks.UNICHAIN]: null,
+        },
       },
       {
         id: '22',
         name: 'Toncoin',
         symbol: 'TON',
-        decimals: 9,
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1/logo.png',
         addresses: {
@@ -356,12 +502,19 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: 9,
+          [Networks.BNB]: 9,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
       },
       {
         id: '23',
         name: 'RZUSD',
         symbol: 'RZUSD',
-        decimals: 18,
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/35716.png',
         addresses: {
@@ -372,12 +525,19 @@ describe('tokenList', () => {
           [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
         },
+        decimals: {
+          [Networks.ETHEREUM]: null,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: null,
+          [Networks.UNICHAIN]: null,
+        },
       },
       {
         id: '24',
         name: 'Liquity USD',
         symbol: 'LUSD',
-        decimals: 18,
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x5f98805A4E8be255a32880FDeC7F6728C6568bA0/logo.png',
         addresses: {
@@ -386,6 +546,14 @@ describe('tokenList', () => {
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           [Networks.BASE]: '0x368181499736d0c0cc614dbb145e2ec1ac86b8c6',
+          [Networks.UNICHAIN]: null,
+        },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          [Networks.BNB]: 18,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.BASE]: 18,
           [Networks.UNICHAIN]: null,
         },
       },
@@ -397,5 +565,18 @@ describe('tokenList', () => {
   it('should not repeat the token ID', () => {
     const tokenids = tokenList.map((token) => token.id);
     expect(new Set(tokenids).size).toEqual(tokenids.length);
+  });
+
+  it('should have the decimals not null if the address for the network is set', () => {
+    tokenList.forEach((token) => {
+      Object.keys(token.decimals).forEach((network) => {
+        if (token.addresses[network]) {
+          const isNull = token.decimals[network] === null;
+          if (isNull) console.log(`${token.name} ${network} is null`);
+
+          expect(token.decimals[network]).not.toBeNull();
+        }
+      });
+    });
   });
 });

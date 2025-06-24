@@ -4,7 +4,7 @@ export interface TokenDTO {
   id?: string;
   name: string;
   symbol: string;
-  decimals: number;
+  decimals: Record<Networks, number | null>;
   addresses: Record<Networks, string | null>;
   logoUrl?: string;
 }

@@ -166,6 +166,7 @@ describe('TokensService', () => {
     expect(result).toEqual(<TokenDTO>{
       ...tokenInList,
       id: undefined,
+      decimals: tokenInList!.decimals,
       addresses: {
         [network]: address,
       },
