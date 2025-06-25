@@ -49,15 +49,15 @@ export class NetworksUtils {
     // TODO: change to subgraph published urls
     switch (network) {
       case Networks.ETHEREUM:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-ethereum/1.1.16';
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-ethereum/version/1.1.20/api`;
       case Networks.SCROLL:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-scroll/1.1.16';
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-scroll/version/1.1.20/api`;
       case Networks.SEPOLIA:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/1.1.16';
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-sepolia/version/1.1.20/api`;
       case Networks.BASE:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-base/1.1.16';
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`;
       case Networks.UNICHAIN:
-        return 'https://api.studio.thegraph.com/query/108565/zup-dexs-unichain/1.1.16';
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`;
     }
   }
 
