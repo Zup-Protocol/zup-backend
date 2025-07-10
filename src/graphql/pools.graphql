@@ -8,8 +8,13 @@ query GetPools(
     type
     totalValueLockedUSD
     feeTier
-    tickSpacing
-    v4Hooks
+    v4PoolData {
+      tickSpacing
+      hooks
+    }
+    v3PoolData {
+      tickSpacing
+    }
     protocol {
       name
       logo

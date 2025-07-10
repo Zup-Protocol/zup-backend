@@ -53,17 +53,17 @@ export class NetworksUtils {
   static getSubgraphUrl(network: Networks): string {
     switch (network) {
       case Networks.ETHEREUM:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-ethereum/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-ethereum/version/2.1.23/api`;
       case Networks.SCROLL:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-scroll/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-scroll/version/2.1.23/api`;
       case Networks.SEPOLIA:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-sepolia/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-sepolia/version/2.1.23/api`;
       case Networks.BASE:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-base/version/2.1.23/api`;
       case Networks.UNICHAIN:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-unichain/version/2.1.23/api`;
       case Networks.BNB:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-bnb/version/1.1.20/api`;
+        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-bnb/version/2.1.23/api`;
     }
   }
 

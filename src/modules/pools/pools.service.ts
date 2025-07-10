@@ -303,11 +303,25 @@ export class PoolsService {
         token0: poolToken0Metadata,
         token1: poolToken1Metadata,
         positionManagerAddress: pool.protocol.positionManager,
-        tickSpacing: pool.tickSpacing,
         feeTier: pool.feeTier,
         permit2Address: pool.protocol.permit2,
+        ...((pool.type === PoolType.V3 || pool.type === PoolType.V4) && {
+          tickSpacing: (() => {
+            if (pool.type === PoolType.V3 && pool.v3PoolData) {
+              return pool.v3PoolData.tickSpacing;
+            }
+
+            if (pool.type === PoolType.V4 && pool.v4PoolData) {
+              return pool.v4PoolData.tickSpacing;
+            }
+
+            throw new Error(
+              `Tick spacing is not available for pool type ${pool.type}`,
+            );
+          })(),
+        }),
         ...(pool.type === PoolType.V4 && {
-          hooksAddress: pool.v4Hooks,
+          hooksAddress: pool.v4PoolData!.hooks,
           poolManagerAddress: pool.protocol.v4PoolManager,
           ...(pool.protocol.v4StateView && {
             stateViewAddress: pool.protocol.v4StateView,

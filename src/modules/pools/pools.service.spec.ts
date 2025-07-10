@@ -6,6 +6,7 @@ import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
+import { V3PoolDTO } from 'src/core/dtos/v3-pool.dto';
 import { V4PoolDTO } from 'src/core/dtos/v4-pool.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { tokenList } from 'src/core/token-list';
@@ -150,7 +151,9 @@ describe('PoolsController', () => {
             positionManager: expectedPoolResult.positionManagerAddress,
             url: expectedPoolResult.protocol.url,
           },
-          tickSpacing: expectedPoolResult.tickSpacing,
+          v3PoolData: {
+            tickSpacing: expectedPoolResult.tickSpacing,
+          },
           token0: {
             decimals: expectedPoolResult.token0.decimals[Networks.ETHEREUM]!,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
@@ -294,7 +297,9 @@ describe('PoolsController', () => {
             positionManager: poolResult1.positionManagerAddress,
             url: poolResult1.protocol.url,
           },
-          tickSpacing: poolResult1.tickSpacing,
+          v3PoolData: {
+            tickSpacing: poolResult1.tickSpacing,
+          },
           token0: {
             decimals: poolResult1.token0.decimals[poolResult1.chainId]!,
             id: NetworksUtils.wrappedNativeAddress(poolResult1.chainId),
@@ -330,7 +335,9 @@ describe('PoolsController', () => {
             positionManager: poolResult2.positionManagerAddress,
             url: poolResult2.protocol.url,
           },
-          tickSpacing: poolResult2.tickSpacing,
+          v3PoolData: {
+            tickSpacing: poolResult2.tickSpacing,
+          },
           token0: {
             decimals: poolResult2.token0.decimals[poolResult2.chainId]!,
             id: NetworksUtils.wrappedNativeAddress(poolResult2.chainId),
@@ -496,7 +503,10 @@ describe('PoolsController', () => {
             v4StateView: stateViewAddress,
             v4PoolManager: poolManagerAddress,
           },
-          tickSpacing: 987,
+          v4PoolData: {
+            tickSpacing: 987,
+            hooks: hooksAddress,
+          },
           token0: {
             decimals: tokenList[0].decimals[Networks.ETHEREUM]!,
             id: tokenList[0].addresses[Networks.ETHEREUM] as string,
@@ -510,8 +520,6 @@ describe('PoolsController', () => {
             symbol: tokenList[3].symbol,
           },
           type: PoolType.V4,
-          v4Hooks: hooksAddress,
-
           totalValueLockedUSD: '12231.32',
         },
       ],
@@ -529,7 +537,7 @@ describe('PoolsController', () => {
             poolsQueryResponse.pools[0].totalValueLockedUSD,
           ),
           poolType: PoolType.V4,
-          tickSpacing: poolsQueryResponse.pools[0].tickSpacing,
+          tickSpacing: poolsQueryResponse.pools[0].v4PoolData!.tickSpacing,
           positionManagerAddress:
             poolsQueryResponse.pools[0].protocol.positionManager,
           protocol: {
@@ -668,7 +676,9 @@ describe('PoolsController', () => {
             positionManager: '0x0000000000000000000000000000000000000001',
             url: 'https://example.com/uniswap',
           },
-          tickSpacing: 10,
+          v3PoolData: {
+            tickSpacing: 10,
+          },
           token0: {
             decimals: 18,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
@@ -723,7 +733,9 @@ describe('PoolsController', () => {
             positionManager: '0x0000000000000000000000000000000000000001',
             url: 'https://example.com/uniswap',
           },
-          tickSpacing: 10,
+          v3PoolData: {
+            tickSpacing: 10,
+          },
           token0: {
             decimals: 18,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
@@ -778,7 +790,6 @@ describe('PoolsController', () => {
             positionManager: '0x0000000000000000000000000000000000000001',
             url: 'https://example.com/uniswap',
           },
-          tickSpacing: 10,
           token0: {
             decimals: 18,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
@@ -793,6 +804,9 @@ describe('PoolsController', () => {
           },
           type: PoolType.V3,
           totalValueLockedUSD: '216876',
+          v3PoolData: {
+            tickSpacing: 10,
+          },
         },
       ],
     };
@@ -833,7 +847,9 @@ describe('PoolsController', () => {
             positionManager: '0x0000000000000000000000000000000000000001',
             url: 'https://example.com/uniswap',
           },
-          tickSpacing: 10,
+          v3PoolData: {
+            tickSpacing: 10,
+          },
           token0: {
             decimals: 18,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
@@ -868,5 +884,180 @@ describe('PoolsController', () => {
     });
 
     expect(result.pools[0].yield90d).toBe(3650);
+  });
+
+  it('Should not contain the tickSpacing param in the response if the pool is v2', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          dailyData: Array.from({ length: 70 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          type: PoolType.V2,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Address: '<token0Address>',
+      token1Address: '<token1Address>',
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect(result.pools[0]).not.toContain('tickSpacing');
+  });
+
+  it('Should return the tick spacing from the v3 pool data if the pool is v3', async () => {
+    const expectedTickSpacing = 161827;
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          dailyData: Array.from({ length: 70 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          v3PoolData: {
+            tickSpacing: expectedTickSpacing,
+          },
+          type: PoolType.V3,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Address: '<token0Address>',
+      token1Address: '<token1Address>',
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect((result.pools[0] as V3PoolDTO).tickSpacing).toBe(
+      expectedTickSpacing,
+    );
+  });
+
+  it('Should return the tick spacing from the v4 pool data if the pool is v3', async () => {
+    const expectedTickSpacing = 1111;
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          dailyData: Array.from({ length: 70 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          v4PoolData: {
+            tickSpacing: expectedTickSpacing,
+            hooks: '0x0000000000000000000000000000000000000001',
+          },
+          type: PoolType.V4,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Address: '<token0Address>',
+      token1Address: '<token1Address>',
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect((result.pools[0] as V4PoolDTO).tickSpacing).toBe(
+      expectedTickSpacing,
+    );
   });
 });
