@@ -279,8 +279,10 @@ export class PoolsService {
         pool90dYields.push(dayAPR);
       }
 
-      const poolYield30d = average(pool30dYields);
-      const poolYield90d = average(pool90dYields);
+      const poolYield30d =
+        pool30dYields.length < 20 ? 0 : average(pool30dYields);
+      const poolYield90d =
+        pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
       return {
         chainId: params.network,
