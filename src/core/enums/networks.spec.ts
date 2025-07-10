@@ -38,22 +38,22 @@ describe('Networks', () => {
     const apiKey = (process.env.GRAPHQL_API_KEY = 'test');
 
     expect(NetworksUtils.getSubgraphUrl(Networks.ETHEREUM)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-ethereum/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-ethereum/version/2.1.24/api`,
     );
     expect(NetworksUtils.getSubgraphUrl(Networks.SEPOLIA)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-sepolia/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-sepolia/version/2.1.24/api`,
     );
     expect(NetworksUtils.getSubgraphUrl(Networks.SCROLL)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-scroll/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-scroll/version/2.1.24/api`,
     );
     expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-base/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-base/version/2.1.24/api`,
     );
     expect(NetworksUtils.getSubgraphUrl(Networks.UNICHAIN)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-unichain/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-unichain/version/2.1.24/api`,
     );
     expect(NetworksUtils.getSubgraphUrl(Networks.BNB)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-bnb/version/2.1.23/api`,
+      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-bnb/version/2.1.24/api`,
     );
   });
 
