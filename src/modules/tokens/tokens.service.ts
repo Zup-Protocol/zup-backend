@@ -24,10 +24,19 @@ export class TokensService {
   getPopularTokens(network?: Networks): TokenDTO[] {
     if (network === undefined) return tokenList;
 
-    return tokenList.filter((token) => {
-      const tokenAddress = token.addresses[network];
-      return tokenAddress !== undefined && tokenAddress !== null;
-    });
+    return tokenList
+      .filter((token) => {
+        const tokenAddress = token.addresses[network];
+        return tokenAddress !== undefined && tokenAddress !== null;
+      })
+      .sort((a, b) => {
+        const aIsZero = a.addresses[network] === zeroEthereumAddress;
+        const bIsZero = b.addresses[network] === zeroEthereumAddress;
+
+        if (aIsZero && !bIsZero) return -1;
+        if (!aIsZero && bIsZero) return 1;
+        return 0;
+      });
   }
 
   searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
@@ -73,8 +82,9 @@ export class TokensService {
       name: alchemyTokenMetadata?.name ?? internalTokenMetadata?.name ?? '',
       symbol:
         alchemyTokenMetadata?.symbol ?? internalTokenMetadata?.symbol ?? '',
-      decimals:
-        alchemyTokenMetadata?.decimals ?? internalTokenMetadata?.decimals ?? 18,
+      decimals: (alchemyTokenMetadata?.decimals
+        ? { [network]: alchemyTokenMetadata?.decimals ?? 18 }
+        : internalTokenMetadata?.decimals) as Record<Networks, number>,
       logoUrl:
         internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata!.logo ?? '', // using internal token logo if available to match the token list
     };
