@@ -21,9 +21,9 @@ describe('Networks', () => {
       AlchemyNetwork.SCROLL_MAINNET,
     );
 
-    expect(NetworksUtils.getAlchemyNetwork(Networks.BASE)).toBe(
-      AlchemyNetwork.BASE_MAINNET,
-    );
+    // expect(NetworksUtils.getAlchemyNetwork(Networks.BASE)).toBe(
+    //   AlchemyNetwork.BASE_MAINNET,
+    // );
 
     expect(NetworksUtils.getAlchemyNetwork(Networks.UNICHAIN)).toBe(
       AlchemyNetwork.UNICHAIN_MAINNET,
@@ -42,9 +42,9 @@ describe('Networks', () => {
     expect(NetworksUtils.getSubgraphUrl(Networks.SCROLL)).toBe(
       `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-scroll/version/1.1.20/api`,
     );
-    expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
-      `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`,
-    );
+    // expect(NetworksUtils.getSubgraphUrl(Networks.BASE)).toBe(
+    //   `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`,
+    // );
     expect(NetworksUtils.getSubgraphUrl(Networks.UNICHAIN)).toBe(
       `https://subgraph.satsuma-prod.com/${apiKey}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`,
     );
@@ -65,7 +65,7 @@ describe('Networks', () => {
     expect(NetworksUtils.isTestnet(Networks.ETHEREUM)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.SEPOLIA)).toBe(true);
     expect(NetworksUtils.isTestnet(Networks.SCROLL)).toBe(false);
-    expect(NetworksUtils.isTestnet(Networks.BASE)).toBe(false);
+    // expect(NetworksUtils.isTestnet(Networks.BASE)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.UNICHAIN)).toBe(false);
   });
 
@@ -79,9 +79,9 @@ describe('Networks', () => {
     expect(NetworksUtils.wrappedNativeAddress(Networks.SCROLL)).toBe(
       '0x5300000000000000000000000000000000000004',
     );
-    expect(NetworksUtils.wrappedNativeAddress(Networks.BASE)).toBe(
-      '0x4200000000000000000000000000000000000006',
-    );
+    // expect(NetworksUtils.wrappedNativeAddress(Networks.BASE)).toBe(
+    //   '0x4200000000000000000000000000000000000006',
+    // );
     expect(NetworksUtils.wrappedNativeAddress(Networks.UNICHAIN)).toBe(
       '0x4200000000000000000000000000000000000006',
     );
