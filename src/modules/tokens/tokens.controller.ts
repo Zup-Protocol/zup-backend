@@ -6,6 +6,8 @@ import {
   Query,
 } from '@nestjs/common';
 
+import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { isEthereumAddress } from 'src/core/utils/string-utils';
@@ -54,5 +56,35 @@ export class TokensController {
     return !isSearchByAddress
       ? this.tokensService.searchTokensByNameOrSymbol(query, network)
       : [await this.tokensService.getTokenByAddress(network!, query)];
+  }
+
+  @Get('/price')
+  async getTokenPrice(
+    @Query('address') address: string,
+    @Query('chainId', ParseIntPipe) chainId: number,
+  ): Promise<TokenPriceDTO> {
+    if (!isEthereumAddress(address)) {
+      throw new BadRequestException('A valid address should be provided');
+    }
+
+    if (!NetworksUtils.isValidChainId(chainId)) {
+      throw new BadRequestException(
+        `The provided chain id (${chainId}) is not supported. Please provide a valid chain id`,
+      );
+    }
+
+    const tokenPrice = await this.tokensService.getTokenPrice(address, chainId);
+
+    if (
+      tokenPrice.usdPrice === 0 &&
+      address.lowercasedEquals(zeroEthereumAddress)
+    ) {
+      return await this.tokensService.getTokenPrice(
+        NetworksUtils.wrappedNativeAddress(chainId),
+        chainId,
+      );
+    }
+
+    return tokenPrice;
   }
 }

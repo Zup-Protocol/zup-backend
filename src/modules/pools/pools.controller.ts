@@ -1,45 +1,46 @@
 import {
+  Body,
   Controller,
-  Get,
   Param,
-  ParseBoolPipe,
-  ParseFloatPipe,
   ParseIntPipe,
+  Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
+import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { PoolsService } from './pools.service';
 
 @Controller('pools')
 export class PoolsController {
   constructor(private readonly poolsService: PoolsService) {}
-  @Get('/search/all')
+  @Post('/search/all')
   async searchPoolsAcrossNetworks(
     @Query('token0Id') token0Id: string,
     @Query('token1Id') token1Id: string,
-    @Query('minTvlUsd', ParseFloatPipe) minTvlUsd: number = 0,
-    @Query('testnetMode', ParseBoolPipe) testnetMode: boolean = false,
+    @Body('filters', new ValidationPipe({ transform: true }))
+    filters: PoolSearchFiltersDTO = new PoolSearchFiltersDTO(),
   ): Promise<MatchedPoolsDTO> {
     return await this.poolsService.searchPoolsCrossChain({
-      minTvlUsd: minTvlUsd,
       token0Id: token0Id,
       token1Id: token1Id,
-      testnetMode: testnetMode,
+      filters,
     });
   }
 
-  @Get('/search/:chainId')
+  @Post('/search/:chainId')
   async searchPoolsInChain(
     @Query('token0Address') token0: string,
     @Query('token1Address') token1: string,
-    @Query('minTvlUsd', ParseFloatPipe) minTvlUsd: number = 0,
     @Param('chainId', ParseIntPipe) chainId: number,
+    @Body('filters', new ValidationPipe({ transform: true }))
+    filters: PoolSearchFiltersDTO = new PoolSearchFiltersDTO(),
   ): Promise<MatchedPoolsDTO> {
     return await this.poolsService.searchPoolsInChain({
       token0Address: token0,
       token1Address: token1,
       network: chainId,
-      minTvlUsd,
+      filters,
     });
   }
 }

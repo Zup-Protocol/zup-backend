@@ -1,37 +1,25 @@
 query GetPools(
-  $token0Id: Bytes!
-  $token1Id: Bytes!
-  $hourlyDataStartTimestamp: BigInt!
-  $dailyDataStartTimestamp: BigInt!
-  $minTVLUSD: BigDecimal!
+  $poolsFilter: Pool_filter # $alternativeToken0Id: Bytes!
+  $dailyDataFilter: PoolDailyData_filter
+  $hourlyDataFilter: PoolHourlyData_filter
 ) {
-  pools(
-    where: {
-      or: [
-        {
-          token0_: { id: $token0Id }
-          token1_: { id: $token1Id }
-          totalValueLockedUSD_gt: $minTVLUSD
-        }
-        {
-          token0_: { id: $token1Id }
-          token1_: { id: $token0Id }
-          totalValueLockedUSD_gt: $minTVLUSD
-        }
-      ]
-    }
-  ) {
+  pools(where: $poolsFilter) {
     id
+    type
+    totalValueLockedUSD
+    feeTier
+    tickSpacing
+    v4Hooks
     protocol {
       name
       logo
       url
       id
       positionManager
+      permit2
+      v4StateView
+      v4PoolManager
     }
-    totalValueLockedUSD
-    feeTier
-    tickSpacing
     token0 {
       id
       name
@@ -47,7 +35,7 @@ query GetPools(
     dailyData(
       orderDirection: desc
       orderBy: dayStartTimestamp
-      where: { dayStartTimestamp_gte: $dailyDataStartTimestamp }
+      where: $dailyDataFilter
     ) {
       feesUSD
       totalValueLockedUSD
@@ -55,7 +43,7 @@ query GetPools(
     hourlyData(
       orderDirection: desc
       orderBy: hourStartTimestamp
-      where: { hourStartTimestamp_gte: $hourlyDataStartTimestamp }
+      where: $hourlyDataFilter
     ) {
       feesUSD
     }

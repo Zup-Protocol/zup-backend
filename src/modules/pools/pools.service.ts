@@ -1,9 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
+import { zeroEthereumAddress } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
+import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
-import { PoolType } from 'src/core/enums/pool-type';
 import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
@@ -12,7 +13,9 @@ import {
   GetPoolsDocument,
   GetPoolsQuery,
   GetPoolsQueryVariables,
+  PoolType,
 } from 'src/gen/graphql.gen';
+import '../../core/extensions/string.extension';
 import { TokensService } from '../tokens/tokens.service';
 
 export class PoolsService {
@@ -26,13 +29,13 @@ export class PoolsService {
     token0Address: string;
     token1Address: string;
     network: Networks;
-    minTvlUsd: number;
+    filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
     const poolsQueryResponse = await this._getPoolsForSingleNetwork(
       params.token0Address,
       params.token1Address,
       params.network,
-      params.minTvlUsd,
+      params.filters,
     );
 
     const matchedPools = await this._processPoolsDataFromQuery({
@@ -44,17 +47,16 @@ export class PoolsService {
 
     return {
       pools: matchedPools,
-      minTvlUsd: params.minTvlUsd,
+      minTvlUsd: params.filters.minTvlUsd,
     };
   }
 
   async searchPoolsCrossChain(params: {
     token0Id: string;
     token1Id: string;
-    minTvlUsd: number;
-    testnetMode: boolean;
+    filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
-    const allSupportedNetworks = params.testnetMode
+    const allSupportedNetworks = params.filters.testnetMode
       ? NetworksUtils.values().filter((network) =>
           NetworksUtils.isTestnet(network),
         )
@@ -62,11 +64,11 @@ export class PoolsService {
           (network) => !NetworksUtils.isTestnet(network),
         );
 
-    const token0InTokenList = tokenList.find(
-      (token) => token.id === params.token0Id,
+    const token0InTokenList = tokenList.find((token) =>
+      token.id?.lowercasedEquals(params.token0Id),
     );
-    const token1InTokenList = tokenList.find(
-      (token) => token.id === params.token1Id,
+    const token1InTokenList = tokenList.find((token) =>
+      token.id?.lowercasedEquals(params.token1Id),
     );
 
     const networksWithTokens = allSupportedNetworks.filter((network) => {
@@ -79,7 +81,7 @@ export class PoolsService {
     if (networksWithTokens.length === 0) {
       return {
         pools: [],
-        minTvlUsd: params.minTvlUsd,
+        minTvlUsd: params.filters.minTvlUsd,
       };
     }
 
@@ -91,7 +93,7 @@ export class PoolsService {
           token1Address: token1InTokenList!.addresses[network]!,
         };
       }),
-      params.minTvlUsd,
+      params.filters,
     );
 
     const matchedPools = await Promise.all(
@@ -111,7 +113,7 @@ export class PoolsService {
 
     return {
       pools: flatMatchedPools,
-      minTvlUsd: params.minTvlUsd,
+      minTvlUsd: params.filters.minTvlUsd,
     };
   }
 
@@ -119,18 +121,71 @@ export class PoolsService {
     token0Address: string,
     token1Address: string,
     network: Networks,
-    minTvlUsd: number,
+    filters: PoolSearchFiltersDTO,
   ): Promise<GetPoolsQuery> {
+    const wrappedNativeAddress = NetworksUtils.wrappedNativeAddress(network);
+    const minTvlUsd = filters.minTvlUsd;
+    const typesAllowed = filters.allowedPoolTypes;
+
+    const isNativeTokenSearch =
+      token0Address === zeroEthereumAddress ||
+      token1Address === zeroEthereumAddress;
+
     const response = await this.graphqlClients[network].request<
       GetPoolsQuery,
       GetPoolsQueryVariables
     >(GetPoolsDocument, {
-      token0Id: token0Address,
-      token1Id: token1Address,
-      minTVLUSD: minTvlUsd.toString(),
-      hourlyDataStartTimestamp:
-        Date.yesterdayStartSecondsTimestamp().toString(),
-      dailyDataStartTimestamp: Date.getDaysAgoTimestamp(90).toString(),
+      poolsFilter: {
+        or: [
+          {
+            token0: token0Address,
+            token1: token1Address,
+            totalValueLockedUSD_gt: minTvlUsd.toString(),
+            type_in: typesAllowed,
+          },
+          {
+            token0: token1Address,
+            token1: token0Address,
+            totalValueLockedUSD_gt: minTvlUsd.toString(),
+            type_in: typesAllowed,
+          },
+          // as V3 pools don't have the native token, we need to search for the wrapped native token
+          ...(isNativeTokenSearch
+            ? [
+                {
+                  token0: token0Address,
+                  token1: wrappedNativeAddress,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                  type_in: typesAllowed,
+                },
+                {
+                  token0: token1Address,
+                  token1: wrappedNativeAddress,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                  type_in: typesAllowed,
+                },
+                {
+                  token0: wrappedNativeAddress,
+                  token1: token0Address,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                  type_in: typesAllowed,
+                },
+                {
+                  token0: wrappedNativeAddress,
+                  token1: token1Address,
+                  totalValueLockedUSD_gt: minTvlUsd.toString(),
+                  type_in: typesAllowed,
+                },
+              ]
+            : []),
+        ],
+      },
+      dailyDataFilter: {
+        dayStartTimestamp_gt: Date.getDaysAgoTimestamp(90).toString(),
+      },
+      hourlyDataFilter: {
+        hourStartTimestamp_gt: Date.yesterdayStartSecondsTimestamp().toString(),
+      },
     });
 
     return response;
@@ -142,7 +197,7 @@ export class PoolsService {
       token0Address: string;
       token1Address: string;
     }[],
-    minTvlUSD: number,
+    filters: PoolSearchFiltersDTO,
   ): Promise<GetPoolsQuery[]> {
     const responses = await Promise.all(
       networks.map((searchNetworkData) => {
@@ -150,7 +205,7 @@ export class PoolsService {
           searchNetworkData.token0Address,
           searchNetworkData.token1Address,
           searchNetworkData.network,
-          minTvlUSD,
+          filters,
         );
       }),
     );
@@ -185,16 +240,25 @@ export class PoolsService {
       let pool24hFees: number = 0;
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
+      const token0MetadataAddress =
+        token0Metadata.addresses[params.network] === zeroEthereumAddress &&
+        pool.type === PoolType.V3
+          ? NetworksUtils.wrappedNativeAddress(params.network)
+          : token0Metadata.addresses[params.network];
+
+      const token1MetadataAddress =
+        token1Metadata.addresses[params.network] === zeroEthereumAddress &&
+        pool.type === PoolType.V3
+          ? NetworksUtils.wrappedNativeAddress(params.network)
+          : token1Metadata.addresses[params.network];
 
       const poolToken0Metadata: TokenDTO =
-        token0Metadata.addresses[params.network]?.toLowerCase() ===
-        pool.token0.id.toLowerCase()
+        token0MetadataAddress?.lowercasedEquals(pool.token0.id)
           ? token0Metadata
           : token1Metadata;
 
       const poolToken1Metadata: TokenDTO =
-        token1Metadata.addresses[params.network]?.toLowerCase() ===
-        pool.token1.id.toLowerCase()
+        token1MetadataAddress?.lowercasedEquals(pool.token1.id)
           ? token1Metadata
           : token0Metadata;
 
@@ -215,8 +279,10 @@ export class PoolsService {
         pool90dYields.push(dayAPR);
       }
 
-      const poolYield30d = average(pool30dYields);
-      const poolYield90d = average(pool90dYields);
+      const poolYield30d =
+        pool30dYields.length < 20 ? 0 : average(pool30dYields);
+      const poolYield90d =
+        pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
       return {
         chainId: params.network,
@@ -228,37 +294,25 @@ export class PoolsService {
         ),
         yield30d: poolYield30d,
         yield90d: poolYield90d,
-        poolType: PoolType.v3,
+        poolType: pool.type,
         protocol: {
           logo: pool.protocol.logo,
           name: pool.protocol.name,
           url: pool.protocol.url,
         },
-        token0: {
-          addresses: {
-            [params.network]: pool.token0.id,
-          } as Record<Networks, string>,
-          decimals: pool.token0.decimals,
-          name: pool.token0.name,
-          symbol: pool.token0.symbol,
-          ...(poolToken0Metadata.logoUrl && {
-            logoUrl: poolToken0Metadata.logoUrl,
-          }),
-        },
-        token1: {
-          addresses: {
-            [params.network]: pool.token1.id,
-          } as Record<Networks, string>,
-          decimals: pool.token1.decimals,
-          name: pool.token1.name,
-          symbol: pool.token1.symbol,
-          ...(poolToken1Metadata.logoUrl && {
-            logoUrl: poolToken1Metadata.logoUrl,
-          }),
-        },
+        token0: poolToken0Metadata,
+        token1: poolToken1Metadata,
         positionManagerAddress: pool.protocol.positionManager,
         tickSpacing: pool.tickSpacing,
         feeTier: pool.feeTier,
+        permit2Address: pool.protocol.permit2,
+        ...(pool.type === PoolType.V4 && {
+          hooksAddress: pool.v4Hooks,
+          poolManagerAddress: pool.protocol.v4PoolManager,
+          ...(pool.protocol.v4StateView && {
+            stateViewAddress: pool.protocol.v4StateView,
+          }),
+        }),
       };
     });
   }

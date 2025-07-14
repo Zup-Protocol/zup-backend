@@ -1,0 +1,9 @@
+query GetToken($tokenId: ID!) {
+  token(id: $tokenId) {
+    id
+    decimals
+    name
+    symbol
+    usdPrice
+  }
+}

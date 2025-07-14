@@ -3,7 +3,7 @@ import { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
   overwrite: true,
   schema:
-    'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/version/latest',
+    'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/1.1.16',
   documents: ['./src/graphql/*.graphql'],
 
   generates: {
@@ -20,6 +20,7 @@ const config: CodegenConfig = {
       Bytes: 'string',
       BigDecimal: 'string',
       BigInt: 'string',
+      ID: 'string',
     },
     documentMode: 'documentNode',
   },
