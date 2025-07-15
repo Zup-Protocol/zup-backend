@@ -100,6 +100,7 @@ describe('PoolsController', () => {
   it('Should process and return the pool data got from the graphQL query correctly when calling the searchPoolsInChain method', async () => {
     const expectedPoolResult: SupportedPoolType = {
       permit2Address: undefined,
+      latestTick: '0',
       token0: {
         addresses: {
           [Networks.ETHEREUM]: tokenList[0].addresses[Networks.ETHEREUM],
@@ -140,6 +141,7 @@ describe('PoolsController', () => {
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
+          tick: expectedPoolResult.latestTick,
           feeTier: expectedPoolResult.feeTier,
           hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
           id: expectedPoolResult.poolAddress,
@@ -242,6 +244,7 @@ describe('PoolsController', () => {
       chainId: Networks.ETHEREUM,
       totalValueLockedUSD: 98261715.218,
       feeTier: 500,
+      latestTick: '32657',
       poolAddress: '0xA30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
       poolType: PoolType.V3,
       positionManagerAddress: '0xB30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
@@ -262,6 +265,7 @@ describe('PoolsController', () => {
 
       chainId: Networks.SCROLL,
       totalValueLockedUSD: 98261715.218,
+      latestTick: '89621782',
       feeTier: 500,
       poolAddress: '0xA30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
       poolType: PoolType.V3,
@@ -284,6 +288,7 @@ describe('PoolsController', () => {
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
+          tick: poolResult1.latestTick,
           feeTier: poolResult1.feeTier,
           hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
           id: poolResult1.poolAddress,
@@ -320,6 +325,7 @@ describe('PoolsController', () => {
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
+          tick: poolResult2.latestTick,
           feeTier: poolResult2.feeTier,
           hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
           id: poolResult2.poolAddress,
@@ -479,6 +485,7 @@ describe('PoolsController', () => {
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
         {
+          tick: '123',
           dailyData: Array.from({ length: 90 }, () => ({
             feesUSD: '10',
             totalValueLockedUSD: '100',
@@ -521,6 +528,7 @@ describe('PoolsController', () => {
       minTvlUsd: 0,
       pools: [
         {
+          latestTick: poolsQueryResponse.pools[0].tick,
           chainId: Networks.ETHEREUM,
           feeTier: poolsQueryResponse.pools[0].feeTier,
           hooksAddress: hooksAddress,
@@ -650,6 +658,7 @@ describe('PoolsController', () => {
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
         {
+          tick: '26187',
           dailyData: Array.from({ length: 10 }, () => ({
             feesUSD: '10',
             totalValueLockedUSD: '100',
@@ -705,6 +714,7 @@ describe('PoolsController', () => {
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
         {
+          tick: '26187',
           dailyData: Array.from({ length: 21 }, () => ({
             feesUSD: '10',
             totalValueLockedUSD: '100',
@@ -760,6 +770,7 @@ describe('PoolsController', () => {
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
         {
+          tick: '26187',
           dailyData: Array.from({ length: 69 }, () => ({
             feesUSD: '10',
             totalValueLockedUSD: '100',
@@ -815,6 +826,7 @@ describe('PoolsController', () => {
     const poolsQueryResponse: GetPoolsQuery = {
       pools: [
         {
+          tick: '26187',
           dailyData: Array.from({ length: 70 }, () => ({
             feesUSD: '10',
             totalValueLockedUSD: '100',

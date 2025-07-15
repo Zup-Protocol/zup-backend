@@ -15,4 +15,6 @@ export interface PoolDTO {
   totalValueLockedUSD: number;
   poolType: PoolType;
   permit2Address?: string | null;
+  positionManagerAddress: string;
+  feeTier: number;
 }
