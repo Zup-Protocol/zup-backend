@@ -9,6 +9,7 @@ query GetPools(
     totalValueLockedUSD
     feeTier
     tickSpacing
+    tick
     v4Hooks
     protocol {
       name

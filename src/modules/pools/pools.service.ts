@@ -3,7 +3,10 @@ import { GraphQLClient } from 'graphql-request';
 import { zeroEthereumAddress } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
+import { PoolDTO } from 'src/core/dtos/pool.dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
+import { V3PoolDTO } from 'src/core/dtos/v3-pool.dto';
+import { V4PoolDTO } from 'src/core/dtos/v4-pool.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
@@ -284,7 +287,7 @@ export class PoolsService {
       const poolYield90d =
         pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
-      return {
+      const basePool: PoolDTO = {
         chainId: params.network,
         poolAddress: pool.id,
         totalValueLockedUSD: Number(pool.totalValueLockedUSD),
@@ -303,17 +306,34 @@ export class PoolsService {
         token0: poolToken0Metadata,
         token1: poolToken1Metadata,
         positionManagerAddress: pool.protocol.positionManager,
-        tickSpacing: pool.tickSpacing,
+        permit2Address: pool.protocol.permit2!,
         feeTier: pool.feeTier,
-        permit2Address: pool.protocol.permit2,
-        ...(pool.type === PoolType.V4 && {
-          hooksAddress: pool.v4Hooks,
-          poolManagerAddress: pool.protocol.v4PoolManager,
-          ...(pool.protocol.v4StateView && {
-            stateViewAddress: pool.protocol.v4StateView,
-          }),
-        }),
       };
+
+      if (pool.type === PoolType.V3) {
+        const v3Pool: V3PoolDTO = {
+          ...basePool,
+          tickSpacing: pool.tickSpacing,
+          latestTick: pool.tick,
+        };
+
+        return v3Pool;
+      }
+
+      if (pool.type === PoolType.V4) {
+        const v4Pool: V4PoolDTO = {
+          ...basePool,
+          latestTick: pool.tick,
+          tickSpacing: pool.tickSpacing,
+          hooksAddress: pool.v4Hooks ?? '',
+          poolManagerAddress: pool.protocol.v4PoolManager ?? '',
+          stateViewAddress: pool.protocol.v4StateView ?? '',
+        };
+
+        return v4Pool;
+      }
+
+      throw new Error('Unsupported pool type received');
     });
   }
 }
