@@ -50,7 +50,7 @@ export class PoolsService {
 
     return {
       pools: matchedPools,
-      minTvlUsd: params.filters.minTvlUsd,
+      filters: params.filters,
     };
   }
 
@@ -84,7 +84,7 @@ export class PoolsService {
     if (networksWithTokens.length === 0) {
       return {
         pools: [],
-        minTvlUsd: params.filters.minTvlUsd,
+        filters: params.filters,
       };
     }
 
@@ -116,7 +116,7 @@ export class PoolsService {
 
     return {
       pools: flatMatchedPools,
-      minTvlUsd: params.filters.minTvlUsd,
+      filters: params.filters,
     };
   }
 
@@ -139,48 +139,47 @@ export class PoolsService {
       GetPoolsQueryVariables
     >(GetPoolsDocument, {
       poolsFilter: {
-        or: [
+        and: [
           {
-            token0: token0Address,
-            token1: token1Address,
             totalValueLockedUSD_gt: minTvlUsd.toString(),
             type_in: typesAllowed,
+            ...(filters.blockedProtocols.length > 0
+              ? { protocol_not_in: filters.blockedProtocols }
+              : {}),
           },
           {
-            token0: token1Address,
-            token1: token0Address,
-            totalValueLockedUSD_gt: minTvlUsd.toString(),
-            type_in: typesAllowed,
+            or: [
+              {
+                token0: token0Address,
+                token1: token1Address,
+              },
+              {
+                token0: token1Address,
+                token1: token0Address,
+              },
+              // as V3 pools don't have the native token, we need to search for the wrapped native token
+              ...(isNativeTokenSearch
+                ? [
+                    {
+                      token0: token0Address,
+                      token1: wrappedNativeAddress,
+                    },
+                    {
+                      token0: token1Address,
+                      token1: wrappedNativeAddress,
+                    },
+                    {
+                      token0: wrappedNativeAddress,
+                      token1: token0Address,
+                    },
+                    {
+                      token0: wrappedNativeAddress,
+                      token1: token1Address,
+                    },
+                  ]
+                : []),
+            ],
           },
-          // as V3 pools don't have the native token, we need to search for the wrapped native token
-          ...(isNativeTokenSearch
-            ? [
-                {
-                  token0: token0Address,
-                  token1: wrappedNativeAddress,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: token1Address,
-                  token1: wrappedNativeAddress,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: wrappedNativeAddress,
-                  token1: token0Address,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: wrappedNativeAddress,
-                  token1: token1Address,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-              ]
-            : []),
         ],
       },
       dailyDataFilter: {
@@ -299,6 +298,7 @@ export class PoolsService {
         yield90d: poolYield90d,
         poolType: pool.type,
         protocol: {
+          id: pool.protocol.id,
           logo: pool.protocol.logo,
           name: pool.protocol.name,
           url: pool.protocol.url,

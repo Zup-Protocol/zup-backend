@@ -1,0 +1,8 @@
+query GetProtocols {
+  protocols {
+    id
+    name
+    logo
+    url
+  }
+}
