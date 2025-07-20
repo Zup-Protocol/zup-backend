@@ -3,7 +3,10 @@ import { GraphQLClient } from 'graphql-request';
 import { zeroEthereumAddress } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
+import { PoolDTO } from 'src/core/dtos/pool.dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
+import { V3PoolDTO } from 'src/core/dtos/v3-pool.dto';
+import { V4PoolDTO } from 'src/core/dtos/v4-pool.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
@@ -47,7 +50,7 @@ export class PoolsService {
 
     return {
       pools: matchedPools,
-      minTvlUsd: params.filters.minTvlUsd,
+      filters: params.filters,
     };
   }
 
@@ -81,7 +84,7 @@ export class PoolsService {
     if (networksWithTokens.length === 0) {
       return {
         pools: [],
-        minTvlUsd: params.filters.minTvlUsd,
+        filters: params.filters,
       };
     }
 
@@ -113,7 +116,7 @@ export class PoolsService {
 
     return {
       pools: flatMatchedPools,
-      minTvlUsd: params.filters.minTvlUsd,
+      filters: params.filters,
     };
   }
 
@@ -136,48 +139,47 @@ export class PoolsService {
       GetPoolsQueryVariables
     >(GetPoolsDocument, {
       poolsFilter: {
-        or: [
+        and: [
           {
-            token0: token0Address,
-            token1: token1Address,
             totalValueLockedUSD_gt: minTvlUsd.toString(),
             type_in: typesAllowed,
+            ...(filters.blockedProtocols.length > 0
+              ? { protocol_not_in: filters.blockedProtocols }
+              : {}),
           },
           {
-            token0: token1Address,
-            token1: token0Address,
-            totalValueLockedUSD_gt: minTvlUsd.toString(),
-            type_in: typesAllowed,
+            or: [
+              {
+                token0: token0Address,
+                token1: token1Address,
+              },
+              {
+                token0: token1Address,
+                token1: token0Address,
+              },
+              // as V3 pools don't have the native token, we need to search for the wrapped native token
+              ...(isNativeTokenSearch
+                ? [
+                    {
+                      token0: token0Address,
+                      token1: wrappedNativeAddress,
+                    },
+                    {
+                      token0: token1Address,
+                      token1: wrappedNativeAddress,
+                    },
+                    {
+                      token0: wrappedNativeAddress,
+                      token1: token0Address,
+                    },
+                    {
+                      token0: wrappedNativeAddress,
+                      token1: token1Address,
+                    },
+                  ]
+                : []),
+            ],
           },
-          // as V3 pools don't have the native token, we need to search for the wrapped native token
-          ...(isNativeTokenSearch
-            ? [
-                {
-                  token0: token0Address,
-                  token1: wrappedNativeAddress,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: token1Address,
-                  token1: wrappedNativeAddress,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: wrappedNativeAddress,
-                  token1: token0Address,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-                {
-                  token0: wrappedNativeAddress,
-                  token1: token1Address,
-                  totalValueLockedUSD_gt: minTvlUsd.toString(),
-                  type_in: typesAllowed,
-                },
-              ]
-            : []),
         ],
       },
       dailyDataFilter: {
@@ -284,7 +286,7 @@ export class PoolsService {
       const poolYield90d =
         pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
-      return {
+      const basePool: PoolDTO = {
         chainId: params.network,
         poolAddress: pool.id,
         totalValueLockedUSD: Number(pool.totalValueLockedUSD),
@@ -296,6 +298,7 @@ export class PoolsService {
         yield90d: poolYield90d,
         poolType: pool.type,
         protocol: {
+          id: pool.protocol.id,
           logo: pool.protocol.logo,
           name: pool.protocol.name,
           url: pool.protocol.url,
@@ -303,17 +306,34 @@ export class PoolsService {
         token0: poolToken0Metadata,
         token1: poolToken1Metadata,
         positionManagerAddress: pool.protocol.positionManager,
-        tickSpacing: pool.tickSpacing,
+        permit2Address: pool.protocol.permit2!,
         feeTier: pool.feeTier,
-        permit2Address: pool.protocol.permit2,
-        ...(pool.type === PoolType.V4 && {
-          hooksAddress: pool.v4Hooks,
-          poolManagerAddress: pool.protocol.v4PoolManager,
-          ...(pool.protocol.v4StateView && {
-            stateViewAddress: pool.protocol.v4StateView,
-          }),
-        }),
       };
+
+      if (pool.type === PoolType.V3) {
+        const v3Pool: V3PoolDTO = {
+          ...basePool,
+          tickSpacing: pool.tickSpacing,
+          latestTick: pool.tick,
+        };
+
+        return v3Pool;
+      }
+
+      if (pool.type === PoolType.V4) {
+        const v4Pool: V4PoolDTO = {
+          ...basePool,
+          latestTick: pool.tick,
+          tickSpacing: pool.tickSpacing,
+          hooksAddress: pool.v4Hooks ?? '',
+          poolManagerAddress: pool.protocol.v4PoolManager ?? '',
+          stateViewAddress: pool.protocol.v4StateView ?? '',
+        };
+
+        return v4Pool;
+      }
+
+      throw new Error('Unsupported pool type received');
     });
   }
 }
