@@ -15,7 +15,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: zeroEthereumAddress,
           // [Networks.BASE]: zeroEthereumAddress,
           [Networks.UNICHAIN]: zeroEthereumAddress,
-          [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+          // [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -23,7 +23,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 18,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
@@ -38,7 +38,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
           // [Networks.BASE]: '0x4200000000000000000000000000000000000006',
           [Networks.UNICHAIN]: '0x4200000000000000000000000000000000000006',
-          [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+          // [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -46,7 +46,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 18,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
@@ -61,7 +61,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2',
           [Networks.UNICHAIN]: '0x588CE4F028D8e7B53B687865d6A67b3A54C75518',
-          [Networks.BNB]: '0x55d398326f99059ff775485246999027b3197955',
+          // [Networks.BNB]: '0x55d398326f99059ff775485246999027b3197955',
         },
         decimals: {
           [Networks.ETHEREUM]: 6,
@@ -69,7 +69,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 6,
           [Networks.UNICHAIN]: 6,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
@@ -84,7 +84,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
           // [Networks.BASE]: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
           [Networks.UNICHAIN]: '0x078d782b760474a361dda0af3839290b0ef57ad6',
-          [Networks.BNB]: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+          // [Networks.BNB]: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
         },
         decimals: {
           [Networks.ETHEREUM]: 6,
@@ -92,7 +92,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 6,
           // [Networks.BASE]: 6,
           [Networks.UNICHAIN]: 6,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
@@ -107,7 +107,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
           [Networks.UNICHAIN]: '0x927B51f251480a681271180DA4de28D44EC4AfB8',
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         decimals: {
           [Networks.ETHEREUM]: 8,
@@ -115,7 +115,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
           [Networks.UNICHAIN]: 8,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
@@ -130,7 +130,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf',
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         decimals: {
           [Networks.ETHEREUM]: 8,
@@ -138,7 +138,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 8,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/32994.png',
@@ -153,7 +153,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb',
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+          // [Networks.BNB]: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -161,7 +161,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
@@ -176,7 +176,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b',
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -184,7 +184,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/26133.png',
@@ -199,7 +199,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
+          // [Networks.BNB]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
         },
         decimals: {
           [Networks.ETHEREUM]: 8,
@@ -207,7 +207,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 8,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: 8,
+          // [Networks.BNB]: 8,
         },
         logoUrl:
           'https://img.cryptorank.io/coins/lombard_staked_btc1725876587975.png',
@@ -222,7 +222,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
           // [Networks.BASE]: '0xc3De830EA07524a0761646a6a4e4be0e114a3C83',
           [Networks.UNICHAIN]: '0x8f187aA05619a017077f5308904739877ce9eA21',
-          [Networks.BNB]: '0xbf5140a22578168fd562dccf235e5d43a02ce9b1',
+          // [Networks.BNB]: '0xbf5140a22578168fd562dccf235e5d43a02ce9b1',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -230,7 +230,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 18,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
@@ -245,7 +245,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: '0x779877A7B0D9E8603169DdbD7836e478b4624789',
           // [Networks.BASE]: '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196',
           [Networks.UNICHAIN]: '0x5a53B6D19D8EDCb7923F0D840EeBB3f09BBeEfB7',
-          [Networks.BNB]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
+          // [Networks.BNB]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -253,7 +253,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 18,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
@@ -268,7 +268,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
           // [Networks.BASE]: '0x63706e401c06ac8513145b7687A14804d17f814b',
           [Networks.UNICHAIN]: '0x02a24C380dA560E4032Dc6671d8164cfbEEAAE1e',
-          [Networks.BNB]: '0xfb6115445bff7b52feb98650c87f44907e58f802',
+          // [Networks.BNB]: '0xfb6115445bff7b52feb98650c87f44907e58f802',
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
@@ -276,7 +276,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: 18,
           // [Networks.BASE]: 18,
           [Networks.UNICHAIN]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png',
@@ -291,7 +291,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         decimals: {
           [Networks.ETHEREUM]: null,
@@ -299,7 +299,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         logoUrl:
           'https://s2.coinmarketcap.com/static/img/coins/200x200/26998.png',
@@ -314,7 +314,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42',
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         decimals: {
           [Networks.ETHEREUM]: 6,
@@ -322,7 +322,7 @@ describe('tokenList', () => {
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 6,
           [Networks.UNICHAIN]: null,
-          [Networks.BNB]: null,
+          // [Networks.BNB]: null,
         },
         logoUrl:
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c/logo.png',
@@ -333,7 +333,7 @@ describe('tokenList', () => {
         symbol: 'FDUSD',
         addresses: {
           [Networks.ETHEREUM]: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
-          [Networks.BNB]: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
+          // [Networks.BNB]: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -341,7 +341,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -356,7 +356,7 @@ describe('tokenList', () => {
         symbol: 'WBNB',
         addresses: {
           [Networks.ETHEREUM]: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
-          [Networks.BNB]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+          // [Networks.BNB]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -364,7 +364,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -379,7 +379,7 @@ describe('tokenList', () => {
         symbol: 'BNB',
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -389,7 +389,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
-          [Networks.BNB]: zeroEthereumAddress,
+          // [Networks.BNB]: zeroEthereumAddress,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -402,7 +402,7 @@ describe('tokenList', () => {
         symbol: 'CAKE',
         addresses: {
           [Networks.ETHEREUM]: '0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898',
-          [Networks.BNB]: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
+          // [Networks.BNB]: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x3055913c90Fcc1A6CE9a358911721eEb942013A1',
@@ -410,7 +410,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 18,
@@ -425,7 +425,7 @@ describe('tokenList', () => {
         symbol: 'BTCB',
         addresses: {
           [Networks.ETHEREUM]: null,
-          [Networks.BNB]: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+          // [Networks.BNB]: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -433,7 +433,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: null,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -448,7 +448,7 @@ describe('tokenList', () => {
         symbol: 'USD1',
         addresses: {
           [Networks.ETHEREUM]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
-          [Networks.BNB]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
+          // [Networks.BNB]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -456,7 +456,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -473,7 +473,7 @@ describe('tokenList', () => {
           'https://s2.coinmarketcap.com/static/img/coins/200x200/33312.png',
         addresses: {
           [Networks.ETHEREUM]: '0x7a56e1c57c7475ccf742a1832b028f0456652f97',
-          [Networks.BNB]: '0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7',
+          // [Networks.BNB]: '0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7',
           [Networks.SCROLL]: '0x3ba89d490ab1c0c9cc2313385b30710e838370a4',
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x3B86Ad95859b6AB773f55f8d94B4b9d443EE931f',
@@ -481,7 +481,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: 18,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 18,
@@ -496,7 +496,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0x582d872a1b094fc48f5de31d3b73f2d9be47def1',
-          [Networks.BNB]: '0x76a797a59ba2c17726896976b7b3747bfd1d220f',
+          // [Networks.BNB]: '0x76a797a59ba2c17726896976b7b3747bfd1d220f',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -504,7 +504,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 9,
-          [Networks.BNB]: 9,
+          // [Networks.BNB]: 9,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -519,7 +519,7 @@ describe('tokenList', () => {
           'https://s2.coinmarketcap.com/static/img/coins/200x200/35716.png',
         addresses: {
           [Networks.ETHEREUM]: null,
-          [Networks.BNB]: '0xc4a1cc5ca8955a4650bdc109bddf110e33a1e344',
+          // [Networks.BNB]: '0xc4a1cc5ca8955a4650bdc109bddf110e33a1e344',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -527,7 +527,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: null,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: null,
@@ -542,7 +542,7 @@ describe('tokenList', () => {
           'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x5f98805A4E8be255a32880FDeC7F6728C6568bA0/logo.png',
         addresses: {
           [Networks.ETHEREUM]: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
-          [Networks.BNB]: '0x5bb4d589467c25A5Ac8db930372dc5dA30C3410E',
+          // [Networks.BNB]: '0x5bb4d589467c25A5Ac8db930372dc5dA30C3410E',
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: '0x368181499736d0c0cc614dbb145e2ec1ac86b8c6',
@@ -550,7 +550,7 @@ describe('tokenList', () => {
         },
         decimals: {
           [Networks.ETHEREUM]: 18,
-          [Networks.BNB]: 18,
+          // [Networks.BNB]: 18,
           [Networks.SCROLL]: null,
           [Networks.SEPOLIA]: null,
           // [Networks.BASE]: 18,

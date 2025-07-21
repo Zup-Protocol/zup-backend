@@ -175,14 +175,15 @@ describe('TokensService', () => {
     expect(_alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
   });
 
-  it(`should return the native token of the network as the
-    first token when calling 'getPopularTokens
-    with a specified network (BNB Case)`, () => {
-    const network = Networks.BNB;
-    const tokens = tokensService.getPopularTokens(network);
+  // TODO: UNCOMMENT WHEN IMPLEMENT BNB
+  // it(`should return the native token of the network as the
+  //   first token when calling 'getPopularTokens
+  //   with a specified network (BNB Case)`, () => {
+  //   const network = Networks.BNB;
+  //   const tokens = tokensService.getPopularTokens(network);
 
-    expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
-  });
+  //   expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
+  // });
 
   it(`should return the native token of the network as the
     first token when calling 'getPopularTokens
