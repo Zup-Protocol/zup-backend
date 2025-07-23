@@ -6,6 +6,7 @@ export enum Networks {
   SEPOLIA = 11155111,
   // BASE = 8453,
   UNICHAIN = 130,
+  // BNB = 56,
 }
 
 export class NetworksUtils {
@@ -27,6 +28,8 @@ export class NetworksUtils {
       //   return AlchemyNetwork.BASE_MAINNET;
       case Networks.UNICHAIN:
         return AlchemyNetwork.UNICHAIN_MAINNET;
+      // case Networks.BNB:
+      //   return AlchemyNetwork.BNB_MAINNET;
     }
   }
 
@@ -42,6 +45,8 @@ export class NetworksUtils {
       //   return false;
       case Networks.UNICHAIN:
         return false;
+      // case Networks.BNB:
+      //   return false;
     }
   }
 
@@ -57,6 +62,8 @@ export class NetworksUtils {
       //   return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`;
       case Networks.UNICHAIN:
         return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`;
+      // case Networks.BNB:
+      //   return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-bnb/version/1.1.20/api`;
     }
   }
 
@@ -76,6 +83,8 @@ export class NetworksUtils {
       //   return '0x4200000000000000000000000000000000000006';
       case Networks.UNICHAIN:
         return '0x4200000000000000000000000000000000000006';
+      // case Networks.BNB:
+      //   return '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
     }
   }
 }

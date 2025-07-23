@@ -56,7 +56,10 @@ describe('PoolsController', () => {
     const token1Address = '0x0000000000000000000000000000000000000002';
     const network = Networks.ETHEREUM;
     const mintvlusd = 321;
-    const filters = <PoolSearchFiltersDTO>{
+    const filters: PoolSearchFiltersDTO = {
+      blockedProtocols: [],
+      allowedPoolTypes: Object.values(PoolType),
+      testnetMode: false,
       minTvlUsd: mintvlusd,
     };
 
@@ -71,18 +74,152 @@ describe('PoolsController', () => {
       GetPoolsDocument,
       <GetPoolsQueryVariables>{
         poolsFilter: {
-          or: [
+          and: [
             {
-              token0: token0Address,
-              token1: token1Address,
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
             },
             {
-              token0: token1Address,
-              token1: token0Address,
+              or: [
+                {
+                  token0: token0Address,
+                  token1: token1Address,
+                },
+                {
+                  token0: token1Address,
+                  token1: token0Address,
+                },
+              ],
+            },
+          ],
+        },
+        dailyDataFilter: {
+          dayStartTimestamp_gt: Date.getDaysAgoTimestamp(90).toString(),
+        },
+        hourlyDataFilter: {
+          hourStartTimestamp_gt:
+            Date.yesterdayStartSecondsTimestamp().toString(),
+        },
+      },
+    );
+  });
+
+  it(`should call the graphql url with the correct query and params to search pools in a
+      specific chain when the blocked protocols ids is greater than 0`, async () => {
+    const token0Address = '0x0000000000000000000000000000000000000001';
+    const token1Address = '0x0000000000000000000000000000000000000002';
+    const network = Networks.ETHEREUM;
+    const mintvlusd = 321;
+    const filters: PoolSearchFiltersDTO = {
+      blockedProtocols: ['uniswap-v2', 'uniswap-v3', 'quickswap'],
+      allowedPoolTypes: Object.values(PoolType),
+      testnetMode: false,
+      minTvlUsd: mintvlusd,
+    };
+
+    await sut.searchPoolsInChain({
+      token0Address,
+      token1Address,
+      network,
+      filters,
+    });
+
+    expect(graphqlClients[network].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
+              protocol_not_in: filters.blockedProtocols,
+            },
+            {
+              or: [
+                {
+                  token0: token0Address,
+                  token1: token1Address,
+                },
+                {
+                  token0: token1Address,
+                  token1: token0Address,
+                },
+              ],
+            },
+          ],
+        },
+        dailyDataFilter: {
+          dayStartTimestamp_gt: Date.getDaysAgoTimestamp(90).toString(),
+        },
+        hourlyDataFilter: {
+          hourStartTimestamp_gt:
+            Date.yesterdayStartSecondsTimestamp().toString(),
+        },
+      },
+    );
+  });
+
+  it(`should call the graphql url with the correct query and params to search pools in all
+     chains when the blocked protocols ids is greater than 0`, async () => {
+    const token0 = <TokenDTO>{
+      addresses: {
+        [Networks.ETHEREUM]: tokenList[1].addresses[Networks.ETHEREUM],
+        [Networks.SCROLL]: tokenList[1].addresses[Networks.SCROLL],
+        [Networks.SEPOLIA]: tokenList[1].addresses[Networks.SEPOLIA],
+      },
+      name: tokenList[1].name,
+      symbol: tokenList[1].symbol,
+      decimals: tokenList[1].decimals,
+      id: tokenList[1].id,
+    };
+    const token1 = <TokenDTO>{
+      addresses: {
+        [Networks.ETHEREUM]: tokenList[3].addresses[Networks.ETHEREUM],
+        [Networks.SCROLL]: tokenList[3].addresses[Networks.SCROLL],
+        [Networks.SEPOLIA]: tokenList[3].addresses[Networks.SEPOLIA],
+      },
+      name: tokenList[3].name,
+      symbol: tokenList[3].symbol,
+      decimals: tokenList[3].decimals,
+      id: tokenList[3].id,
+    };
+
+    const network = Networks.ETHEREUM;
+    const mintvlusd = 321;
+    const filters: PoolSearchFiltersDTO = {
+      blockedProtocols: ['uniswap-v2', 'uniswap-v3', 'quickswap'],
+      allowedPoolTypes: Object.values(PoolType),
+      testnetMode: false,
+      minTvlUsd: mintvlusd,
+    };
+
+    await sut.searchPoolsCrossChain({
+      token0Id: token0.id!,
+      token1Id: token1.id!,
+      filters,
+    });
+
+    expect(graphqlClients[network].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
+              totalValueLockedUSD_gt: mintvlusd.toString(),
+              type_in: filters.allowedPoolTypes,
+              protocol_not_in: filters.blockedProtocols,
+            },
+            {
+              or: [
+                {
+                  token0: token0.addresses[network]!,
+                  token1: token1.addresses[network]!,
+                },
+                {
+                  token0: token1.addresses[network]!,
+                  token1: token0.addresses[network]!,
+                },
+              ],
             },
           ],
         },
@@ -127,6 +264,7 @@ describe('PoolsController', () => {
       yield30d: 3650,
       yield90d: 3650,
       protocol: {
+        id: 'uniswap',
         name: 'Uniswap V3',
         url: 'https://uniswap.org',
         logo: 'https://www.pudim.com.br/pudim.jpg',
@@ -154,13 +292,13 @@ describe('PoolsController', () => {
           },
           tickSpacing: expectedPoolResult.tickSpacing,
           token0: {
-            decimals: expectedPoolResult.token0.decimals,
+            decimals: expectedPoolResult.token0.decimals[Networks.ETHEREUM]!,
             id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
             name: expectedPoolResult.token0.name,
             symbol: expectedPoolResult.token0.symbol,
           },
           token1: {
-            decimals: expectedPoolResult.token1.decimals,
+            decimals: expectedPoolResult.token1.decimals[Networks.ETHEREUM]!,
             id: expectedPoolResult.token1.addresses[
               Networks.ETHEREUM
             ] as string,
@@ -209,7 +347,7 @@ describe('PoolsController', () => {
 
     expect(result).toEqual(<MatchedPoolsDTO>{
       pools: [expectedPoolResult],
-      minTvlUsd: 0,
+      filters: new PoolSearchFiltersDTO(),
     });
   });
 
@@ -252,6 +390,7 @@ describe('PoolsController', () => {
       yield30d: 3650,
       yield90d: 3650,
       protocol: {
+        id: 'uniswap',
         name: 'Uniswap V3',
         url: 'https://uniswap.org',
         logo: 'https://www.pudim.com.br/pudim.jpg',
@@ -274,6 +413,7 @@ describe('PoolsController', () => {
       yield30d: 3650,
       yield90d: 3650,
       protocol: {
+        id: 'uniswap',
         name: 'Uniswap V3',
         url: 'https://uniswap.org',
         logo: 'https://www.pudim.com.br/pudim.jpg',
@@ -301,13 +441,13 @@ describe('PoolsController', () => {
           },
           tickSpacing: poolResult1.tickSpacing,
           token0: {
-            decimals: poolResult1.token0.decimals,
+            decimals: poolResult1.token0.decimals[poolResult1.chainId]!,
             id: NetworksUtils.wrappedNativeAddress(poolResult1.chainId),
             name: poolResult1.token0.name,
             symbol: poolResult1.token0.symbol,
           },
           token1: {
-            decimals: poolResult1.token1.decimals,
+            decimals: poolResult1.token1.decimals[poolResult1.chainId]!,
             id: poolResult1.token1.addresses[Networks.ETHEREUM] as string,
             name: poolResult1.token1.name,
             symbol: poolResult1.token1.symbol,
@@ -338,13 +478,13 @@ describe('PoolsController', () => {
           },
           tickSpacing: poolResult2.tickSpacing,
           token0: {
-            decimals: poolResult2.token0.decimals,
+            decimals: poolResult2.token0.decimals[poolResult2.chainId]!,
             id: NetworksUtils.wrappedNativeAddress(poolResult2.chainId),
             name: poolResult2.token0.name,
             symbol: poolResult2.token0.symbol,
           },
           token1: {
-            decimals: poolResult2.token1.decimals,
+            decimals: poolResult2.token1.decimals[poolResult2.chainId]!,
             id: poolResult2.token1.addresses[Networks.SCROLL] as string,
             name: poolResult2.token1.name,
             symbol: poolResult2.token1.symbol,
@@ -405,7 +545,7 @@ describe('PoolsController', () => {
 
     expect(result).toEqual(<MatchedPoolsDTO>{
       pools: [poolResult1, poolResult2],
-      minTvlUsd: 0,
+      filters: new PoolSearchFiltersDTO(),
     });
   });
 
@@ -427,42 +567,38 @@ describe('PoolsController', () => {
       GetPoolsDocument,
       <GetPoolsQueryVariables>{
         poolsFilter: {
-          or: [
+          and: [
             {
-              token0: zeroEthereumAddress,
-              token1: token1Address,
-              totalValueLockedUSD_gt: minTVLUSD,
+              totalValueLockedUSD_gt: minTVLUSD.toString(),
               type_in: filters.allowedPoolTypes,
             },
             {
-              token0: token1Address,
-              token1: zeroEthereumAddress,
-              totalValueLockedUSD_gt: minTVLUSD,
-              type_in: filters.allowedPoolTypes,
-            },
-            {
-              token0: zeroEthereumAddress,
-              token1: NetworksUtils.wrappedNativeAddress(network),
-              totalValueLockedUSD_gt: minTVLUSD,
-              type_in: filters.allowedPoolTypes,
-            },
-            {
-              token0: token1Address,
-              token1: NetworksUtils.wrappedNativeAddress(network),
-              totalValueLockedUSD_gt: minTVLUSD,
-              type_in: filters.allowedPoolTypes,
-            },
-            {
-              token0: NetworksUtils.wrappedNativeAddress(network),
-              token1: zeroEthereumAddress,
-              totalValueLockedUSD_gt: minTVLUSD,
-              type_in: filters.allowedPoolTypes,
-            },
-            {
-              token0: NetworksUtils.wrappedNativeAddress(network),
-              token1: token1Address,
-              totalValueLockedUSD_gt: minTVLUSD,
-              type_in: filters.allowedPoolTypes,
+              or: [
+                {
+                  token0: zeroEthereumAddress,
+                  token1: token1Address,
+                },
+                {
+                  token0: token1Address,
+                  token1: zeroEthereumAddress,
+                },
+                {
+                  token0: zeroEthereumAddress,
+                  token1: NetworksUtils.wrappedNativeAddress(network),
+                },
+                {
+                  token0: token1Address,
+                  token1: NetworksUtils.wrappedNativeAddress(network),
+                },
+                {
+                  token0: NetworksUtils.wrappedNativeAddress(network),
+                  token1: zeroEthereumAddress,
+                },
+                {
+                  token0: NetworksUtils.wrappedNativeAddress(network),
+                  token1: token1Address,
+                },
+              ],
             },
           ],
         },
@@ -505,13 +641,13 @@ describe('PoolsController', () => {
           },
           tickSpacing: 987,
           token0: {
-            decimals: tokenList[0].decimals,
+            decimals: tokenList[0].decimals[Networks.ETHEREUM]!,
             id: tokenList[0].addresses[Networks.ETHEREUM] as string,
             name: tokenList[0].name,
             symbol: tokenList[0].symbol,
           },
           token1: {
-            decimals: tokenList[3].decimals,
+            decimals: tokenList[3].decimals[Networks.ETHEREUM]!,
             id: tokenList[3].addresses[Networks.ETHEREUM] as string,
             name: tokenList[3].name,
             symbol: tokenList[3].symbol,
@@ -525,7 +661,7 @@ describe('PoolsController', () => {
     };
 
     const poolsResult: MatchedPoolsDTO = {
-      minTvlUsd: 0,
+      filters: new PoolSearchFiltersDTO(),
       pools: [
         {
           latestTick: poolsQueryResponse.pools[0].tick,
@@ -541,6 +677,7 @@ describe('PoolsController', () => {
           positionManagerAddress:
             poolsQueryResponse.pools[0].protocol.positionManager,
           protocol: {
+            id: poolsQueryResponse.pools[0].protocol.id,
             logo: poolsQueryResponse.pools[0].protocol.logo,
             name: poolsQueryResponse.pools[0].protocol.name,
             url: poolsQueryResponse.pools[0].protocol.url,
@@ -549,7 +686,9 @@ describe('PoolsController', () => {
             addresses: {
               [Networks.ETHEREUM]: poolsQueryResponse.pools[0].token0.id,
             } as Record<Networks, string>,
-            decimals: poolsQueryResponse.pools[0].token0.decimals,
+            decimals: {
+              [Networks.ETHEREUM]: poolsQueryResponse.pools[0].token0.decimals,
+            } as Record<Networks, number>,
             name: poolsQueryResponse.pools[0].token0.name,
             symbol: poolsQueryResponse.pools[0].token0.symbol,
           },
@@ -563,7 +702,9 @@ describe('PoolsController', () => {
             addresses: {
               [Networks.ETHEREUM]: poolsQueryResponse.pools[0].token1.id,
             } as Record<Networks, string>,
-            decimals: poolsQueryResponse.pools[0].token1.decimals,
+            decimals: {
+              [Networks.ETHEREUM]: poolsQueryResponse.pools[0].token1.decimals,
+            } as Record<Networks, number>,
             name: poolsQueryResponse.pools[0].token1.name,
             symbol: poolsQueryResponse.pools[0].token1.symbol,
           },
@@ -618,6 +759,7 @@ describe('PoolsController', () => {
       token1Address,
       token0Address,
       filters: {
+        blockedProtocols: [],
         minTvlUsd: minTvlUsd,
         testnetMode: false,
         allowedPoolTypes: [PoolType.V4],
@@ -628,18 +770,22 @@ describe('PoolsController', () => {
       GetPoolsDocument,
       <GetPoolsQueryVariables>{
         poolsFilter: {
-          or: [
+          and: [
             {
-              token0: token0Address,
-              token1: token1Address,
               totalValueLockedUSD_gt: minTvlUsd.toString(),
               type_in: [PoolType.V4],
             },
             {
-              token0: token1Address,
-              token1: token0Address,
-              totalValueLockedUSD_gt: minTvlUsd.toString(),
-              type_in: [PoolType.V4],
+              or: [
+                {
+                  token0: token0Address,
+                  token1: token1Address,
+                },
+                {
+                  token0: token1Address,
+                  token1: token0Address,
+                },
+              ],
             },
           ],
         },

@@ -166,11 +166,31 @@ describe('TokensService', () => {
     expect(result).toEqual(<TokenDTO>{
       ...tokenInList,
       id: undefined,
+      decimals: tokenInList!.decimals,
       addresses: {
         [network]: address,
       },
     });
 
     expect(_alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
+  });
+
+  // TODO: UNCOMMENT WHEN IMPLEMENT BNB
+  // it(`should return the native token of the network as the
+  //   first token when calling 'getPopularTokens
+  //   with a specified network (BNB Case)`, () => {
+  //   const network = Networks.BNB;
+  //   const tokens = tokensService.getPopularTokens(network);
+
+  //   expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
+  // });
+
+  it(`should return the native token of the network as the
+    first token when calling 'getPopularTokens
+    with a specified network (ETH Case)`, () => {
+    const network = Networks.ETHEREUM;
+    const tokens = tokensService.getPopularTokens(network);
+
+    expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
   });
 });
