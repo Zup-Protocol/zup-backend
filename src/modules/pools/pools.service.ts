@@ -285,15 +285,16 @@ export class PoolsService {
         pool30dYields.length < 20 ? 0 : average(pool30dYields);
       const poolYield90d =
         pool90dYields.length < 70 ? 0 : average(pool90dYields);
+      const poolYield24h =
+        pool.hourlyData.length < 15
+          ? 0
+          : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
 
       const basePool: PoolDTO = {
         chainId: params.network,
         poolAddress: pool.id,
         totalValueLockedUSD: Number(pool.totalValueLockedUSD),
-        yield24h: calculateDayPoolAPR(
-          Number(pool.totalValueLockedUSD),
-          pool24hFees,
-        ),
+        yield24h: poolYield24h,
         yield30d: poolYield30d,
         yield90d: poolYield90d,
         poolType: pool.type,
