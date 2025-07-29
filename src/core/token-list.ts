@@ -24,7 +24,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/info/logo.png',
   },
   {
     id: '2',
@@ -47,7 +47,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
   },
   {
     id: '3',
@@ -70,7 +70,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
   },
   {
     id: '4',
@@ -93,7 +93,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
   },
   {
     id: '5',
@@ -116,7 +116,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
   },
   {
     id: '6',
@@ -161,7 +161,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
   },
   {
     id: '8',
@@ -229,7 +229,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
   },
   {
     id: '11',
@@ -252,7 +252,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
   },
   {
     id: '12',
@@ -275,7 +275,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: 18,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png',
   },
   {
     id: '13',
@@ -320,7 +320,7 @@ export const tokenList: TokenDTO[] = [
       // [Networks.BNB]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c/logo.png',
   },
   {
     id: '15',
@@ -343,7 +343,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409/logo.png',
   },
   {
     id: '16',
@@ -366,7 +366,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
   },
   {
     id: '17',
@@ -381,7 +381,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
     addresses: {
       [Networks.ETHEREUM]: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
       // [Networks.BNB]: zeroEthereumAddress,
@@ -412,7 +412,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898/logo.png',
   },
   {
     id: '19',
@@ -435,7 +435,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BTCB-1DE/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/binance/assets/BTCB-1DE/logo.png',
   },
   {
     id: '20',
@@ -458,7 +458,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
     },
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png',
   },
   {
     id: '21',
@@ -487,7 +487,7 @@ export const tokenList: TokenDTO[] = [
     name: 'Toncoin',
     symbol: 'TON',
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1/logo.png',
     addresses: {
       [Networks.ETHEREUM]: '0x582d872a1b094fc48f5de31d3b73f2d9be47def1',
       // [Networks.BNB]: '0x76a797a59ba2c17726896976b7b3747bfd1d220f',
@@ -532,7 +532,7 @@ export const tokenList: TokenDTO[] = [
     name: 'Liquity USD',
     symbol: 'LUSD',
     logoUrl:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x5f98805A4E8be255a32880FDeC7F6728C6568bA0/logo.png',
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x5f98805A4E8be255a32880FDeC7F6728C6568bA0/logo.png',
     addresses: {
       [Networks.ETHEREUM]: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
       // [Networks.BNB]: '0x5bb4d589467c25A5Ac8db930372dc5dA30C3410E',
