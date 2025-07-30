@@ -3,8 +3,11 @@ import { BadRequestException } from '@nestjs/common';
 import { mock } from 'jest-mock-extended';
 import { _MockProxy } from 'jest-mock-extended/lib/Mock';
 import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenListDTO } from 'src/core/dtos/token-list.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { tokenGroupList } from 'src/core/token-group-list';
+import { tokenList } from 'src/core/token-list';
 import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
 
@@ -163,5 +166,49 @@ describe('TokensController', () => {
       zeroEthereumAddress,
       chainId,
     );
+  });
+
+  it('should call the service method with the passed chainId to get the tokens groups when calling the /groups endpoint', () => {
+    const chainId = Networks.SEPOLIA;
+    sut.getTokenGroups(chainId);
+
+    expect(tokensService.getTokenGroups).toHaveBeenCalledWith(chainId);
+  });
+
+  it('should call the service method without a chainId to get the tokens groups when calling the /groups endpoint not passing a chainId', () => {
+    sut.getTokenGroups();
+
+    expect(tokensService.getTokenGroups).toHaveBeenCalledWith(undefined);
+  });
+
+  it('should call the service method with the chainid passed to get the popular tokens and tokens groups when calling the /list endpoint', () => {
+    const chainId = Networks.SEPOLIA;
+    sut.getTokenList(chainId);
+
+    expect(tokensService.getPopularTokens).toHaveBeenCalledWith(chainId);
+    expect(tokensService.getTokenGroups).toHaveBeenCalledWith(chainId);
+  });
+
+  it(`should call the service method without the chainid to get
+    the popular tokens and tokens groups when calling the
+    /list endpoint not passing a chainId`, () => {
+    sut.getTokenList();
+
+    expect(tokensService.getPopularTokens).toHaveBeenCalledWith(undefined);
+    expect(tokensService.getTokenGroups).toHaveBeenCalledWith(undefined);
+  });
+
+  it(`should return the popular tokens and tokens groups when calling the /list endpoint, got from the service`, () => {
+    tokensService.getPopularTokens.mockReturnValue(tokenList);
+    tokensService.getTokenGroups.mockReturnValue(tokenGroupList);
+
+    const expectedResult: TokenListDTO = {
+      popularTokens: tokenList,
+      tokenGroups: tokenGroupList,
+    };
+
+    const result = sut.getTokenList();
+
+    expect(result).toEqual(expectedResult);
   });
 });

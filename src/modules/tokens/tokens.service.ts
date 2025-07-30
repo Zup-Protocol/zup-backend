@@ -3,9 +3,11 @@ import { TokenMetadataResponse } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
 import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
 import {
   GetTokenDocument,
@@ -39,6 +41,22 @@ export class TokensService {
       });
   }
 
+  getTokenGroups(network?: Networks): TokenGroupDTO[] {
+    let rawGroups = tokenGroupList;
+    if (network === undefined) return rawGroups;
+
+    rawGroups = rawGroups.map((group) => {
+      group.tokens = group.tokens.filter((groupToken) => {
+        const tokenAddress = groupToken?.addresses[network];
+        return tokenAddress !== undefined && tokenAddress !== null;
+      });
+
+      return group;
+    });
+
+    return rawGroups;
+  }
+
   searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
     const _tokenList =
       network === undefined
@@ -68,6 +86,11 @@ export class TokensService {
 
     try {
       alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
+      if (alchemyTokenMetadata.name === '') alchemyTokenMetadata.name = null;
+
+      if (alchemyTokenMetadata.symbol === '') {
+        alchemyTokenMetadata.symbol = null;
+      }
     } catch {
       // ignore
     }
@@ -83,7 +106,7 @@ export class TokensService {
       symbol:
         alchemyTokenMetadata?.symbol ?? internalTokenMetadata?.symbol ?? '',
       decimals: (alchemyTokenMetadata?.decimals
-        ? { [network]: alchemyTokenMetadata?.decimals ?? 18 }
+        ? { [network]: alchemyTokenMetadata.decimals }
         : internalTokenMetadata?.decimals) as Record<Networks, number>,
       logoUrl:
         internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata!.logo ?? '', // using internal token logo if available to match the token list
