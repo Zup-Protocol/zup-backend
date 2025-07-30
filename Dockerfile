@@ -32,6 +32,7 @@ COPY --from=builder /app/package.json .
 COPY --from=builder /app/yarn.lock .
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/graphql-codegen.config.ts ./graphql-codegen.config.ts
+COPY --from=builder /app/static ./static
 
 # Install all dependencies (including dev dependencies)
 RUN yarn install --frozen-lockfile
