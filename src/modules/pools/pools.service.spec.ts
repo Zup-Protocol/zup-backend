@@ -560,8 +560,6 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
     const network = Networks.SEPOLIA;
     const token1Address = '0x0000000000000000000000000000000000000001';
-    const minTVLUSD = '0';
-    const filters = new PoolSearchFiltersDTO();
 
     await sut.searchPoolsInChain({
       token0Addresses: [zeroEthereumAddress],
