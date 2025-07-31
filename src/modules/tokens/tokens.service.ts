@@ -79,37 +79,35 @@ export class TokensService {
       return this._getNativeTokenData(network);
     }
 
+    const internalTokenMetadata = tokenList.find((token) => {
+      return token.addresses[network]?.lowercasedEquals(address);
+    });
+
+    if (internalTokenMetadata) return internalTokenMetadata;
+
     const alchemy = this.alchemyFactory(
       NetworksUtils.getAlchemyNetwork(network),
     );
+
     let alchemyTokenMetadata: TokenMetadataResponse | undefined;
 
     try {
       alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
-      if (alchemyTokenMetadata.name === '') alchemyTokenMetadata.name = null;
-
-      if (alchemyTokenMetadata.symbol === '') {
-        alchemyTokenMetadata.symbol = null;
-      }
     } catch {
       // ignore
     }
-    const internalTokenMetadata = tokenList.find((token) => {
-      return token.addresses[network]?.lowercasedEquals(address);
-    });
 
     return {
       addresses: {
         [network]: address,
       } as Record<Networks, string>,
-      name: alchemyTokenMetadata?.name ?? internalTokenMetadata?.name ?? '',
-      symbol:
-        alchemyTokenMetadata?.symbol ?? internalTokenMetadata?.symbol ?? '',
-      decimals: (alchemyTokenMetadata?.decimals
-        ? { [network]: alchemyTokenMetadata.decimals }
-        : internalTokenMetadata?.decimals) as Record<Networks, number>,
-      logoUrl:
-        internalTokenMetadata?.logoUrl ?? alchemyTokenMetadata!.logo ?? '', // using internal token logo if available to match the token list
+      name: alchemyTokenMetadata?.name ?? '',
+      symbol: alchemyTokenMetadata?.symbol ?? '',
+      decimals: { [network]: alchemyTokenMetadata?.decimals ?? 18 } as Record<
+        Networks,
+        number
+      >,
+      logoUrl: alchemyTokenMetadata!.logo ?? '',
     };
   }
 

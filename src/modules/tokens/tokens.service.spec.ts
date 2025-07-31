@@ -1,7 +1,6 @@
 import { Alchemy } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
 import { zeroEthereumAddress } from 'src/core/constants';
-import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
@@ -145,7 +144,7 @@ describe('TokensService', () => {
     );
   });
 
-  it('should return the internal token metadata (if available) when alchemy fetch fails when calling getTokenByAddress method', async () => {
+  it('should return the internal token metadata (if available) before alchemy fetch when calling getTokenByAddress method', async () => {
     const _alchemy = {
       core: {
         getTokenMetadata: jest.fn().mockRejectedValue(new Error()),
@@ -164,49 +163,9 @@ describe('TokensService', () => {
 
     const result = await _sut.getTokenByAddress(network, address);
 
-    expect(result).toEqual(<TokenDTO>{
-      ...tokenInList,
-      id: undefined,
-      decimals: tokenInList!.decimals,
-      addresses: {
-        [network]: address,
-      },
-    });
+    expect(result).toEqual(tokenInList);
 
-    expect(_alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
-  });
-
-  it('should return the internal token name and symbol (if available) when alchemy fetch return empty name or symbol', async () => {
-    const _alchemy = {
-      core: {
-        getTokenMetadata: jest.fn().mockReturnValue({
-          name: '',
-          symbol: '',
-        }),
-      },
-    };
-    const _sut = new TokensService(
-      jest.fn().mockReturnValue(_alchemy),
-      {} as Record<Networks, GraphQLClient>,
-    );
-
-    const address = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
-    const network = Networks.SEPOLIA;
-    const tokenInList = tokenList.find(
-      (token) => token.addresses[network] === address,
-    );
-
-    const result = await _sut.getTokenByAddress(network, address);
-
-    expect(result).toEqual(<TokenDTO>{
-      ...tokenInList,
-      id: undefined,
-      addresses: {
-        [network]: address,
-      },
-    });
-
-    expect(_alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
+    expect(_alchemy.core.getTokenMetadata).not.toHaveBeenCalled();
   });
 
   // TODO: UNCOMMENT WHEN IMPLEMENT BNB

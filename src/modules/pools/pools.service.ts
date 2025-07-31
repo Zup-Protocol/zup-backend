@@ -189,6 +189,10 @@ export class PoolsService {
       poolsFilter: {
         and: [
           {
+            dailyData_: {
+              // remove pools that have not been active in the last 30 days
+              dayStartTimestamp_gt: Date.getDaysAgoTimestamp(30).toString(),
+            },
             totalValueLockedUSD_gt: minTvlUsd.toString(),
             type_in: typesAllowed,
             ...(filters.blockedProtocols.length > 0

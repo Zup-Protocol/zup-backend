@@ -79,6 +79,7 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
+              dailyData_: any(),
             },
             {
               or: [
@@ -134,6 +135,7 @@ describe('PoolsController', () => {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
               protocol_not_in: filters.blockedProtocols,
+              dailyData_: any(),
             },
             {
               or: [
@@ -209,6 +211,7 @@ describe('PoolsController', () => {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
               protocol_not_in: filters.blockedProtocols,
+              dailyData_: any(),
             },
             {
               or: [
@@ -573,8 +576,9 @@ describe('PoolsController', () => {
         poolsFilter: {
           and: [
             {
-              totalValueLockedUSD_gt: minTVLUSD.toString(),
-              type_in: filters.allowedPoolTypes,
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: any(),
             },
             {
               or: [
@@ -773,6 +777,7 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: minTvlUsd.toString(),
               type_in: [PoolType.V4],
+              dailyData_: any(),
             },
             {
               or: [
@@ -1295,6 +1300,7 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: any(),
               type_in: any(),
+              dailyData_: any(),
             },
             {
               or: possibleTokenCombinations,
@@ -1331,9 +1337,47 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: any(),
               type_in: any(),
+              dailyData_: any(),
             },
             {
               or: possibleTokenCombinations,
+            },
+          ],
+        },
+        dailyDataFilter: any(),
+        hourlyDataFilter: any(),
+      },
+    );
+  });
+
+  it(`should filter pools that are not active in the last 30 days using the daily data in the pool query `, async () => {
+    const tokens0 = ['<token0Address-1>'];
+    const tokens1 = ['<token0Address-1>'];
+
+    const chainId = Networks.ETHEREUM;
+    const filters = new PoolSearchFiltersDTO();
+
+    await sut.searchPoolsInChain({
+      token0Addresses: tokens0,
+      token1Addresses: tokens1,
+      network: chainId,
+      filters: filters,
+    });
+
+    expect(graphqlClients[chainId].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: {
+                dayStartTimestamp_gt: Date.getDaysAgoTimestamp(30).toString(),
+              },
+            },
+            {
+              or: [any()],
             },
           ],
         },
