@@ -1546,6 +1546,29 @@ describe('tokenList', () => {
           [Networks.UNICHAIN]: null,
         },
       },
+      {
+        id: '68',
+        name: 'Ripple USD',
+        symbol: 'RLUSD',
+        logoUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/128x128/34387.png',
+        addresses: {
+          [Networks.ETHEREUM]: '0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD',
+          // [Networks.BASE]: null,
+          // [Networks.BNB]: null,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.UNICHAIN]: null,
+        },
+        decimals: {
+          [Networks.ETHEREUM]: 18,
+          // [Networks.BASE]: null,
+          // [Networks.BNB]: null,
+          [Networks.SCROLL]: null,
+          [Networks.SEPOLIA]: null,
+          [Networks.UNICHAIN]: null,
+        },
+      },
     ];
 
     expect(tokenList).toEqual(expectedList);

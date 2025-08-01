@@ -23,6 +23,7 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '35', // USDY
         '36', // GHO
         '37', // AUSD
+        '68', // RLUSD
       ]).has(token.id!),
     ),
   },
