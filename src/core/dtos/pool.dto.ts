@@ -9,6 +9,7 @@ export interface PoolDTO {
   token1: TokenDTO;
   protocol: ProtocolDTO;
   yield24h: number;
+  yield7d: number;
   yield30d: number;
   yield90d: number;
   chainId: Networks;

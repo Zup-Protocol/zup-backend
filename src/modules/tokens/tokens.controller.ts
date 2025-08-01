@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 
 import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
+import { TokenListDTO } from 'src/core/dtos/token-list.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
@@ -20,6 +22,22 @@ export class TokensController {
   @Get('/popular')
   getPopularTokens(@Query('chainId') chainId?: Networks): TokenDTO[] {
     return this.tokensService.getPopularTokens(chainId);
+  }
+
+  @Get('/groups')
+  getTokenGroups(@Query('chainId') chainId?: Networks): TokenGroupDTO[] {
+    return this.tokensService.getTokenGroups(chainId);
+  }
+
+  @Get('/list')
+  getTokenList(@Query('chainId') chainId?: Networks): TokenListDTO {
+    const tokens = this.tokensService.getPopularTokens(chainId);
+    const groups = this.tokensService.getTokenGroups(chainId);
+
+    return {
+      popularTokens: tokens,
+      tokenGroups: groups,
+    };
   }
 
   @Get('/search')

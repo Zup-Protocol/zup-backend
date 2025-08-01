@@ -1,8 +1,8 @@
 import { Alchemy } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
 import { zeroEthereumAddress } from 'src/core/constants';
-import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks } from 'src/core/enums/networks';
+import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
 import { GetTokenDocument, GetTokenQueryVariables } from 'src/gen/graphql.gen';
 import { TokensService } from './tokens.service';
@@ -144,7 +144,7 @@ describe('TokensService', () => {
     );
   });
 
-  it('should return the internal token metadata (if available) when alchemy fetch fails when calling getTokenByAddress method', async () => {
+  it('should return the internal token metadata (if available) before alchemy fetch when calling getTokenByAddress method', async () => {
     const _alchemy = {
       core: {
         getTokenMetadata: jest.fn().mockRejectedValue(new Error()),
@@ -163,16 +163,9 @@ describe('TokensService', () => {
 
     const result = await _sut.getTokenByAddress(network, address);
 
-    expect(result).toEqual(<TokenDTO>{
-      ...tokenInList,
-      id: undefined,
-      decimals: tokenInList!.decimals,
-      addresses: {
-        [network]: address,
-      },
-    });
+    expect(result).toEqual(tokenInList);
 
-    expect(_alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
+    expect(_alchemy.core.getTokenMetadata).not.toHaveBeenCalled();
   });
 
   // TODO: UNCOMMENT WHEN IMPLEMENT BNB
@@ -192,5 +185,27 @@ describe('TokensService', () => {
     const tokens = tokensService.getPopularTokens(network);
 
     expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
+  });
+
+  it('should return the whole token group list when calling getTokenGroups method without passing a chainId', () => {
+    const tokenGroups = tokensService.getTokenGroups();
+
+    expect(tokenGroups).toEqual(tokenGroupList);
+  });
+
+  it('should return the token group filtered by network when calling getTokenGroups method passing a chainId', () => {
+    const network = Networks.SEPOLIA;
+
+    const tokenGroups = tokensService.getTokenGroups(network);
+    const expectedReturn = tokenGroupList.map((group) => {
+      group.tokens = group.tokens.filter((groupToken) => {
+        const tokenAddress = groupToken?.addresses[network];
+        return tokenAddress !== undefined && tokenAddress !== null;
+      });
+
+      return group;
+    });
+
+    expect(tokenGroups).toEqual(expectedReturn);
   });
 });

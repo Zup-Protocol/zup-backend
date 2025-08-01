@@ -16,6 +16,7 @@ import {
   GetPoolsDocument,
   GetPoolsQuery,
   GetPoolsQueryVariables,
+  Pool_Filter,
   PoolType,
 } from 'src/gen/graphql.gen';
 import '../../core/extensions/string.extension';
@@ -29,14 +30,14 @@ export class PoolsService {
   ) {}
 
   async searchPoolsInChain(params: {
-    token0Address: string;
-    token1Address: string;
+    token0Addresses: string[];
+    token1Addresses: string[];
     network: Networks;
     filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
     const poolsQueryResponse = await this._getPoolsForSingleNetwork(
-      params.token0Address,
-      params.token1Address,
+      params.token0Addresses,
+      params.token1Addresses,
       params.network,
       params.filters,
     );
@@ -44,8 +45,7 @@ export class PoolsService {
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
       network: params.network,
-      token0Address: params.token0Address,
-      token1Address: params.token1Address,
+      tokenAddresses: params.token0Addresses.concat(params.token1Addresses),
     });
 
     return {
@@ -55,8 +55,8 @@ export class PoolsService {
   }
 
   async searchPoolsCrossChain(params: {
-    token0Id: string;
-    token1Id: string;
+    token0Ids: string[];
+    token1Ids: string[];
     filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
     const allSupportedNetworks = params.filters.testnetMode
@@ -67,17 +67,18 @@ export class PoolsService {
           (network) => !NetworksUtils.isTestnet(network),
         );
 
-    const token0InTokenList = tokenList.find((token) =>
-      token.id?.lowercasedEquals(params.token0Id),
+    const searchTokens0 = tokenList.filter((token) =>
+      params.token0Ids.includes(token.id!),
     );
-    const token1InTokenList = tokenList.find((token) =>
-      token.id?.lowercasedEquals(params.token1Id),
+
+    const searchTokens1 = tokenList.filter((token) =>
+      params.token1Ids.includes(token.id!),
     );
 
     const networksWithTokens = allSupportedNetworks.filter((network) => {
       return (
-        token0InTokenList?.addresses[network] !== null &&
-        token1InTokenList?.addresses[network] !== null
+        searchTokens0.some((token) => token?.addresses[network] !== null) ||
+        searchTokens1.some((token) => token?.addresses[network] !== null)
       );
     });
 
@@ -88,12 +89,32 @@ export class PoolsService {
       };
     }
 
+    const tokenAddressesPerChainId: Record<
+      number,
+      Record<number, string[]>
+    > = {};
+
+    networksWithTokens.forEach((network) => {
+      tokenAddressesPerChainId[network] = {
+        0: [],
+        1: [],
+      };
+
+      tokenAddressesPerChainId[network][0] = searchTokens0
+        .filter((token) => token.addresses[network] !== null)
+        .map((token) => token.addresses[network]!);
+
+      tokenAddressesPerChainId[network][1] = searchTokens1
+        .filter((token) => token.addresses[network] !== null)
+        .map((token) => token.addresses[network]!);
+    });
+
     const poolsQueryResponses = await this._getPoolsForMultipleNetworks(
       networksWithTokens.map((network) => {
         return {
           network: network,
-          token0Address: token0InTokenList!.addresses[network]!,
-          token1Address: token1InTokenList!.addresses[network]!,
+          token0Addresses: tokenAddressesPerChainId[network][0],
+          token1Addresses: tokenAddressesPerChainId[network][1],
         };
       }),
       params.filters,
@@ -106,8 +127,9 @@ export class PoolsService {
         return this._processPoolsDataFromQuery({
           queryResponse,
           network,
-          token0Address: token0InTokenList!.addresses[network]!,
-          token1Address: token1InTokenList!.addresses[network]!,
+          tokenAddresses: tokenAddressesPerChainId[network][0].concat(
+            tokenAddressesPerChainId[network][1],
+          ),
         });
       }),
     );
@@ -121,8 +143,8 @@ export class PoolsService {
   }
 
   private async _getPoolsForSingleNetwork(
-    token0Address: string,
-    token1Address: string,
+    token0Addresses: string[],
+    token1Addresses: string[],
     network: Networks,
     filters: PoolSearchFiltersDTO,
   ): Promise<GetPoolsQuery> {
@@ -130,9 +152,35 @@ export class PoolsService {
     const minTvlUsd = filters.minTvlUsd;
     const typesAllowed = filters.allowedPoolTypes;
 
-    const isNativeTokenSearch =
-      token0Address === zeroEthereumAddress ||
-      token1Address === zeroEthereumAddress;
+    const possibleTokenCombinations: Pool_Filter[] = [];
+
+    for (let i = 0; i < token0Addresses.length; i++) {
+      for (let j = 0; j < token1Addresses.length; j++) {
+        const tokenA = token0Addresses[i];
+        const tokenB = token1Addresses[j];
+
+        if (tokenA === tokenB) continue;
+
+        possibleTokenCombinations.push(
+          { token0: tokenA, token1: tokenB },
+          { token0: tokenB, token1: tokenA },
+        );
+
+        if (tokenA === zeroEthereumAddress) {
+          possibleTokenCombinations.push(
+            { token0: tokenB, token1: wrappedNativeAddress },
+            { token0: wrappedNativeAddress, token1: tokenB },
+          );
+        }
+
+        if (tokenB === zeroEthereumAddress) {
+          possibleTokenCombinations.push(
+            { token0: tokenA, token1: wrappedNativeAddress },
+            { token0: wrappedNativeAddress, token1: tokenA },
+          );
+        }
+      }
+    }
 
     const response = await this.graphqlClients[network].request<
       GetPoolsQuery,
@@ -141,6 +189,10 @@ export class PoolsService {
       poolsFilter: {
         and: [
           {
+            dailyData_: {
+              // remove pools that have not been active in the last 30 days
+              dayStartTimestamp_gt: Date.getDaysAgoTimestamp(30).toString(),
+            },
             totalValueLockedUSD_gt: minTvlUsd.toString(),
             type_in: typesAllowed,
             ...(filters.blockedProtocols.length > 0
@@ -148,37 +200,7 @@ export class PoolsService {
               : {}),
           },
           {
-            or: [
-              {
-                token0: token0Address,
-                token1: token1Address,
-              },
-              {
-                token0: token1Address,
-                token1: token0Address,
-              },
-              // as V3 pools don't have the native token, we need to search for the wrapped native token
-              ...(isNativeTokenSearch
-                ? [
-                    {
-                      token0: token0Address,
-                      token1: wrappedNativeAddress,
-                    },
-                    {
-                      token0: token1Address,
-                      token1: wrappedNativeAddress,
-                    },
-                    {
-                      token0: wrappedNativeAddress,
-                      token1: token0Address,
-                    },
-                    {
-                      token0: wrappedNativeAddress,
-                      token1: token1Address,
-                    },
-                  ]
-                : []),
-            ],
+            or: possibleTokenCombinations,
           },
         ],
       },
@@ -196,16 +218,16 @@ export class PoolsService {
   private async _getPoolsForMultipleNetworks(
     networks: {
       network: Networks;
-      token0Address: string;
-      token1Address: string;
+      token0Addresses: string[];
+      token1Addresses: string[];
     }[],
     filters: PoolSearchFiltersDTO,
   ): Promise<GetPoolsQuery[]> {
     const responses = await Promise.all(
       networks.map((searchNetworkData) => {
         return this._getPoolsForSingleNetwork(
-          searchNetworkData.token0Address,
-          searchNetworkData.token1Address,
+          searchNetworkData.token0Addresses,
+          searchNetworkData.token1Addresses,
           searchNetworkData.network,
           filters,
         );
@@ -218,51 +240,63 @@ export class PoolsService {
   private async _processPoolsDataFromQuery(params: {
     queryResponse: GetPoolsQuery;
     network: Networks;
-    token0Address: string;
-    token1Address: string;
+    tokenAddresses: string[];
   }): Promise<SupportedPoolType[]> {
-    let token0Metadata: TokenDTO;
-    let token1Metadata: TokenDTO;
+    const tokensMetadata: Record<string, TokenDTO> = {};
 
-    try {
-      token0Metadata = await this.tokensService.getTokenByAddress(
-        params.network,
-        params.token0Address,
-      );
+    const tokensMetadataResponses = await Promise.all(
+      params.tokenAddresses.map((tokenAddress) => {
+        return this.tokensService.getTokenByAddress(
+          params.network,
+          tokenAddress,
+        );
+      }),
+    );
 
-      token1Metadata = await this.tokensService.getTokenByAddress(
-        params.network,
-        params.token1Address,
-      );
-    } catch {
-      // ignore
+    for (let i = 0; i < params.tokenAddresses.length; i++) {
+      const tokenAddress = params.tokenAddresses[i];
+      const tokenMetadata = tokensMetadataResponses[i];
+
+      tokensMetadata[tokenAddress.toLowerCase()] = tokenMetadata;
     }
 
     return params.queryResponse.pools.map<SupportedPoolType>((pool) => {
       let pool24hFees: number = 0;
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
-      const token0MetadataAddress =
-        token0Metadata.addresses[params.network] === zeroEthereumAddress &&
-        pool.type === PoolType.V3
-          ? NetworksUtils.wrappedNativeAddress(params.network)
-          : token0Metadata.addresses[params.network];
+      const pool7DaysYields: number[] = [];
 
-      const token1MetadataAddress =
-        token1Metadata.addresses[params.network] === zeroEthereumAddress &&
-        pool.type === PoolType.V3
-          ? NetworksUtils.wrappedNativeAddress(params.network)
-          : token1Metadata.addresses[params.network];
+      function poolToken0Metadata(): TokenDTO {
+        const isPoolToken0WrappedNative: boolean =
+          pool.token0.id.lowercasedEquals(
+            NetworksUtils.wrappedNativeAddress(params.network),
+          );
 
-      const poolToken0Metadata: TokenDTO =
-        token0MetadataAddress?.lowercasedEquals(pool.token0.id)
-          ? token0Metadata
-          : token1Metadata;
+        const poolToken0AddressMetadata =
+          tokensMetadata[pool.token0.id.toLowerCase()];
 
-      const poolToken1Metadata: TokenDTO =
-        token1MetadataAddress?.lowercasedEquals(pool.token1.id)
-          ? token1Metadata
-          : token0Metadata;
+        if (isPoolToken0WrappedNative && !poolToken0AddressMetadata) {
+          return tokensMetadata[zeroEthereumAddress];
+        }
+
+        return poolToken0AddressMetadata;
+      }
+
+      function poolToken1Metadata(): TokenDTO {
+        const isPoolToken1WrappedNative: boolean =
+          pool.token1.id.lowercasedEquals(
+            NetworksUtils.wrappedNativeAddress(params.network),
+          );
+
+        const poolToken1AddressMetadata =
+          tokensMetadata[pool.token1.id.toLowerCase()];
+
+        if (isPoolToken1WrappedNative && !poolToken1AddressMetadata) {
+          return tokensMetadata[zeroEthereumAddress];
+        }
+
+        return poolToken1AddressMetadata;
+      }
 
       pool.hourlyData.forEach((hourlyData) => {
         if (hourlyData) pool24hFees += Number(hourlyData.feesUSD);
@@ -277,18 +311,24 @@ export class PoolsService {
           Number(dailyData.feesUSD),
         );
 
+        if (pool7DaysYields.length < 7) pool7DaysYields.push(dayAPR);
         if (pool30dYields.length < 30) pool30dYields.push(dayAPR);
         pool90dYields.push(dayAPR);
       }
 
-      const poolYield30d =
-        pool30dYields.length < 20 ? 0 : average(pool30dYields);
-      const poolYield90d =
-        pool90dYields.length < 70 ? 0 : average(pool90dYields);
       const poolYield24h =
-        pool.hourlyData.length < 15
+        pool.hourlyData.length < 10
           ? 0
           : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
+
+      const poolYield7d =
+        pool7DaysYields.length < 3 ? 0 : average(pool7DaysYields);
+
+      const poolYield30d =
+        pool30dYields.length < 20 ? 0 : average(pool30dYields);
+
+      const poolYield90d =
+        pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
       const basePool: PoolDTO = {
         chainId: params.network,
@@ -297,6 +337,7 @@ export class PoolsService {
         yield24h: poolYield24h,
         yield30d: poolYield30d,
         yield90d: poolYield90d,
+        yield7d: poolYield7d,
         poolType: pool.type,
         protocol: {
           id: pool.protocol.id,
@@ -304,8 +345,8 @@ export class PoolsService {
           name: pool.protocol.name,
           url: pool.protocol.url,
         },
-        token0: poolToken0Metadata,
-        token1: poolToken1Metadata,
+        token0: poolToken0Metadata(),
+        token1: poolToken1Metadata(),
         positionManagerAddress: pool.protocol.positionManager,
         permit2Address: pool.protocol.permit2!,
         feeTier: pool.feeTier,

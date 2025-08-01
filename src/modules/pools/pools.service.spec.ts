@@ -14,6 +14,7 @@ import {
   GetPoolsDocument,
   GetPoolsQuery,
   GetPoolsQueryVariables,
+  Pool_Filter,
   PoolType,
 } from 'src/gen/graphql.gen';
 import { TokensService } from '../tokens/tokens.service';
@@ -64,8 +65,8 @@ describe('PoolsController', () => {
     };
 
     await sut.searchPoolsInChain({
-      token0Address,
-      token1Address,
+      token0Addresses: [token0Address],
+      token1Addresses: [token1Address],
       network,
       filters,
     });
@@ -78,6 +79,7 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
+              dailyData_: any(),
             },
             {
               or: [
@@ -118,8 +120,8 @@ describe('PoolsController', () => {
     };
 
     await sut.searchPoolsInChain({
-      token0Address,
-      token1Address,
+      token0Addresses: [token0Address],
+      token1Addresses: [token1Address],
       network,
       filters,
     });
@@ -133,6 +135,7 @@ describe('PoolsController', () => {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
               protocol_not_in: filters.blockedProtocols,
+              dailyData_: any(),
             },
             {
               or: [
@@ -194,8 +197,8 @@ describe('PoolsController', () => {
     };
 
     await sut.searchPoolsCrossChain({
-      token0Id: token0.id!,
-      token1Id: token1.id!,
+      token0Ids: [token0.id!],
+      token1Ids: [token1.id!],
       filters,
     });
 
@@ -208,6 +211,7 @@ describe('PoolsController', () => {
               totalValueLockedUSD_gt: mintvlusd.toString(),
               type_in: filters.allowedPoolTypes,
               protocol_not_in: filters.blockedProtocols,
+              dailyData_: any(),
             },
             {
               or: [
@@ -238,6 +242,7 @@ describe('PoolsController', () => {
     const expectedPoolResult: SupportedPoolType = {
       permit2Address: undefined,
       latestTick: '0',
+
       token0: {
         addresses: {
           [Networks.ETHEREUM]: tokenList[0].addresses[Networks.ETHEREUM],
@@ -263,6 +268,7 @@ describe('PoolsController', () => {
       yield24h: 0.8914967523786218,
       yield30d: 3650,
       yield90d: 3650,
+      yield7d: 3650,
       protocol: {
         id: 'uniswap',
         name: 'Uniswap V3',
@@ -335,12 +341,12 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsInChain({
-      token0Address: expectedPoolResult.token0.addresses[
-        expectedPoolResult.chainId
-      ] as string,
-      token1Address: expectedPoolResult.token1.addresses[
-        expectedPoolResult.chainId
-      ] as string,
+      token0Addresses: [
+        expectedPoolResult.token0.addresses[expectedPoolResult.chainId]!,
+      ],
+      token1Addresses: [
+        expectedPoolResult.token1.addresses[expectedPoolResult.chainId]!,
+      ],
       network: expectedPoolResult.chainId,
       filters: new PoolSearchFiltersDTO(),
     });
@@ -389,6 +395,7 @@ describe('PoolsController', () => {
       yield24h: 0.8914967523786218,
       yield30d: 3650,
       yield90d: 3650,
+      yield7d: 3650,
       protocol: {
         id: 'uniswap',
         name: 'Uniswap V3',
@@ -401,7 +408,6 @@ describe('PoolsController', () => {
     const poolResult2: SupportedPoolType = {
       token0: token0,
       token1: token1,
-
       chainId: Networks.SCROLL,
       totalValueLockedUSD: 98261715.218,
       latestTick: '89621782',
@@ -412,6 +418,7 @@ describe('PoolsController', () => {
       yield24h: 0.8914967523786218,
       yield30d: 3650,
       yield90d: 3650,
+      yield7d: 3650,
       protocol: {
         id: 'uniswap',
         name: 'Uniswap V3',
@@ -538,8 +545,8 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsCrossChain({
-      token0Id: token0.id!,
-      token1Id: token1.id!,
+      token0Ids: [token0.id!],
+      token1Ids: [token1.id!],
       filters: new PoolSearchFiltersDTO(),
     });
 
@@ -553,12 +560,10 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
     const network = Networks.SEPOLIA;
     const token1Address = '0x0000000000000000000000000000000000000001';
-    const minTVLUSD = '0';
-    const filters = new PoolSearchFiltersDTO();
 
     await sut.searchPoolsInChain({
-      token0Address: zeroEthereumAddress,
-      token1Address: token1Address,
+      token0Addresses: [zeroEthereumAddress],
+      token1Addresses: [token1Address],
       network: network,
       filters: new PoolSearchFiltersDTO(),
     });
@@ -569,8 +574,9 @@ describe('PoolsController', () => {
         poolsFilter: {
           and: [
             {
-              totalValueLockedUSD_gt: minTVLUSD.toString(),
-              type_in: filters.allowedPoolTypes,
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: any(),
             },
             {
               or: [
@@ -583,16 +589,8 @@ describe('PoolsController', () => {
                   token1: zeroEthereumAddress,
                 },
                 {
-                  token0: zeroEthereumAddress,
-                  token1: NetworksUtils.wrappedNativeAddress(network),
-                },
-                {
                   token0: token1Address,
                   token1: NetworksUtils.wrappedNativeAddress(network),
-                },
-                {
-                  token0: NetworksUtils.wrappedNativeAddress(network),
-                  token1: zeroEthereumAddress,
                 },
                 {
                   token0: NetworksUtils.wrappedNativeAddress(network),
@@ -695,6 +693,7 @@ describe('PoolsController', () => {
           yield24h: 7161.941638351379,
           yield30d: 3650,
           yield90d: 3650,
+          yield7d: 3650,
           stateViewAddress: stateViewAddress,
           poolManagerAddress: poolManagerAddress,
           permit2Address: poolsQueryResponse.pools[0].protocol.permit2,
@@ -732,10 +731,12 @@ describe('PoolsController', () => {
 
     const result = (
       await sut.searchPoolsInChain({
-        token0Address:
+        token0Addresses: [
           poolsResult.pools[0].token0.addresses[poolsResult.pools[0].chainId]!,
-        token1Address:
+        ],
+        token1Addresses: [
           poolsResult.pools[0].token1.addresses[poolsResult.pools[0].chainId]!,
+        ],
         network: Networks.ETHEREUM,
         filters: new PoolSearchFiltersDTO(),
       })
@@ -756,8 +757,8 @@ describe('PoolsController', () => {
 
     await sut.searchPoolsInChain({
       network: network,
-      token1Address,
-      token0Address,
+      token1Addresses: [token1Address],
+      token0Addresses: [token0Address],
       filters: {
         blockedProtocols: [],
         minTvlUsd: minTvlUsd,
@@ -774,6 +775,7 @@ describe('PoolsController', () => {
             {
               totalValueLockedUSD_gt: minTvlUsd.toString(),
               type_in: [PoolType.V4],
+              dailyData_: any(),
             },
             {
               or: [
@@ -847,13 +849,237 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsInChain({
-      token0Address: '<token0Address>',
-      token1Address: '<token1Address>',
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
       network: Networks.ETHEREUM,
       filters: new PoolSearchFiltersDTO(),
     });
 
     expect(result.pools[0].yield30d).toBe(0);
+  });
+
+  it('Should return zero as yield when there are not at least 3 days of data in the 7d yield', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          tick: '26187',
+          dailyData: Array.from({ length: 2 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          tickSpacing: 10,
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          type: PoolType.V3,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect(result.pools[0].yield7d).toBe(0);
+  });
+
+  it('Should return zero as yield when there are not at least 10 hours of data in the 24h yield', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          tick: '26187',
+          dailyData: Array.from({ length: 2 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 8 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          tickSpacing: 10,
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          type: PoolType.V3,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect(result.pools[0].yield24h).toBe(0);
+  });
+
+  it('Should not return zero as yield when there are at least 10 hours of data in the 24h yield', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          tick: '26187',
+          dailyData: Array.from({ length: 2 }, () => ({
+            feesUSD: '10',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 11 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          tickSpacing: 10,
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          type: PoolType.V3,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect(result.pools[0].yield24h).toBe(185.1288293771556);
+  });
+
+  it('Should not return zero as yield when there are at least 3 days of data in the 7d yield', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      pools: [
+        {
+          tick: '26187',
+          dailyData: Array.from({ length: 10 }, () => ({
+            feesUSD: '100',
+            totalValueLockedUSD: '100',
+          })),
+          feeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({ feesUSD: '100' })),
+          id: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            positionManager: '0x0000000000000000000000000000000000000001',
+            url: 'https://example.com/uniswap',
+          },
+          tickSpacing: 10,
+          token0: {
+            decimals: 18,
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          type: PoolType.V3,
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClients = {
+      [Networks.ETHEREUM]: {
+        request: jest.fn().mockReturnValue(poolsQueryResponse),
+      } as unknown as GraphQLClient,
+    } as unknown as Record<Networks, GraphQLClient>;
+
+    const sut = new PoolsService(tokensService, graphqlClients);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: new PoolSearchFiltersDTO(),
+    });
+
+    expect(result.pools[0].yield7d).toBe(36500);
   });
 
   it('Should not return zero as yield when there are at least 20 days of data in the 30d yield', async () => {
@@ -903,8 +1129,8 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsInChain({
-      token0Address: '<token0Address>',
-      token1Address: '<token1Address>',
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
       network: Networks.ETHEREUM,
       filters: new PoolSearchFiltersDTO(),
     });
@@ -959,8 +1185,8 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsInChain({
-      token0Address: '<token0Address>',
-      token1Address: '<token1Address>',
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
       network: Networks.ETHEREUM,
       filters: new PoolSearchFiltersDTO(),
     });
@@ -1015,12 +1241,162 @@ describe('PoolsController', () => {
     const sut = new PoolsService(tokensService, graphqlClients);
 
     const result = await sut.searchPoolsInChain({
-      token0Address: '<token0Address>',
-      token1Address: '<token1Address>',
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
       network: Networks.ETHEREUM,
       filters: new PoolSearchFiltersDTO(),
     });
 
     expect(result.pools[0].yield90d).toBe(3650);
+  });
+
+  it(`should make all possible combinations between the tokens0 and tokens1 when calling searchPoolsInChain
+    and put it in the or filter in the query`, async () => {
+    const tokens0 = [
+      '<token0Address-1>',
+      '<token0Address-2>',
+      '<token0Address-3>',
+    ];
+
+    const tokens1 = [
+      '<token1Address-1>',
+      '<token1Address-2>',
+      '<token1Address-3>',
+    ];
+
+    const possibleTokenCombinations: Pool_Filter[] = [];
+
+    for (let i = 0; i < tokens0.length; i++) {
+      for (let j = 0; j < tokens1.length; j++) {
+        const tokenA = tokens0[i];
+        const tokenB = tokens1[j];
+
+        if (tokenA === tokenB) continue;
+
+        possibleTokenCombinations.push(
+          { token0: tokenA, token1: tokenB },
+          { token0: tokenB, token1: tokenA },
+        );
+      }
+    }
+
+    const chainId = Networks.ETHEREUM;
+    const filters = new PoolSearchFiltersDTO();
+
+    await sut.searchPoolsInChain({
+      token0Addresses: tokens0,
+      token1Addresses: tokens1,
+      network: chainId,
+      filters: filters,
+    });
+
+    expect(graphqlClients[chainId].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: any(),
+            },
+            {
+              or: possibleTokenCombinations,
+            },
+          ],
+        },
+        dailyDataFilter: any(),
+        hourlyDataFilter: any(),
+      },
+    );
+  });
+
+  it(`should remove duplicated when making all possible combinations between the tokens0 and tokens1 to call the subgraph`, async () => {
+    const tokens0 = ['<token0Address-1>'];
+    const tokens1 = ['<token0Address-1>'];
+
+    const possibleTokenCombinations: Pool_Filter[] = [];
+
+    const chainId = Networks.ETHEREUM;
+    const filters = new PoolSearchFiltersDTO();
+
+    await sut.searchPoolsInChain({
+      token0Addresses: tokens0,
+      token1Addresses: tokens1,
+      network: chainId,
+      filters: filters,
+    });
+
+    expect(graphqlClients[chainId].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: any(),
+            },
+            {
+              or: possibleTokenCombinations,
+            },
+          ],
+        },
+        dailyDataFilter: any(),
+        hourlyDataFilter: any(),
+      },
+    );
+  });
+
+  it(`should filter pools that are not active in the last 30 days using the daily data in the pool query `, async () => {
+    const tokens0 = ['<token0Address-1>'];
+    const tokens1 = ['<token0Address-1>'];
+
+    const chainId = Networks.ETHEREUM;
+    const filters = new PoolSearchFiltersDTO();
+
+    await sut.searchPoolsInChain({
+      token0Addresses: tokens0,
+      token1Addresses: tokens1,
+      network: chainId,
+      filters: filters,
+    });
+
+    expect(graphqlClients[chainId].request).toHaveBeenCalledWith(
+      GetPoolsDocument,
+      <GetPoolsQueryVariables>{
+        poolsFilter: {
+          and: [
+            {
+              totalValueLockedUSD_gt: any(),
+              type_in: any(),
+              dailyData_: {
+                dayStartTimestamp_gt: Date.getDaysAgoTimestamp(30).toString(),
+              },
+            },
+            {
+              or: [any()],
+            },
+          ],
+        },
+        dailyDataFilter: any(),
+        hourlyDataFilter: any(),
+      },
+    );
+  });
+
+  it('should return empty pools if none of the networks supported has the passed token ids in the searchPoolsCrossChain', async () => {
+    const filters = new PoolSearchFiltersDTO();
+
+    const result = await sut.searchPoolsCrossChain({
+      token0Ids: ['97128752615'], // random id
+      token1Ids: ['9172627521'], // random id
+      filters: filters,
+    });
+
+    expect(result).toEqual({
+      pools: [],
+      filters: any(),
+    });
   });
 });
