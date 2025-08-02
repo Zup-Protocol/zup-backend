@@ -1,5 +1,5 @@
 query GetPools(
-  $poolsFilter: Pool_filter # $alternativeToken0Id: Bytes!
+  $poolsFilter: Pool_filter
   $dailyDataFilter: PoolDailyData_filter
   $hourlyDataFilter: PoolHourlyData_filter
 ) {
