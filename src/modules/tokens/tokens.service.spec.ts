@@ -208,4 +208,12 @@ describe('TokensService', () => {
 
     expect(tokenGroups).toEqual(expectedReturn);
   });
+
+  it('should not modify the original token group list when calling getTokenGroups method passing a chainId', () => {
+    const network = Networks.SEPOLIA;
+    const tokenGroupsBefore = structuredClone(tokenGroupList);
+
+    tokensService.getTokenGroups(network);
+    expect(tokenGroupList).toEqual(tokenGroupsBefore);
+  });
 });
