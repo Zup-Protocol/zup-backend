@@ -341,7 +341,11 @@ export class PoolsService {
         poolType: pool.type,
         protocol: {
           id: pool.protocol.id,
-          logo: pool.protocol.logo,
+          // TODO: Remove workaround once the subgraph is updated using logos from CDN
+          logo: pool.protocol.logo.replace(
+            'https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/dapps/',
+            'https://assets-cdn.trustwallet.com/dapps/',
+          ),
           name: pool.protocol.name,
           url: pool.protocol.url,
         },
