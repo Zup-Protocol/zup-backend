@@ -42,7 +42,8 @@ export class TokensService {
   }
 
   getTokenGroups(network?: Networks): TokenGroupDTO[] {
-    let rawGroups = tokenGroupList;
+    let rawGroups = structuredClone(tokenGroupList);
+
     if (network === undefined) return rawGroups;
 
     rawGroups = rawGroups.map((group) => {
