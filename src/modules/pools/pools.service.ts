@@ -168,15 +168,31 @@ export class PoolsService {
 
         if (tokenA === zeroEthereumAddress) {
           possibleTokenCombinations.push(
-            { token0: tokenB, token1: wrappedNativeAddress },
-            { token0: wrappedNativeAddress, token1: tokenB },
+            {
+              token0: tokenB,
+              token1: wrappedNativeAddress,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
+            {
+              token0: wrappedNativeAddress,
+              token1: tokenB,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
           );
         }
 
         if (tokenB === zeroEthereumAddress) {
           possibleTokenCombinations.push(
-            { token0: tokenA, token1: wrappedNativeAddress },
-            { token0: wrappedNativeAddress, token1: tokenA },
+            {
+              token0: tokenA,
+              token1: wrappedNativeAddress,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
+            {
+              token0: wrappedNativeAddress,
+              token1: tokenA,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
           );
         }
       }
