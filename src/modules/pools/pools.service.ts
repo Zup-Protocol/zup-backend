@@ -168,15 +168,31 @@ export class PoolsService {
 
         if (tokenA === zeroEthereumAddress) {
           possibleTokenCombinations.push(
-            { token0: tokenB, token1: wrappedNativeAddress },
-            { token0: wrappedNativeAddress, token1: tokenB },
+            {
+              token0: tokenB,
+              token1: wrappedNativeAddress,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
+            {
+              token0: wrappedNativeAddress,
+              token1: tokenB,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
           );
         }
 
         if (tokenB === zeroEthereumAddress) {
           possibleTokenCombinations.push(
-            { token0: tokenA, token1: wrappedNativeAddress },
-            { token0: wrappedNativeAddress, token1: tokenA },
+            {
+              token0: tokenA,
+              token1: wrappedNativeAddress,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
+            {
+              token0: wrappedNativeAddress,
+              token1: tokenA,
+              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
+            },
           );
         }
       }
@@ -341,7 +357,11 @@ export class PoolsService {
         poolType: pool.type,
         protocol: {
           id: pool.protocol.id,
-          logo: pool.protocol.logo,
+          // TODO: Remove workaround once the subgraph is updated using logos from CDN
+          logo: pool.protocol.logo.replace(
+            'https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/dapps/',
+            'https://assets-cdn.trustwallet.com/dapps/',
+          ),
           name: pool.protocol.name,
           url: pool.protocol.url,
         },

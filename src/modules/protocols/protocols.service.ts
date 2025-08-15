@@ -40,7 +40,11 @@ export class ProtocolsService {
               id: rawProtocol.id,
               name: rawProtocol.name,
               url: rawProtocol.url,
-              logo: rawProtocol.logo,
+              // TODO: Remove workaround once the subgraph is updated using logos from CDN
+              logo: rawProtocol.logo.replace(
+                'https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/dapps/',
+                'https://assets-cdn.trustwallet.com/dapps/',
+              ),
             };
 
             return protocol;

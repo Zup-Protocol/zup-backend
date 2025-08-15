@@ -556,7 +556,7 @@ describe('PoolsController', () => {
     });
   });
 
-  it('When the search has the token 0 with zero address (native token), it should also search for the wrapped native address', async () => {
+  it('When the search has the token 0 with zero address (native token), it should also search for the wrapped native address, but exlude V4 pools', async () => {
     const sut = new PoolsService(tokensService, graphqlClients);
     const network = Networks.SEPOLIA;
     const token1Address = '0x0000000000000000000000000000000000000001';
@@ -591,10 +591,12 @@ describe('PoolsController', () => {
                 {
                   token0: token1Address,
                   token1: NetworksUtils.wrappedNativeAddress(network),
+                  type_not: PoolType.V4,
                 },
                 {
                   token0: NetworksUtils.wrappedNativeAddress(network),
                   token1: token1Address,
+                  type_not: PoolType.V4,
                 },
               ],
             },
