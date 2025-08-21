@@ -1,5 +1,5 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
-import 'dotenv/config'; // Load environment variables
+import 'dotenv/config';
 
 const config: CodegenConfig = {
   schema: process.env.INDEXER_URL,
