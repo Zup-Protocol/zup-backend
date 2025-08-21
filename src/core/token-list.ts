@@ -13,6 +13,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: zeroEthereumAddress,
       [Networks.BASE]: zeroEthereumAddress,
       [Networks.UNICHAIN]: zeroEthereumAddress,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
     },
     decimals: {
@@ -21,10 +22,10 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 18,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
-    logoUrl:
-      'https://assets-cdn.trustwallet.com/blockchains/ethereum/info/logo.png',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/ethereum/info/logo.png',
   },
   {
     id: '2',
@@ -36,6 +37,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
       [Networks.BASE]: '0x4200000000000000000000000000000000000006',
       [Networks.UNICHAIN]: '0x4200000000000000000000000000000000000006',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
     },
     decimals: {
@@ -44,6 +46,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 18,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -59,6 +62,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2',
       [Networks.UNICHAIN]: '0x588CE4F028D8e7B53B687865d6A67b3A54C75518',
+      [Networks.HYPER_EVM]: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb',
       // [Networks.BNB]: '0x55d398326f99059ff775485246999027b3197955',
     },
     decimals: {
@@ -67,6 +71,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 6,
       [Networks.UNICHAIN]: 6,
+      [Networks.HYPER_EVM]: 6,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -82,6 +87,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
       [Networks.BASE]: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
       [Networks.UNICHAIN]: '0x078d782b760474a361dda0af3839290b0ef57ad6',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
     },
     decimals: {
@@ -90,6 +96,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 6,
       [Networks.BASE]: 6,
       [Networks.UNICHAIN]: 6,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -105,6 +112,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c',
       [Networks.UNICHAIN]: '0x927B51f251480a681271180DA4de28D44EC4AfB8',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     decimals: {
@@ -113,6 +121,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 8,
       [Networks.UNICHAIN]: 8,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     logoUrl:
@@ -128,6 +137,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     decimals: {
@@ -136,6 +146,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 8,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/200x200/32994.png',
@@ -150,6 +161,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
     },
     decimals: {
@@ -158,6 +170,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -173,6 +186,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     decimals: {
@@ -181,6 +195,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/200x200/26133.png',
@@ -195,6 +210,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0xecac9c5f704e954931349da37f60e39f515c11c1',
     },
     decimals: {
@@ -203,10 +219,10 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 8,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 8,
     },
-    logoUrl:
-      'https://img.cryptorank.io/coins/lombard_staked_btc1725876587975.png',
+    logoUrl: 'https://img.cryptorank.io/coins/lombard_staked_btc1725876587975.png',
   },
   {
     id: '10',
@@ -218,6 +234,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
       [Networks.BASE]: '0xc3De830EA07524a0761646a6a4e4be0e114a3C83',
       [Networks.UNICHAIN]: '0x8f187aA05619a017077f5308904739877ce9eA21',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0xbf5140a22578168fd562dccf235e5d43a02ce9b1',
     },
     decimals: {
@@ -226,6 +243,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 18,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -241,6 +259,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: '0x779877A7B0D9E8603169DdbD7836e478b4624789',
       [Networks.BASE]: '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196',
       [Networks.UNICHAIN]: '0x5a53B6D19D8EDCb7923F0D840EeBB3f09BBeEfB7',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
     },
     decimals: {
@@ -249,6 +268,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 18,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -264,6 +284,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: '0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a',
       [Networks.BASE]: '0x63706e401c06ac8513145b7687A14804d17f814b',
       [Networks.UNICHAIN]: '0x02a24C380dA560E4032Dc6671d8164cfbEEAAE1e',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0xfb6115445bff7b52feb98650c87f44907e58f802',
     },
     decimals: {
@@ -272,6 +293,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: 18,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -287,6 +309,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     decimals: {
@@ -295,6 +318,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/200x200/26998.png',
@@ -309,6 +333,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     decimals: {
@@ -317,6 +342,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 6,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: null,
     },
     logoUrl:
@@ -333,6 +359,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -341,6 +368,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409/logo.png',
@@ -356,6 +384,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -364,9 +393,9 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
-    logoUrl:
-      'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
   },
   {
     id: '17',
@@ -379,9 +408,9 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
-    logoUrl:
-      'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png',
     addresses: {
       [Networks.ETHEREUM]: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
       // [Networks.BNB]: zeroEthereumAddress,
@@ -389,6 +418,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -402,6 +432,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x3055913c90Fcc1A6CE9a358911721eEb942013A1',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -410,6 +441,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898/logo.png',
@@ -425,6 +457,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: null,
@@ -433,9 +466,9 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
-    logoUrl:
-      'https://assets-cdn.trustwallet.com/blockchains/binance/assets/BTCB-1DE/logo.png',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/binance/assets/BTCB-1DE/logo.png',
   },
   {
     id: '20',
@@ -448,6 +481,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -456,6 +490,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png',
@@ -472,6 +507,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x3B86Ad95859b6AB773f55f8d94B4b9d443EE931f',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -480,6 +516,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -495,6 +532,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 9,
@@ -503,6 +541,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -517,6 +556,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: null,
@@ -525,6 +565,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -540,6 +581,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x368181499736d0c0cc614dbb145e2ec1ac86b8c6',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -548,6 +590,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -563,6 +606,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -571,6 +615,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -586,6 +631,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -594,6 +640,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
     },
   },
   {
@@ -609,6 +656,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -617,6 +665,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -632,6 +681,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -640,6 +690,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -654,6 +705,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0x80eede496655fb9047dd39d9f418d5483ed600df',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -662,6 +714,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -677,6 +730,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -685,6 +739,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -699,6 +754,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -707,6 +763,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -722,6 +779,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -730,6 +788,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -745,6 +804,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -753,6 +813,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -768,6 +829,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 6,
@@ -776,6 +838,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -791,6 +854,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -799,6 +863,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -814,6 +879,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -822,6 +888,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -836,6 +903,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 6,
@@ -844,6 +912,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -858,6 +927,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 8,
@@ -866,6 +936,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -880,6 +951,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 8,
@@ -888,6 +960,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -902,6 +975,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -910,6 +984,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -924,6 +999,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0x73E0C0d45E048D25Fc26Fa3159b0aA04BfA4Db98',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 8,
@@ -932,6 +1008,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 8,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -947,6 +1024,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 8,
@@ -955,6 +1033,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 8,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -969,6 +1048,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: null,
@@ -977,6 +1057,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -992,6 +1073,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 8,
@@ -1000,6 +1082,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1015,6 +1098,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
       [Networks.SEPOLIA]: '0xB82381A3fBD3FaFA77B3a7bE693342618240067b',
       [Networks.UNICHAIN]: '0xc02fE7317D4eb8753a02c35fe019786854A92001',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1023,6 +1107,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: 18,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1038,6 +1123,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1046,6 +1132,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1061,6 +1148,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0x7DCC39B4d1C53CB31e1aBc0e358b43987FEF80f7',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1069,6 +1157,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1083,6 +1172,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1091,6 +1181,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1105,6 +1196,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x65421ba909200b81640d98b979d07487c9781b66',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0xc3eACf0612346366Db554C991D7858716db09f58',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1113,6 +1205,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1127,6 +1220,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0xa25b25548B4C98B0c7d3d27dcA5D5ca743d68b7F',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: null,
@@ -1135,6 +1229,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1149,6 +1244,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: '0x072d71b257ECa6B60b5333626F6a55ea1B0c451c',
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1157,6 +1253,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: 18,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1171,6 +1268,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1179,6 +1277,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1194,6 +1293,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1202,6 +1302,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1216,6 +1317,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1224,6 +1326,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1238,6 +1341,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1246,6 +1350,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1260,6 +1365,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1268,6 +1374,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1282,6 +1389,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1290,6 +1398,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1304,6 +1413,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1312,6 +1422,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1327,6 +1438,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1335,6 +1447,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1350,6 +1463,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1358,6 +1472,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1373,6 +1488,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1381,6 +1497,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1396,6 +1513,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1404,6 +1522,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1418,6 +1537,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1426,6 +1546,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1440,6 +1561,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1448,14 +1570,14 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
     id: '65',
     name: 'Super OETH',
     symbol: 'superOETH',
-    logoUrl:
-      'https://assets.coingecko.com/coins/images/39828/standard/Super_OETH.png',
+    logoUrl: 'https://assets.coingecko.com/coins/images/39828/standard/Super_OETH.png',
     addresses: {
       [Networks.ETHEREUM]: null,
       [Networks.BASE]: '0xDBFeFD2e8460a6Ee4955A68582F85708BAEA60A3',
@@ -1463,6 +1585,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: null,
@@ -1471,6 +1594,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1485,6 +1609,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: '0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7',
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1493,6 +1618,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1508,6 +1634,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x12D8CE035c5DE3Ce39B1fDD4C1d5a745EAbA3b8C',
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1516,6 +1643,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: 18,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
   },
   {
@@ -1530,6 +1658,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -1538,6 +1667,367 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+  },
+  {
+    id: '69',
+    name: 'Hyperliquid',
+    symbol: 'HYPE',
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/32196.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: zeroEthereumAddress,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '70',
+    name: 'Staked HYPE',
+    symbol: 'stHYPE',
+    logoUrl: 'https://hyperevmscan.io/token/images/stHYPE_64.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '71',
+    name: 'Staked HYPE Shares',
+    symbol: 'wstHYPE',
+    logoUrl: 'https://hyperevmscan.io/token/images/stHYPE_64.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x94e8396e0869c9F2200760aF0621aFd240E1CF38',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '72',
+    name: 'Unit Bitcoin',
+    symbol: 'UBTC',
+    logoUrl: 'https://assets.coingecko.com/coins/images/55066/standard/ubtc.jpg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 8,
+    },
+  },
+  {
+    id: '73',
+    name: 'Unit Ethereum',
+    symbol: 'UETH',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/ethereum/info/logo.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xBe6727B535545C67d5cAa73dEa54865B92CF7907',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '74',
+    name: 'Kinetiq Staked HYPE',
+    symbol: 'kHYPE',
+    logoUrl: 'https://assets.coingecko.com/coins/images/67388/standard/khype.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xfD739d4e423301CE9385c1fb8850539D657C296D',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '75',
+    name: 'Looped HYPE',
+    symbol: 'LHYPE',
+    logoUrl: 'https://assets.coingecko.com/coins/images/54816/standard/loopedhype_logo_transparent.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x5748ae796AE46A4F1348a1693de4b50560485562',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '76',
+    name: 'Relend Network USDC',
+    symbol: 'rUSDC',
+    logoUrl: 'https://assets.coingecko.com/coins/images/66543/standard/rUSDC-hyper.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x9ab96A4668456896d45c301Bc3A15Cee76AA7B8D',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 6,
+    },
+  },
+  {
+    id: '77',
+    name: 'Hyper USD',
+    symbol: 'USDHL',
+    logoUrl: 'https://assets.coingecko.com/coins/images/66679/standard/usdhl.jpg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 6,
+    },
+  },
+  {
+    id: '78',
+    name: 'Hyperbeat USDT',
+    symbol: 'hbUSDT',
+    logoUrl: 'https://assets.coingecko.com/coins/images/67161/standard/hyperbeat_usdt.jpg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x5e105266db42f78FA814322Bce7f388B4C2e61eb',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '79',
+    name: 'Felix feUSD',
+    symbol: 'feUSD',
+    logoUrl: 'https://assets.coingecko.com/coins/images/55068/standard/feusd.jpg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '80',
+    name: 'Theo Short Duration US Treasury Fund',
+    symbol: 'thBILL',
+    logoUrl: 'https://assets.coingecko.com/coins/images/67650/standard/thBILL.png',
+    addresses: {
+      [Networks.ETHEREUM]: '0x5FA487BCa6158c64046B2813623e20755091DA0b',
+      [Networks.BASE]: '0xfDD22Ce6D1F66bc0Ec89b20BF16CcB6670F55A5a',
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xfDD22Ce6D1F66bc0Ec89b20BF16CcB6670F55A5a',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: 6,
+      [Networks.BASE]: 6,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 6,
+    },
+  },
+  {
+    id: '81',
+    name: 'Unit Solana',
+    symbol: 'USOL',
+    logoUrl: 'https://assets-cdn.trustwallet.com/blockchains/solana/info/logo.png',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x068f321Fa8Fb9f0D135f290Ef6a3e2813e1c8A29',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 9,
+    },
+  },
+  {
+    id: '82',
+    name: 'Wrapped HYPE',
+    symbol: 'WHYPE',
+    logoUrl: 'https://assets.coingecko.com/coins/images/54469/standard/_UP3jBsi_400x400.jpg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x5555555555555555555555555555555555555555',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 18,
+    },
+  },
+  {
+    id: '83',
+    name: 'Hyperbeat Ultra uBTC',
+    symbol: 'hbBTC',
+    logoUrl: 'https://hyperevmscan.io/token/images/hbBTC.svg',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0xc061d38903b99aC12713B550C2CB44B221674F94',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.BASE]: null,
+      // [Networks.BNB]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 8,
     },
   },
 ];

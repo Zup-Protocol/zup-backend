@@ -11,22 +11,17 @@ import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
+import { isArrayEmptyOrUndefined } from 'src/core/utils/array-utils';
 import { average, calculateDayPoolAPR } from 'src/core/utils/math-utils';
-import {
-  GetPoolsDocument,
-  GetPoolsQuery,
-  GetPoolsQueryVariables,
-  Pool_Filter,
-  PoolType,
-} from 'src/gen/graphql.gen';
+import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp } from 'src/gen/graphql.gen';
 import '../../core/extensions/string.extension';
 import { TokensService } from '../tokens/tokens.service';
 
 export class PoolsService {
   constructor(
     private readonly tokensService: TokensService,
-    @Inject('GraphqlClients')
-    private readonly graphqlClients: Record<Networks, GraphQLClient>,
+    @Inject('GraphqlClient')
+    private readonly graphqlClient: GraphQLClient,
   ) {}
 
   async searchPoolsInChain(params: {
@@ -35,17 +30,32 @@ export class PoolsService {
     network: Networks;
     filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
-    const poolsQueryResponse = await this._getPoolsForSingleNetwork(
-      params.token0Addresses,
-      params.token1Addresses,
-      params.network,
-      params.filters,
-    );
+    const search0Addresses = structuredClone(params.token0Addresses);
+    const search1Addresses = structuredClone(params.token1Addresses);
+
+    if (params.token0Addresses.includes(zeroEthereumAddress)) {
+      search0Addresses.push(NetworksUtils.wrappedNativeAddress(params.network));
+    }
+
+    if (params.token1Addresses.includes(zeroEthereumAddress)) {
+      search1Addresses.push(NetworksUtils.wrappedNativeAddress(params.network));
+    }
+
+    const poolsQueryResponse = await this._getPools({
+      filters: params.filters,
+      token0AddressesPerChainId: {
+        [params.network]: search0Addresses,
+      },
+      token1AddressesPerChainId: {
+        [params.network]: search1Addresses,
+      },
+    });
 
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
-      network: params.network,
-      tokenAddresses: params.token0Addresses.concat(params.token1Addresses),
+      userInputTokenAddresses: {
+        [params.network]: [...params.token0Addresses, ...params.token1Addresses],
+      } as Record<Networks, string[]>,
     });
 
     return {
@@ -60,79 +70,102 @@ export class PoolsService {
     filters: PoolSearchFiltersDTO;
   }): Promise<MatchedPoolsDTO> {
     const allSupportedNetworks = params.filters.testnetMode
-      ? NetworksUtils.values().filter((network) =>
-          NetworksUtils.isTestnet(network),
-        )
-      : NetworksUtils.values().filter(
-          (network) => !NetworksUtils.isTestnet(network),
-        );
+      ? NetworksUtils.values().filter((network) => NetworksUtils.isTestnet(network))
+      : NetworksUtils.values().filter((network) => !NetworksUtils.isTestnet(network));
 
-    const searchTokens0 = tokenList.filter((token) =>
-      params.token0Ids.includes(token.id!),
-    );
+    const searchTokens0 = tokenList.filter((token) => params.token0Ids.includes(token.id!));
+    const searchTokens1 = tokenList.filter((token) => params.token1Ids.includes(token.id!));
 
-    const searchTokens1 = tokenList.filter((token) =>
-      params.token1Ids.includes(token.id!),
-    );
-
-    const networksWithTokens = allSupportedNetworks.filter((network) => {
+    const networksWithPools = allSupportedNetworks.filter((network) => {
       return (
-        searchTokens0.some((token) => token?.addresses[network] !== null) ||
+        searchTokens0.some((token) => token?.addresses[network] !== null) &&
         searchTokens1.some((token) => token?.addresses[network] !== null)
       );
     });
 
-    if (networksWithTokens.length === 0) {
+    if (networksWithPools.length === 0) {
       return {
         pools: [],
         filters: params.filters,
       };
     }
 
-    const tokenAddressesPerChainId: Record<
-      number,
-      Record<number, string[]>
-    > = {};
+    const userInputTokenAddressesPerChainId: Record<number, string[]> = {};
+    const searchToken0AddressesPerChainId: Record<number, string[]> = {};
+    const searchToken1AddressesPerChainId: Record<number, string[]> = {};
 
-    networksWithTokens.forEach((network) => {
-      tokenAddressesPerChainId[network] = {
-        0: [],
-        1: [],
-      };
+    networksWithPools.forEach((network) => {
+      searchTokens0
+        .map((token) => token.addresses[network])
+        .filter((tokenAddress) => tokenAddress !== null)
+        .forEach((tokenAddress) => {
+          if (userInputTokenAddressesPerChainId[network] === undefined) {
+            userInputTokenAddressesPerChainId[network] = [];
+          }
 
-      tokenAddressesPerChainId[network][0] = searchTokens0
-        .filter((token) => token.addresses[network] !== null)
-        .map((token) => token.addresses[network]!);
+          if (!userInputTokenAddressesPerChainId[network].includes[tokenAddress]) {
+            userInputTokenAddressesPerChainId[network].push(tokenAddress);
+          }
 
-      tokenAddressesPerChainId[network][1] = searchTokens1
-        .filter((token) => token.addresses[network] !== null)
-        .map((token) => token.addresses[network]!);
+          if (searchToken0AddressesPerChainId[network] === undefined) {
+            searchToken0AddressesPerChainId[network] = [tokenAddress];
+          }
+
+          if (!searchToken0AddressesPerChainId[network].includes(tokenAddress)) {
+            searchToken0AddressesPerChainId[network].push(tokenAddress);
+          }
+
+          // include native wrapped tokens in the list if user searched with native token
+          // because of v3 and v2 pools being with wrapped native, and v4 being with native/wrapped
+          if (tokenAddress === zeroEthereumAddress) {
+            const wrappedNative = NetworksUtils.wrappedNativeAddress(network);
+            if (searchToken0AddressesPerChainId[network].includes(wrappedNative)) return;
+
+            searchToken0AddressesPerChainId[network].push(NetworksUtils.wrappedNativeAddress(network));
+          }
+        });
+
+      searchTokens1
+        .map((token) => token.addresses[network])
+        .filter((tokenAddress) => tokenAddress !== null)
+        .forEach((tokenAddress) => {
+          if (userInputTokenAddressesPerChainId[network] === undefined) {
+            userInputTokenAddressesPerChainId[network] = [];
+          }
+
+          if (!userInputTokenAddressesPerChainId[network].includes[tokenAddress]) {
+            userInputTokenAddressesPerChainId[network].push(tokenAddress);
+          }
+
+          if (searchToken1AddressesPerChainId[network] === undefined) {
+            searchToken1AddressesPerChainId[network] = [tokenAddress];
+          }
+
+          if (!searchToken1AddressesPerChainId[network].includes(tokenAddress)) {
+            searchToken1AddressesPerChainId[network].push(tokenAddress);
+          }
+
+          // include native wrapped tokens in the list if user searched with native token
+          // because of v3 and v2 pools being with wrapped native, and v4 being with native/wrapped
+          if (tokenAddress === zeroEthereumAddress) {
+            const wrappedNative = NetworksUtils.wrappedNativeAddress(network);
+            if (searchToken1AddressesPerChainId[network].includes(wrappedNative)) return;
+
+            searchToken1AddressesPerChainId[network].push(NetworksUtils.wrappedNativeAddress(network));
+          }
+        });
     });
 
-    const poolsQueryResponses = await this._getPoolsForMultipleNetworks(
-      networksWithTokens.map((network) => {
-        return {
-          network: network,
-          token0Addresses: tokenAddressesPerChainId[network][0],
-          token1Addresses: tokenAddressesPerChainId[network][1],
-        };
-      }),
-      params.filters,
-    );
+    const poolsQueryResponse = await this._getPools({
+      filters: params.filters,
+      token0AddressesPerChainId: searchToken0AddressesPerChainId,
+      token1AddressesPerChainId: searchToken1AddressesPerChainId,
+    });
 
-    const matchedPools = await Promise.all(
-      poolsQueryResponses.map((queryResponse, index) => {
-        const network = networksWithTokens[index];
-
-        return this._processPoolsDataFromQuery({
-          queryResponse,
-          network,
-          tokenAddresses: tokenAddressesPerChainId[network][0].concat(
-            tokenAddressesPerChainId[network][1],
-          ),
-        });
-      }),
-    );
+    const matchedPools = await this._processPoolsDataFromQuery({
+      queryResponse: poolsQueryResponse,
+      userInputTokenAddresses: userInputTokenAddressesPerChainId,
+    });
 
     const flatMatchedPools = matchedPools.flat();
 
@@ -142,154 +175,204 @@ export class PoolsService {
     };
   }
 
-  private async _getPoolsForSingleNetwork(
-    token0Addresses: string[],
-    token1Addresses: string[],
-    network: Networks,
-    filters: PoolSearchFiltersDTO,
-  ): Promise<GetPoolsQuery> {
-    const wrappedNativeAddress = NetworksUtils.wrappedNativeAddress(network);
-    const minTvlUsd = filters.minTvlUsd;
-    const typesAllowed = filters.allowedPoolTypes;
+  private async _getPools(params: {
+    token0AddressesPerChainId: Record<number, string[]>;
+    token1AddressesPerChainId: Record<number, string[]>;
+    filters: PoolSearchFiltersDTO;
+  }): Promise<GetPoolsQuery> {
+    const minTvlUsd = params.filters.minTvlUsd;
+    const typesAllowed = params.filters.allowedPoolTypes;
 
-    const possibleTokenCombinations: Pool_Filter[] = [];
+    Object.entries(params.token0AddressesPerChainId).forEach(([network, token0Addresses]) => {
+      params.token0AddressesPerChainId[network] = token0Addresses.map((address) => address.toLowerCase());
+    });
 
-    for (let i = 0; i < token0Addresses.length; i++) {
-      for (let j = 0; j < token1Addresses.length; j++) {
-        const tokenA = token0Addresses[i];
-        const tokenB = token1Addresses[j];
+    Object.entries(params.token1AddressesPerChainId).forEach(([network, token1Addresses]) => {
+      params.token1AddressesPerChainId[network] = token1Addresses.map((address) => address.toLowerCase());
+    });
 
-        if (tokenA === tokenB) continue;
+    const networks = new Set<number>(
+      Object.keys(params.token0AddressesPerChainId)
+        .concat(Object.keys(params.token1AddressesPerChainId))
+        .map((network) => Number(network)),
+    );
 
-        possibleTokenCombinations.push(
-          { token0: tokenA, token1: tokenB },
-          { token0: tokenB, token1: tokenA },
-        );
+    const possibleCombinations: Pool_Bool_Exp[] = [];
 
-        if (tokenA === zeroEthereumAddress) {
-          possibleTokenCombinations.push(
-            {
-              token0: tokenB,
-              token1: wrappedNativeAddress,
-              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
-            },
-            {
-              token0: wrappedNativeAddress,
-              token1: tokenB,
-              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
-            },
-          );
-        }
-
-        if (tokenB === zeroEthereumAddress) {
-          possibleTokenCombinations.push(
-            {
-              token0: tokenA,
-              token1: wrappedNativeAddress,
-              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
-            },
-            {
-              token0: wrappedNativeAddress,
-              token1: tokenA,
-              type_not: PoolType.V4, // do not search for wrapped native in v4 pools
-            },
-          );
-        }
+    for (const network of networks) {
+      if (
+        isArrayEmptyOrUndefined(params.token0AddressesPerChainId[network]) ||
+        isArrayEmptyOrUndefined(params.token1AddressesPerChainId[network])
+      ) {
+        continue;
       }
+
+      possibleCombinations.push({
+        _and: [
+          {
+            chainId: {
+              _eq: Number(network),
+            },
+          },
+          {
+            _or: [
+              {
+                token0: {
+                  tokenAddress: {
+                    _in: params.token0AddressesPerChainId[network],
+                  },
+                },
+                token1: {
+                  tokenAddress: {
+                    _in: params.token1AddressesPerChainId[network],
+                  },
+                },
+              },
+              {
+                token0: {
+                  tokenAddress: {
+                    _in: params.token1AddressesPerChainId[network],
+                  },
+                },
+                token1: {
+                  tokenAddress: {
+                    _in: params.token0AddressesPerChainId[network],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      });
     }
 
-    const response = await this.graphqlClients[network].request<
-      GetPoolsQuery,
-      GetPoolsQueryVariables
-    >(GetPoolsDocument, {
+    const response = await this.graphqlClient.request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
       poolsFilter: {
-        and: [
+        _and: [
           {
-            dailyData_: {
-              // remove pools that have not been active in the last 30 days
-              dayStartTimestamp_gt: Date.getDaysAgoTimestamp(30).toString(),
+            dailyData: {
+              dayStartTimestamp: {
+                // remove pools that have not been active in the last 20 days
+                _gt: Date.getDaysAgoTimestamp(30).toString(),
+              },
             },
-            totalValueLockedUSD_gt: minTvlUsd.toString(),
-            type_in: typesAllowed,
-            ...(filters.blockedProtocols.length > 0
-              ? { protocol_not_in: filters.blockedProtocols }
+            totalValueLockedUSD: {
+              _gt: minTvlUsd.toString(),
+              _lt: (1000000000000).toString(), // remove pools with tvl > 1 trillion (which today can be considered an error)
+            },
+            poolType: {
+              _in: typesAllowed,
+            },
+            ...(params.filters.blockedProtocols.length > 0
+              ? {
+                  protocol_id: {
+                    _nin: params.filters.blockedProtocols,
+                  },
+                }
               : {}),
           },
           {
-            or: possibleTokenCombinations,
+            _or: possibleCombinations,
           },
         ],
       },
       dailyDataFilter: {
-        dayStartTimestamp_gt: Date.getDaysAgoTimestamp(90).toString(),
+        feesUSD: {
+          _lt: '1000000000', // filter out weird days with very high fees
+        },
+        dayStartTimestamp: {
+          _gt: Date.getDaysAgoTimestamp(90).toString(),
+        },
       },
       hourlyDataFilter: {
-        hourStartTimestamp_gt: Date.yesterdayStartSecondsTimestamp().toString(),
+        feesUSD: {
+          _lt: '10000000', // filter out weird hours with very high fees
+        },
+        hourStartTimestamp: {
+          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+        },
       },
     });
 
     return response;
   }
 
-  private async _getPoolsForMultipleNetworks(
-    networks: {
-      network: Networks;
-      token0Addresses: string[];
-      token1Addresses: string[];
-    }[],
-    filters: PoolSearchFiltersDTO,
-  ): Promise<GetPoolsQuery[]> {
-    const responses = await Promise.all(
-      networks.map((searchNetworkData) => {
-        return this._getPoolsForSingleNetwork(
-          searchNetworkData.token0Addresses,
-          searchNetworkData.token1Addresses,
-          searchNetworkData.network,
-          filters,
-        );
-      }),
-    );
+  private async _getSearchedTokensMetadata(
+    userInputTokenAddresses: Record<Networks, string[]>,
+  ): Promise<Record<string, TokenDTO>> {
+    const tokensMetadata: Record<string, TokenDTO> = {};
+    const tokensService = this.tokensService;
 
-    return responses;
+    const promises = (): Promise<TokenDTO>[] => {
+      const requests: Promise<TokenDTO>[] = [];
+
+      for (const network of NetworksUtils.values()) {
+        const networkAddresses = userInputTokenAddresses[network];
+
+        if (!networkAddresses) continue;
+
+        networkAddresses.forEach((address) => {
+          requests.push(tokensService.getTokenByAddress(network, address));
+        });
+      }
+
+      return requests;
+    };
+
+    const tokensMetadataResponses = await Promise.all(promises());
+
+    for (let i = 0; i < tokensMetadataResponses.length; i++) {
+      const tokenMetadata = tokensMetadataResponses[i];
+      const tokenAddresses = tokenMetadata.addresses;
+
+      NetworksUtils.values().forEach((network) => {
+        if (tokenAddresses[network]) tokensMetadata[tokenAddresses[network].toLowerCase()] = tokenMetadata;
+      });
+    }
+
+    return tokensMetadata;
   }
 
   private async _processPoolsDataFromQuery(params: {
     queryResponse: GetPoolsQuery;
-    network: Networks;
-    tokenAddresses: string[];
+    userInputTokenAddresses: Record<Networks, string[]>;
   }): Promise<SupportedPoolType[]> {
-    const tokensMetadata: Record<string, TokenDTO> = {};
-
-    const tokensMetadataResponses = await Promise.all(
-      params.tokenAddresses.map((tokenAddress) => {
-        return this.tokensService.getTokenByAddress(
-          params.network,
-          tokenAddress,
-        );
-      }),
+    const tokensMetadata: Record<string, TokenDTO> = await this._getSearchedTokensMetadata(
+      params.userInputTokenAddresses,
     );
 
-    for (let i = 0; i < params.tokenAddresses.length; i++) {
-      const tokenAddress = params.tokenAddresses[i];
-      const tokenMetadata = tokensMetadataResponses[i];
+    const matchedPools: SupportedPoolType[] = [];
 
-      tokensMetadata[tokenAddress.toLowerCase()] = tokenMetadata;
-    }
-
-    return params.queryResponse.pools.map<SupportedPoolType>((pool) => {
+    for (const pool of params.queryResponse.Pool) {
       let pool24hFees: number = 0;
       const pool30dYields: number[] = [];
       const pool90dYields: number[] = [];
       const pool7DaysYields: number[] = [];
 
-      function poolToken0Metadata(): TokenDTO {
-        const isPoolToken0WrappedNative: boolean =
-          pool.token0.id.lowercasedEquals(
-            NetworksUtils.wrappedNativeAddress(params.network),
-          );
+      const didUserSearchForWrappedNativePoolsAtPoolNetwork = params.userInputTokenAddresses[
+        NetworksUtils.networkFromChainId(pool.chainId)
+      ].includes(NetworksUtils.wrappedNativeAddress(pool.chainId));
 
-        const poolToken0AddressMetadata =
-          tokensMetadata[pool.token0.id.toLowerCase()];
+      const isPoolToken0WrappedNative: boolean = pool.token0!.tokenAddress.lowercasedEquals(
+        NetworksUtils.wrappedNativeAddress(pool.chainId),
+      );
+
+      const isPoolToken1WrappedNative: boolean = pool.token1!.tokenAddress.lowercasedEquals(
+        NetworksUtils.wrappedNativeAddress(pool.chainId),
+      );
+
+      // filter out pools that are v4 with wrapped native
+      // due to the search for v3 pools with wrapped native
+      if (
+        (isPoolToken0WrappedNative || isPoolToken1WrappedNative) &&
+        pool.poolType === 'V4' &&
+        !didUserSearchForWrappedNativePoolsAtPoolNetwork
+      ) {
+        continue;
+      }
+
+      function poolToken0Metadata(): TokenDTO {
+        const poolToken0AddressMetadata = tokensMetadata[pool.token0!.tokenAddress.toLowerCase()];
 
         if (isPoolToken0WrappedNative && !poolToken0AddressMetadata) {
           return tokensMetadata[zeroEthereumAddress];
@@ -299,13 +382,7 @@ export class PoolsService {
       }
 
       function poolToken1Metadata(): TokenDTO {
-        const isPoolToken1WrappedNative: boolean =
-          pool.token1.id.lowercasedEquals(
-            NetworksUtils.wrappedNativeAddress(params.network),
-          );
-
-        const poolToken1AddressMetadata =
-          tokensMetadata[pool.token1.id.toLowerCase()];
+        const poolToken1AddressMetadata = tokensMetadata[pool.token1!.tokenAddress.toLowerCase()];
 
         if (isPoolToken1WrappedNative && !poolToken1AddressMetadata) {
           return tokensMetadata[zeroEthereumAddress];
@@ -322,80 +399,80 @@ export class PoolsService {
         const dailyData = pool.dailyData[i];
         if (!dailyData) continue;
 
-        const dayAPR = calculateDayPoolAPR(
-          Number(dailyData.totalValueLockedUSD),
-          Number(dailyData.feesUSD),
-        );
+        const dayAPR = calculateDayPoolAPR(Number(dailyData.totalValueLockedUSD), Number(dailyData.feesUSD));
+        if (dayAPR === 0) continue;
 
-        if (pool7DaysYields.length < 7) pool7DaysYields.push(dayAPR);
-        if (pool30dYields.length < 30) pool30dYields.push(dayAPR);
+        if (Number.parseFloat(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(7)) pool7DaysYields.push(dayAPR);
+        if (Number.parseFloat(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(30)) pool30dYields.push(dayAPR);
         pool90dYields.push(dayAPR);
       }
 
       const poolYield24h =
-        pool.hourlyData.length < 10
-          ? 0
-          : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
+        pool.hourlyData.length < 10 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
 
-      const poolYield7d =
-        pool7DaysYields.length < 3 ? 0 : average(pool7DaysYields);
+      const poolYield7d = pool7DaysYields.length < 3 ? 0 : average(pool7DaysYields);
+      const poolYield30d = pool30dYields.length < 20 ? 0 : average(pool30dYields);
+      const poolYield90d = pool90dYields.length < 70 ? 0 : average(pool90dYields);
 
-      const poolYield30d =
-        pool30dYields.length < 20 ? 0 : average(pool30dYields);
-
-      const poolYield90d =
-        pool90dYields.length < 70 ? 0 : average(pool90dYields);
+      if (poolYield24h === 0 && poolYield7d === 0 && poolYield30d === 0 && poolYield90d === 0) {
+        continue; // skip pool if all yields are 0
+      }
 
       const basePool: PoolDTO = {
-        chainId: params.network,
-        poolAddress: pool.id,
+        chainId: pool.chainId,
+        poolAddress: pool.poolAddress,
         totalValueLockedUSD: Number(pool.totalValueLockedUSD),
         yield24h: poolYield24h,
         yield30d: poolYield30d,
         yield90d: poolYield90d,
         yield7d: poolYield7d,
-        poolType: pool.type,
+        poolType: pool.poolType,
         protocol: {
-          id: pool.protocol.id,
+          id: pool.protocol!.id,
           // TODO: Remove workaround once the subgraph is updated using logos from CDN
-          logo: pool.protocol.logo.replace(
+          logo: pool.protocol!.logo.replace(
             'https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/dapps/',
             'https://assets-cdn.trustwallet.com/dapps/',
           ),
-          name: pool.protocol.name,
-          url: pool.protocol.url,
+          name: pool.protocol!.name,
+          url: pool.protocol!.url,
         },
         token0: poolToken0Metadata(),
         token1: poolToken1Metadata(),
-        positionManagerAddress: pool.protocol.positionManager,
-        permit2Address: pool.protocol.permit2!,
-        feeTier: pool.feeTier,
+        positionManagerAddress: pool.positionManager,
+        feeTier: pool.initialFeeTier,
       };
 
-      if (pool.type === PoolType.V3) {
+      if (pool.poolType === 'V3') {
         const v3Pool: V3PoolDTO = {
           ...basePool,
-          tickSpacing: pool.tickSpacing,
-          latestTick: pool.tick,
+          tickSpacing: pool.v3PoolData!.tickSpacing,
+          latestTick: pool.v3PoolData!.tick,
+          deployerAddress: pool.algebraPoolData?.deployer,
         };
 
-        return v3Pool;
+        matchedPools.push(v3Pool);
+        continue;
       }
 
-      if (pool.type === PoolType.V4) {
+      if (pool.poolType === 'V4') {
         const v4Pool: V4PoolDTO = {
           ...basePool,
-          latestTick: pool.tick,
-          tickSpacing: pool.tickSpacing,
-          hooksAddress: pool.v4Hooks ?? '',
-          poolManagerAddress: pool.protocol.v4PoolManager ?? '',
-          stateViewAddress: pool.protocol.v4StateView ?? '',
+          permit2Address: pool.v4PoolData!.permit2,
+          latestTick: pool.v4PoolData!.tick,
+          tickSpacing: pool.v4PoolData!.tickSpacing,
+          hooksAddress: pool.v4PoolData!.hooks,
+          poolManagerAddress: pool.v4PoolData!.poolManager,
+          stateViewAddress: pool.v4PoolData!.stateView ?? '',
         };
 
-        return v4Pool;
+        matchedPools.push(v4Pool);
+        continue;
       }
 
       throw new Error('Unsupported pool type received');
-    });
+    }
+
+    return matchedPools;
   }
 }

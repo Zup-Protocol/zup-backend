@@ -9,18 +9,14 @@ import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
-import {
-  GetTokenDocument,
-  GetTokenQuery,
-  GetTokenQueryVariables,
-} from 'src/gen/graphql.gen';
+import { GetTokenDocument, GetTokenQuery, GetTokenQueryVariables } from 'src/gen/graphql.gen';
 import '../../core/extensions/string.extension';
 
 export class TokensService {
   constructor(
     @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
-    @Inject('GraphqlClients')
-    private readonly graphqlClients: Record<Networks, GraphQLClient>,
+    @Inject('GraphqlClient')
+    private readonly graphqlClient: GraphQLClient,
   ) {}
 
   getPopularTokens(network?: Networks): TokenDTO[] {
@@ -55,14 +51,12 @@ export class TokensService {
       return group;
     });
 
-    return rawGroups;
+    return rawGroups.filter((group) => group.tokens.length > 0);
   }
 
   searchTokensByNameOrSymbol(query: string, network?: Networks): TokenDTO[] {
     const _tokenList =
-      network === undefined
-        ? tokenList
-        : tokenList.filter((token) => token.addresses[network] !== null);
+      network === undefined ? tokenList : tokenList.filter((token) => token.addresses[network] !== null);
 
     return _tokenList.filter((token) => {
       return (
@@ -72,10 +66,7 @@ export class TokensService {
     });
   }
 
-  async getTokenByAddress(
-    network: Networks,
-    address: string,
-  ): Promise<TokenDTO> {
+  async getTokenByAddress(network: Networks, address: string): Promise<TokenDTO> {
     if (address === zeroEthereumAddress) {
       return this._getNativeTokenData(network);
     }
@@ -86,9 +77,7 @@ export class TokensService {
 
     if (internalTokenMetadata) return internalTokenMetadata;
 
-    const alchemy = this.alchemyFactory(
-      NetworksUtils.getAlchemyNetwork(network),
-    );
+    const alchemy = this.alchemyFactory(NetworksUtils.getAlchemyNetwork(network));
 
     let alchemyTokenMetadata: TokenMetadataResponse | undefined;
 
@@ -104,28 +93,26 @@ export class TokensService {
       } as Record<Networks, string>,
       name: alchemyTokenMetadata?.name ?? '',
       symbol: alchemyTokenMetadata?.symbol ?? '',
-      decimals: { [network]: alchemyTokenMetadata?.decimals ?? 18 } as Record<
-        Networks,
-        number
-      >,
+      decimals: { [network]: alchemyTokenMetadata?.decimals ?? 18 } as Record<Networks, number>,
       logoUrl: alchemyTokenMetadata!.logo ?? '',
     };
   }
 
-  async getTokenPrice(
-    tokenAddress: string,
-    network: Networks,
-  ): Promise<TokenPriceDTO> {
-    const request = await this.graphqlClients[network].request<
-      GetTokenQuery,
-      GetTokenQueryVariables
-    >(GetTokenDocument, {
-      tokenId: tokenAddress,
-    });
+  async getTokenPrice(tokenAddress: string, network: Networks): Promise<TokenPriceDTO> {
+    const tokenPrice = await this.graphqlClient
+      .request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
+        tokenFilter: {
+          id: {
+            _eq: `${network}-${tokenAddress}`.toLowerCase(),
+          },
+        },
+      })
+      .then((response) => response.Token[0].usdPrice)
+      .catch(() => 0);
 
     return {
       address: tokenAddress,
-      usdPrice: Number.parseFloat(request.token?.usdPrice ?? '0'),
+      usdPrice: Number.parseFloat(String(tokenPrice ?? 0)),
     };
   }
 

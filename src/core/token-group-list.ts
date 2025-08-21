@@ -24,6 +24,11 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '36', // GHO
         '37', // AUSD
         '68', // RLUSD
+        '76', // rUSDC
+        '77', // USDHL
+        '78', // hbUSDT
+        '79', // feUSD
+        '80', // thBILL
       ]).has(token.id!),
     ),
   },
@@ -45,6 +50,8 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '42', // EBTC
         '43', // teleBTC
         '44', // 21BTC
+        '72', // UBTC
+        '83', // hbBTC
       ]).has(token.id!),
     ),
   },
@@ -77,6 +84,20 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '65', // superOETH
         '66', // pzETH
         '67', // ankrETH
+        '73', // UETH
+      ]).has(token.id!),
+    ),
+  },
+  {
+    id: 'group-4',
+    name: 'HYPE Pegged Tokens',
+    tokens: tokenList.filter((token) =>
+      new Set([
+        '69', // HYPE
+        '70', // stHYPE
+        '71', // wstHYPE
+        '74', // kHYPE
+        '75', // LHYPE
       ]).has(token.id!),
     ),
   },

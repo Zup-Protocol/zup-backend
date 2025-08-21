@@ -6,14 +6,13 @@ export enum Networks {
   SEPOLIA = 11155111,
   BASE = 8453,
   UNICHAIN = 130,
+  HYPER_EVM = 999,
   // BNB = 56,
 }
 
 export class NetworksUtils {
   static values(): Networks[] {
-    return (Object.values(Networks) as Networks[]).filter(
-      (value) => typeof value === 'number',
-    );
+    return (Object.values(Networks) as Networks[]).filter((value) => typeof value === 'number');
   }
 
   static getAlchemyNetwork(network: Networks): AlchemyNetwork {
@@ -28,6 +27,8 @@ export class NetworksUtils {
         return AlchemyNetwork.BASE_MAINNET;
       case Networks.UNICHAIN:
         return AlchemyNetwork.UNICHAIN_MAINNET;
+      case Networks.HYPER_EVM:
+        return AlchemyNetwork.HYPERLIQUID_MAINNET;
       // case Networks.BNB:
       //   return AlchemyNetwork.BNB_MAINNET;
     }
@@ -42,25 +43,20 @@ export class NetworksUtils {
     }
   }
 
-  static getSubgraphUrl(network: Networks): string {
-    switch (network) {
-      case Networks.ETHEREUM:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-ethereum/version/1.1.20/api`;
-      case Networks.SCROLL:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-scroll/version/1.1.20/api`;
-      case Networks.SEPOLIA:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-sepolia/version/1.1.20/api`;
-      case Networks.BASE:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-base/version/1.1.20/api`;
-      case Networks.UNICHAIN:
-        return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-unichain/version/1.1.20/api`;
-      // case Networks.BNB:
-      //   return `https://subgraph.satsuma-prod.com/${process.env.GRAPHQL_API_KEY}/zup-protocol-team--156415/zup-dexs-bnb/version/1.1.20/api`;
-    }
+  static getIndexerUrl(): string {
+    return process.env.INDEXER_URL!;
   }
 
   static isValidChainId(chainId: number): boolean {
-    return Object.values(Networks).includes(chainId);
+    return this.values().includes(chainId);
+  }
+
+  static networkFromChainId(chainId: number): Networks {
+    if (!this.isValidChainId(chainId)) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+
+    return this.values().find((network) => network.toString() === chainId.toString())!;
   }
 
   static wrappedNativeAddress(network: Networks): string {
@@ -75,6 +71,8 @@ export class NetworksUtils {
         return '0x4200000000000000000000000000000000000006';
       case Networks.UNICHAIN:
         return '0x4200000000000000000000000000000000000006';
+      case Networks.HYPER_EVM:
+        return '0x5555555555555555555555555555555555555555';
       // case Networks.BNB:
       //   return '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
     }
