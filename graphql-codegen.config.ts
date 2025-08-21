@@ -1,24 +1,20 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
+import 'dotenv/config'; // Load environment variables
 
 const config: CodegenConfig = {
+  schema: process.env.INDEXER_URL,
   overwrite: true,
-  schema:
-    'https://api.studio.thegraph.com/query/108565/zup-dexs-sepolia/1.1.16',
   documents: ['./src/graphql/*.graphql'],
-
   generates: {
     './src/gen/graphql.gen.ts': {
-      plugins: [
-        'typescript',
-        'typescript-graphql-request',
-        'typescript-operations',
-      ],
+      plugins: ['typescript', 'typescript-graphql-request', 'typescript-operations'],
     },
   },
   config: {
     scalars: {
+      pooltype: 'string',
       Bytes: 'string',
-      BigDecimal: 'string',
+      numeric: 'string',
       BigInt: 'string',
       ID: 'string',
     },

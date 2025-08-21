@@ -8,8 +8,8 @@ import { ProtocolsService } from './protocols.service';
   providers: [
     ProtocolsService,
     {
-      provide: 'GraphqlClients',
-      useValue: GraphQLService.shared.zupSubgraphClients,
+      provide: 'GraphqlClient',
+      useValue: GraphQLService.shared.client,
     },
   ],
   exports: [ProtocolsService],
