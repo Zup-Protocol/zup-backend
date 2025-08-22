@@ -32,6 +32,7 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '85', // USDbC
         '88', // msUSD
         '90', // USD+
+        '91', // USD₮0
       ]).has(token.id!),
     ),
   },
