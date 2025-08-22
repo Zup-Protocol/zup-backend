@@ -62,7 +62,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2',
       [Networks.UNICHAIN]: '0x588CE4F028D8e7B53B687865d6A67b3A54C75518',
-      [Networks.HYPER_EVM]: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb',
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: '0x55d398326f99059ff775485246999027b3197955',
     },
     decimals: {
@@ -71,7 +71,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 6,
       [Networks.UNICHAIN]: 6,
-      [Networks.HYPER_EVM]: 6,
+      [Networks.HYPER_EVM]: null,
       // [Networks.BNB]: 18,
     },
     logoUrl:
@@ -2177,5 +2177,27 @@ export const tokenList: TokenDTO[] = [
       [Networks.UNICHAIN]: null,
       [Networks.HYPER_EVM]: null,
     },
+  },
+  {
+    id: '91',
+    name: 'USD₮0',
+    symbol: 'USD₮0',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: '0x9151434b16b9763660705744891fA906F660EcC5',
+      [Networks.HYPER_EVM]: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: 6,
+      [Networks.HYPER_EVM]: 6,
+    },
+    logoUrl: 'https://assets.smold.app/api/token/130/0x9151434b16b9763660705744891fa906f660ecc5/logo.svg',
   },
 ];
