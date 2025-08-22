@@ -31,6 +31,9 @@ describe('TokenGroupList', () => {
             '78', // hbUSDT
             '79', // feUSD
             '80', // thBILL
+            '85', // USDbC
+            '88', // msUSD
+            '90', // USD+
           ]).has(token.id!),
         ),
       },

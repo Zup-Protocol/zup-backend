@@ -460,7 +460,8 @@ export class PoolsService {
         token0: poolToken0Metadata(),
         token1: poolToken1Metadata(),
         positionManagerAddress: pool.positionManager,
-        feeTier: pool.initialFeeTier,
+        initialFeeTier: pool.initialFeeTier,
+        currentFeeTier: pool.currentFeeTier,
       };
 
       if (pool.poolType === 'V3') {

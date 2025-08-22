@@ -16,5 +16,6 @@ export interface PoolDTO {
   poolType: string;
   permit2Address?: string | null;
   positionManagerAddress: string;
-  feeTier: number;
+  initialFeeTier: number;
+  currentFeeTier: number;
 }
