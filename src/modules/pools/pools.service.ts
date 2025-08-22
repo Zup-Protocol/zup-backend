@@ -12,7 +12,7 @@ import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
 import { isArrayEmptyOrUndefined } from 'src/core/utils/array-utils';
-import { average, calculateDayPoolAPR } from 'src/core/utils/math-utils';
+import { calculateDayPoolAPR, trimmedAverage } from 'src/core/utils/math-utils';
 import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp } from 'src/gen/graphql.gen';
 import '../../core/extensions/string.extension';
 import { TokensService } from '../tokens/tokens.service';
@@ -53,6 +53,7 @@ export class PoolsService {
 
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
+      filters: params.filters,
       userInputTokenAddresses: {
         [params.network]: [...params.token0Addresses, ...params.token1Addresses],
       } as Record<Networks, string[]>,
@@ -164,6 +165,7 @@ export class PoolsService {
 
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
+      filters: params.filters,
       userInputTokenAddresses: userInputTokenAddressesPerChainId,
     });
 
@@ -250,12 +252,13 @@ export class PoolsService {
       poolsFilter: {
         _and: [
           {
-            dailyData: {
-              dayStartTimestamp: {
-                // remove pools that have not been active in the last 20 days
-                _gt: Date.getDaysAgoTimestamp(30).toString(),
-              },
-            },
+            // TODO: Evaluate coming back with this if added @index to envio indexer
+            // dailyData: {
+            //   dayStartTimestamp: {
+            //     // remove pools that have not been active in the last 20 days
+            //     _gt: Date.getDaysAgoTimestamp(30).toString(),
+            //   },
+            // },
             totalValueLockedUSD: {
               _gt: minTvlUsd.toString(),
               _lt: (1000000000000).toString(), // remove pools with tvl > 1 trillion (which today can be considered an error)
@@ -281,7 +284,7 @@ export class PoolsService {
           _lt: '1000000000', // filter out weird days with very high fees
         },
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -336,12 +339,16 @@ export class PoolsService {
   private async _processPoolsDataFromQuery(params: {
     queryResponse: GetPoolsQuery;
     userInputTokenAddresses: Record<Networks, string[]>;
+    filters: PoolSearchFiltersDTO;
   }): Promise<SupportedPoolType[]> {
     const tokensMetadata: Record<string, TokenDTO> = await this._getSearchedTokensMetadata(
       params.userInputTokenAddresses,
     );
 
     const matchedPools: SupportedPoolType[] = [];
+    const trimmedAveragePercentage7Days: number = 0.15;
+    const trimmedAveragePercentage30Days: number = 0.1;
+    const trimmedAveragePercentage90Days: number = 0.05;
 
     for (const pool of params.queryResponse.Pool) {
       let pool24hFees: number = 0;
@@ -400,19 +407,32 @@ export class PoolsService {
         if (!dailyData) continue;
 
         const dayAPR = calculateDayPoolAPR(Number(dailyData.totalValueLockedUSD), Number(dailyData.feesUSD));
-        if (dayAPR === 0) continue;
+        if (dayAPR === 0 || Number(dailyData.totalValueLockedUSD) < params.filters.minTvlUsd) continue;
 
-        if (Number.parseFloat(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(7)) pool7DaysYields.push(dayAPR);
-        if (Number.parseFloat(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(30)) pool30dYields.push(dayAPR);
-        pool90dYields.push(dayAPR);
+        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(7 + trimmedAveragePercentage7Days * 7)) {
+          pool7DaysYields.push(dayAPR);
+        }
+
+        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(30 + trimmedAveragePercentage30Days * 30)) {
+          pool30dYields.push(dayAPR);
+        }
+
+        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(90 + trimmedAveragePercentage90Days * 90)) {
+          pool90dYields.push(dayAPR);
+        }
       }
 
       const poolYield24h =
         pool.hourlyData.length < 10 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
 
-      const poolYield7d = pool7DaysYields.length < 3 ? 0 : average(pool7DaysYields);
-      const poolYield30d = pool30dYields.length < 20 ? 0 : average(pool30dYields);
-      const poolYield90d = pool90dYields.length < 70 ? 0 : average(pool90dYields);
+      const poolYield7d =
+        pool7DaysYields.length < 3 ? 0 : trimmedAverage(pool7DaysYields, trimmedAveragePercentage7Days);
+
+      const poolYield30d =
+        pool30dYields.length < 20 ? 0 : trimmedAverage(pool30dYields, trimmedAveragePercentage30Days);
+
+      const poolYield90d =
+        pool90dYields.length < 70 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
 
       if (poolYield24h === 0 && poolYield7d === 0 && poolYield30d === 0 && poolYield90d === 0) {
         continue; // skip pool if all yields are 0

@@ -69,7 +69,6 @@ describe('PoolsController', () => {
             poolType: {
               _in: filters.allowedPoolTypes,
             },
-            dailyData: any(),
           },
           {
             _or: [
@@ -117,7 +116,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -163,9 +162,6 @@ describe('PoolsController', () => {
             protocol_id: {
               _nin: filters.blockedProtocols,
             },
-            dailyData: {
-              dayStartTimestamp: any(),
-            },
           },
           {
             _or: [
@@ -213,7 +209,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -335,7 +331,6 @@ describe('PoolsController', () => {
             protocol_id: {
               _nin: filters.blockedProtocols,
             },
-            dailyData: any(),
           },
           {
             _or: possibleCombinations,
@@ -345,7 +340,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -662,7 +657,6 @@ describe('PoolsController', () => {
             poolType: {
               _in: any(),
             },
-            dailyData: any(),
           },
           {
             _or: [
@@ -710,7 +704,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -820,7 +814,6 @@ describe('PoolsController', () => {
             poolType: {
               _in: any(),
             },
-            dailyData: any(),
           },
           {
             _or: possibleCombinations,
@@ -830,7 +823,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -940,7 +933,6 @@ describe('PoolsController', () => {
             poolType: {
               _in: any(),
             },
-            dailyData: any(),
           },
           {
             _or: possibleCombinations,
@@ -950,7 +942,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -971,7 +963,7 @@ describe('PoolsController', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 90 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(90).toString(),
+            dayStartTimestamp: Date.getDaysAgoTimestamp(100).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1129,7 +1121,6 @@ describe('PoolsController', () => {
             poolType: {
               _in: [PoolType.V4],
             },
-            dailyData: any(),
           },
           {
             _or: [
@@ -1177,7 +1168,7 @@ describe('PoolsController', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(90).toString(),
+          _gt: Date.getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
@@ -2190,6 +2181,283 @@ describe('PoolsController', () => {
     expect(result.pools[0].yield90d).toBe(3650);
   });
 
+  it('Should not use the daily data to make the daily yield calculation if the day tvl is less than the min tvl set in filters', async () => {
+    const minTvl = 1000;
+
+    const poolsQueryResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          v3PoolData: {
+            tick: '26187',
+            tickSpacing: 10,
+          },
+          dailyData: Array.from({ length: 70 }, (_, index) => ({
+            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            feesUSD: '10',
+            totalValueLockedUSD: (minTvl - 100).toString(),
+          })),
+          initialFeeTier: 100,
+          currentFeeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '100',
+            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+          })),
+          id: '0x0000000000000000000000000000000000000001',
+          positionManager: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            url: 'https://example.com/uniswap',
+          },
+
+          token0: {
+            decimals: 18,
+            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          poolType: PoolType.V3,
+          chainId: Networks.ETHEREUM,
+          poolAddress: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClient = {
+      request: jest.fn().mockReturnValue(poolsQueryResponse),
+    } as unknown as GraphQLClient;
+
+    const sut = new PoolsService(tokensService, graphqlClient);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: {
+        ...new PoolSearchFiltersDTO(),
+        minTvlUsd: minTvl,
+      },
+    });
+
+    expect(result.pools[0].yield30d).toBe(0);
+    expect(result.pools[0].yield7d).toBe(0);
+    expect(result.pools[0].yield90d).toBe(0);
+  });
+
+  it('Should cut out huge outliers from the 7d data and make the 7d yield calculation without them', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          v3PoolData: {
+            tick: '26187',
+            tickSpacing: 10,
+          },
+          dailyData: Array.from({ length: 10 }, (_, index) => ({
+            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            feesUSD: index === 3 ? '100' : '10',
+            totalValueLockedUSD: index === 3 ? '1' : '1000000',
+          })),
+          initialFeeTier: 100,
+          currentFeeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '100',
+            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+          })),
+          id: '0x0000000000000000000000000000000000000001',
+          positionManager: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            url: 'https://example.com/uniswap',
+          },
+
+          token0: {
+            decimals: 18,
+            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          poolType: PoolType.V3,
+          chainId: Networks.ETHEREUM,
+          poolAddress: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClient = {
+      request: jest.fn().mockReturnValue(poolsQueryResponse),
+    } as unknown as GraphQLClient;
+
+    const sut = new PoolsService(tokensService, graphqlClient);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: {
+        ...new PoolSearchFiltersDTO(),
+      },
+    });
+
+    expect(result.pools[0].yield7d).toBe(0.36499999999999994);
+  });
+
+  it('Should cut out huge outliers from the 30d data and make the 30d yield calculation without them', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          v3PoolData: {
+            tick: '26187',
+            tickSpacing: 10,
+          },
+          dailyData: Array.from({ length: 40 }, (_, index) => ({
+            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            feesUSD: index === 3 || index === 10 ? '127198' : '10',
+            totalValueLockedUSD: index === 3 ? '1111' : '1000000',
+          })),
+          initialFeeTier: 100,
+          currentFeeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '100',
+            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+          })),
+          id: '0x0000000000000000000000000000000000000001',
+          positionManager: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            url: 'https://example.com/uniswap',
+          },
+
+          token0: {
+            decimals: 18,
+            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          poolType: PoolType.V3,
+          chainId: Networks.ETHEREUM,
+          poolAddress: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClient = {
+      request: jest.fn().mockReturnValue(poolsQueryResponse),
+    } as unknown as GraphQLClient;
+
+    const sut = new PoolsService(tokensService, graphqlClient);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: {
+        ...new PoolSearchFiltersDTO(),
+      },
+    });
+
+    expect(result.pools[0].yield30d).toBe(0.36500000000000016);
+  });
+
+  it('Should cut out huge outliers from the 90d data and make the 90d yield calculation without them', async () => {
+    const poolsQueryResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          v3PoolData: {
+            tick: '26187',
+            tickSpacing: 10,
+          },
+          dailyData: Array.from({ length: 100 }, (_, index) => ({
+            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            feesUSD: index === 3 || index === 10 || index === 60 ? '9889788' : '10',
+            totalValueLockedUSD: index === 3 ? '436782' : '1000000',
+          })),
+          initialFeeTier: 100,
+          currentFeeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '100',
+            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+          })),
+          id: '0x0000000000000000000000000000000000000001',
+          positionManager: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            url: 'https://example.com/uniswap',
+          },
+
+          token0: {
+            decimals: 18,
+            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          poolType: PoolType.V3,
+          chainId: Networks.ETHEREUM,
+          poolAddress: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    graphqlClient = {
+      request: jest.fn().mockReturnValue(poolsQueryResponse),
+    } as unknown as GraphQLClient;
+
+    const sut = new PoolsService(tokensService, graphqlClient);
+
+    const result = await sut.searchPoolsInChain({
+      token0Addresses: ['<token0Address>'],
+      token1Addresses: ['<token1Address>'],
+      network: Networks.ETHEREUM,
+      filters: {
+        ...new PoolSearchFiltersDTO(),
+      },
+    });
+
+    expect(result.pools[0].yield90d).toBe(0.3649999999999993);
+  });
+
   it(`should make all possible combinations between the tokens0 and tokens1 when calling searchPoolsInChain
     and put it in the or filter in the query`, async () => {
     const tokens0 = ['<token0Address-1>', '<token0Address-2>', '<token0Address-3>'];
@@ -2211,7 +2479,6 @@ describe('PoolsController', () => {
           {
             totalValueLockedUSD: any(),
             poolType: any(),
-            dailyData: any(),
           },
           {
             _or: [
@@ -2261,41 +2528,42 @@ describe('PoolsController', () => {
     });
   });
 
-  it('should filter pools that are not active in the last 30 days using the daily data in the pool query', async () => {
-    const tokens0 = ['<token0Address-1>'];
-    const tokens1 = ['<token0Address-1>'];
+  // TODO: remove test or implement feature
+  // it('should filter pools that are not active in the last 30 days using the daily data in the pool query', async () => {
+  //   const tokens0 = ['<token0Address-1>'];
+  //   const tokens1 = ['<token0Address-1>'];
 
-    const chainId = Networks.ETHEREUM;
-    const filters = new PoolSearchFiltersDTO();
+  //   const chainId = Networks.ETHEREUM;
+  //   const filters = new PoolSearchFiltersDTO();
 
-    await sut.searchPoolsInChain({
-      token0Addresses: tokens0,
-      token1Addresses: tokens1,
-      network: chainId,
-      filters: filters,
-    });
+  //   await sut.searchPoolsInChain({
+  //     token0Addresses: tokens0,
+  //     token1Addresses: tokens1,
+  //     network: chainId,
+  //     filters: filters,
+  //   });
 
-    expect(graphqlClient.request).toHaveBeenCalledWith(GetPoolsDocument, <GetPoolsQueryVariables>{
-      poolsFilter: {
-        _and: [
-          {
-            totalValueLockedUSD: any(),
-            poolType: any(),
-            dailyData: {
-              dayStartTimestamp: {
-                _gt: Date.getDaysAgoTimestamp(30).toString(),
-              },
-            },
-          },
-          {
-            _or: any(),
-          },
-        ],
-      },
-      dailyDataFilter: any(),
-      hourlyDataFilter: any(),
-    });
-  });
+  //   expect(graphqlClient.request).toHaveBeenCalledWith(GetPoolsDocument, <GetPoolsQueryVariables>{
+  //     poolsFilter: {
+  //       _and: [
+  //         {
+  //           totalValueLockedUSD: any(),
+  //           poolType: any(),
+  //           dailyData: {
+  //             dayStartTimestamp: {
+  //               _gt: Date.getDaysAgoTimestamp(30).toString(),
+  //             },
+  //           },
+  //         },
+  //         {
+  //           _or: any(),
+  //         },
+  //       ],
+  //     },
+  //     dailyDataFilter: any(),
+  //     hourlyDataFilter: any(),
+  //   });
+  // });
 
   it('should filter out pools that the tvl are greater than 1 trillion, to reduce the possible errors', async () => {
     const tokens0 = ['<token0Address-1>'];
@@ -2320,7 +2588,6 @@ describe('PoolsController', () => {
               _lt: '1000000000000',
             },
             poolType: any(),
-            dailyData: any(),
           },
           {
             _or: any(),
@@ -2353,7 +2620,6 @@ describe('PoolsController', () => {
           {
             totalValueLockedUSD: any(),
             poolType: any(),
-            dailyData: any(),
           },
           {
             _or: any(),
