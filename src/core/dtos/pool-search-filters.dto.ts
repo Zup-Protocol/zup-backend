@@ -1,4 +1,4 @@
-import { PoolType } from 'src/gen/graphql.gen';
+import { PoolType } from '../enums/pool-type';
 
 export class PoolSearchFiltersDTO {
   minTvlUsd: number = 0;

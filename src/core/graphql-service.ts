@@ -1,22 +1,9 @@
 import { GraphQLClient } from 'graphql-request';
-import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { NetworksUtils } from 'src/core/enums/networks';
 
 export class GraphQLService {
   constructor() {
-    this.zupSubgraphClients = NetworksUtils.values().reduce(
-      (acc, network) => {
-        const graphqlClientUrl = NetworksUtils.getSubgraphUrl(network);
-
-        acc[network] = new GraphQLClient(graphqlClientUrl, {
-          headers: {
-            authorization: `Bearer ${process.env.GRAPHQL_API_KEY}`,
-          },
-        });
-
-        return acc;
-      },
-      {} as Record<Networks, GraphQLClient>,
-    );
+    this.client = new GraphQLClient(NetworksUtils.getIndexerUrl());
   }
 
   private static instance: GraphQLService;
@@ -29,5 +16,5 @@ export class GraphQLService {
     return GraphQLService.instance;
   }
 
-  zupSubgraphClients: Record<Networks, GraphQLClient>;
+  client: GraphQLClient;
 }

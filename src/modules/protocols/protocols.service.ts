@@ -1,5 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { Networks, NetworksUtils } from 'src/core/enums/networks';
 
 import { GraphQLClient } from 'graphql-request';
 import { ProtocolDTO } from 'src/core/dtos/protocol.dto';
@@ -11,47 +10,15 @@ import {
 
 export class ProtocolsService {
   constructor(
-    @Inject('GraphqlClients')
-    private readonly graphqlClients: Record<Networks, GraphQLClient>,
+    @Inject('GraphqlClient')
+    private readonly graphqlClient: GraphQLClient,
   ) {}
   async getAllSupportedProtocols(): Promise<ProtocolDTO[]> {
-    const supportedNetworks = NetworksUtils.values();
+    const response = await this.graphqlClient.request<
+      GetProtocolsQuery,
+      GetProtocolsQueryVariables
+    >(GetProtocolsDocument);
 
-    const responses = await Promise.all(
-      supportedNetworks.map((network) => {
-        return this.graphqlClients[network].request<
-          GetProtocolsQuery,
-          GetProtocolsQueryVariables
-        >(GetProtocolsDocument);
-      }),
-    );
-
-    const protocolList: ProtocolDTO[] = [];
-
-    responses.forEach((response) => {
-      protocolList.push(
-        ...response.protocols
-          .filter(
-            (rawProtocol) =>
-              !protocolList.some((protocol) => protocol.id === rawProtocol.id),
-          )
-          .map((rawProtocol) => {
-            const protocol: ProtocolDTO = {
-              id: rawProtocol.id,
-              name: rawProtocol.name,
-              url: rawProtocol.url,
-              // TODO: Remove workaround once the subgraph is updated using logos from CDN
-              logo: rawProtocol.logo.replace(
-                'https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/dapps/',
-                'https://assets-cdn.trustwallet.com/dapps/',
-              ),
-            };
-
-            return protocol;
-          }),
-      );
-    });
-
-    return protocolList;
+    return response.Protocol;
   }
 }

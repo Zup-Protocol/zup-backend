@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ARG INDEXER_URL
+ENV INDEXER_URL=$INDEXER_URL
+
 # Copy package files
 COPY package.json .
 COPY yarn.lock .

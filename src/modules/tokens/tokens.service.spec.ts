@@ -20,18 +20,13 @@ describe('TokensService', () => {
   beforeEach(() => {
     alchemy = {
       core: {
-        getTokenMetadata: jest
-          .fn()
-          .mockReturnValue(alchemyTokenMetadataWithoutLogo),
+        getTokenMetadata: jest.fn().mockReturnValue(alchemyTokenMetadataWithoutLogo),
       },
     } as unknown as Alchemy;
 
     const alchemyFactoryMock = jest.fn().mockReturnValue(alchemy);
 
-    tokensService = new TokensService(
-      alchemyFactoryMock,
-      {} as Record<Networks, GraphQLClient>,
-    );
+    tokensService = new TokensService(alchemyFactoryMock, {} as GraphQLClient);
   });
 
   it('should return the token list if no network is provided to the getPopularTokens method', () => {
@@ -44,9 +39,7 @@ describe('TokensService', () => {
     const network = Networks.SEPOLIA;
     const tokens = tokensService.getPopularTokens(network);
 
-    expect(tokens).toEqual(
-      tokenList.filter((token) => token.addresses[network] !== null),
-    );
+    expect(tokens).toEqual(tokenList.filter((token) => token.addresses[network] !== null));
   });
 
   it('should return the tokens matching the query by name or symbol when calling searchTokensByNameOrSymbol method', () => {
@@ -93,7 +86,7 @@ describe('TokensService', () => {
   });
 
   it('should request the right query to the GraphQL client when calling getTokenPrice method and return the token price from the response', async () => {
-    const tokenAddress = '0x1234567890123456789012345678901234567890';
+    const tokenAddress = '0x1234567890123456AAAA12345678901234567890';
     const network = Networks.SEPOLIA;
     const expectedPrice = 120.312;
 
@@ -101,31 +94,32 @@ describe('TokensService', () => {
       request: jest.fn(),
     } as unknown as { request: jest.Mock };
 
-    tokensService = new TokensService(jest.fn(), {
-      [network]: graphqlClient as unknown as GraphQLClient,
-    } as Record<Networks, GraphQLClient>);
+    tokensService = new TokensService(jest.fn(), graphqlClient as unknown as GraphQLClient);
 
     const expectedQuery = GetTokenDocument;
 
     const expectedVariables = <GetTokenQueryVariables>{
-      tokenId: tokenAddress,
+      tokenFilter: {
+        id: {
+          _eq: `${network}-${tokenAddress}`.toLowerCase(),
+        },
+      },
     };
 
-    graphqlClient.request.mockReturnValue({
-      token: {
-        address: tokenAddress,
-        decimals: 18,
-        symbol: 'TEST',
-        name: 'Test Token',
-        usdPrice: expectedPrice,
-      },
+    graphqlClient.request.mockResolvedValue({
+      Token: [
+        {
+          address: tokenAddress,
+          decimals: 18,
+          symbol: 'TEST',
+          name: 'Test Token',
+          usdPrice: expectedPrice,
+        },
+      ],
     });
     const result = await tokensService.getTokenPrice(tokenAddress, network);
 
-    expect(graphqlClient.request).toHaveBeenCalledWith(
-      expectedQuery,
-      expectedVariables,
-    );
+    expect(graphqlClient.request).toHaveBeenCalledWith(expectedQuery, expectedVariables);
 
     expect(result).toEqual({
       address: tokenAddress,
@@ -139,9 +133,7 @@ describe('TokensService', () => {
 
     const result = await tokensService.getTokenByAddress(network, address);
 
-    expect(result).toEqual(
-      tokenList.find((token) => token.addresses[network] === address),
-    );
+    expect(result).toEqual(tokenList.find((token) => token.addresses[network] === address));
   });
 
   it('should return the internal token metadata (if available) before alchemy fetch when calling getTokenByAddress method', async () => {
@@ -150,16 +142,11 @@ describe('TokensService', () => {
         getTokenMetadata: jest.fn().mockRejectedValue(new Error()),
       },
     };
-    const _sut = new TokensService(
-      jest.fn().mockReturnValue(_alchemy),
-      {} as Record<Networks, GraphQLClient>,
-    );
+    const _sut = new TokensService(jest.fn().mockReturnValue(_alchemy), {} as GraphQLClient);
 
     const address = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
     const network = Networks.SEPOLIA;
-    const tokenInList = tokenList.find(
-      (token) => token.addresses[network] === address,
-    );
+    const tokenInList = tokenList.find((token) => token.addresses[network] === address);
 
     const result = await _sut.getTokenByAddress(network, address);
 
@@ -197,14 +184,17 @@ describe('TokensService', () => {
     const network = Networks.SEPOLIA;
 
     const tokenGroups = tokensService.getTokenGroups(network);
-    const expectedReturn = tokenGroupList.map((group) => {
-      group.tokens = group.tokens.filter((groupToken) => {
-        const tokenAddress = groupToken?.addresses[network];
-        return tokenAddress !== undefined && tokenAddress !== null;
-      });
 
-      return group;
-    });
+    const expectedReturn = tokenGroupList
+      .map((group) => {
+        group.tokens = group.tokens.filter((groupToken) => {
+          const tokenAddress = groupToken?.addresses[network];
+          return tokenAddress !== undefined && tokenAddress !== null;
+        });
+
+        return group;
+      })
+      .filter((group) => group.tokens.length > 0);
 
     expect(tokenGroups).toEqual(expectedReturn);
   });

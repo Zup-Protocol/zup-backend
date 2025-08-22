@@ -1,4 +1,3 @@
-import { PoolType } from 'src/gen/graphql.gen';
 import { Networks } from '../enums/networks';
 import { ProtocolDTO } from './protocol.dto';
 import { TokenDTO } from './token.dto';
@@ -14,8 +13,9 @@ export interface PoolDTO {
   yield90d: number;
   chainId: Networks;
   totalValueLockedUSD: number;
-  poolType: PoolType;
+  poolType: string;
   permit2Address?: string | null;
   positionManagerAddress: string;
-  feeTier: number;
+  initialFeeTier: number;
+  currentFeeTier: number;
 }
