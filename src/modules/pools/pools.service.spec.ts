@@ -355,6 +355,7 @@ describe('PoolsController', () => {
   it('Should process and return the pool data got from the graphQL query correctly when calling the searchPoolsInChain method', async () => {
     const expectedPoolResult: SupportedPoolType = {
       latestTick: '0',
+      latestSqrtPriceX96: '12097189279187289172918',
       deployerAddress: undefined,
       token0: {
         addresses: {
@@ -403,6 +404,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: expectedPoolResult.latestTick,
             tickSpacing: expectedPoolResult.tickSpacing,
+            sqrtPriceX96: expectedPoolResult.latestSqrtPriceX96,
           },
           initialFeeTier: expectedPoolResult.initialFeeTier,
           currentFeeTier: expectedPoolResult.currentFeeTier,
@@ -480,6 +482,7 @@ describe('PoolsController', () => {
       initialFeeTier: 500,
       currentFeeTier: 2187,
       latestTick: '32657',
+      latestSqrtPriceX96: '6172189216872617862781627',
       poolAddress: '0xA30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
       poolType: PoolType.V3,
       positionManagerAddress: '0xB30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
@@ -503,6 +506,7 @@ describe('PoolsController', () => {
       chainId: Networks.SCROLL,
       totalValueLockedUSD: 98261715.218,
       latestTick: '89621782',
+      latestSqrtPriceX96: '987987897987892179827198',
       initialFeeTier: 500,
       currentFeeTier: 21111,
       poolAddress: '0xA30B2D8c8eB4aA8a5F6eF9C1E5Bd0A1b1eA4B1E5',
@@ -532,6 +536,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tickSpacing: poolResult1.tickSpacing,
             tick: poolResult1.latestTick,
+            sqrtPriceX96: poolResult1.latestSqrtPriceX96,
           },
           initialFeeTier: poolResult1.initialFeeTier,
           currentFeeTier: poolResult1.currentFeeTier,
@@ -576,6 +581,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: poolResult2.latestTick,
             tickSpacing: poolResult2.tickSpacing,
+            sqrtPriceX96: poolResult2.latestSqrtPriceX96,
           },
           initialFeeTier: poolResult2.initialFeeTier,
           currentFeeTier: poolResult2.currentFeeTier,
@@ -990,6 +996,7 @@ describe('PoolsController', () => {
             hooks: hooksAddress,
             tick: '123',
             tickSpacing: 987,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           positionManager: '0x0d4a11d5eeaac28ec3f61d1005ee9b9f5060c61a',
           token0: {
@@ -1019,6 +1026,7 @@ describe('PoolsController', () => {
       filters: new PoolSearchFiltersDTO(),
       pools: [
         {
+          latestSqrtPriceX96: poolsQueryResponse.Pool[0].v4PoolData!.sqrtPriceX96,
           latestTick: poolsQueryResponse.Pool[0].v4PoolData!.tick,
           chainId: Networks.ETHEREUM,
           initialFeeTier: poolsQueryResponse.Pool[0].initialFeeTier,
@@ -1191,6 +1199,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 10 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(10).toString(),
@@ -1257,6 +1266,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 2 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(10).toString(),
@@ -1322,6 +1332,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 10 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1393,6 +1404,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '871872816287111111111',
           },
           initialFeeTier: 100,
           currentFeeTier: 100,
@@ -1458,6 +1470,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tickSpacing: 10,
             tick: '26187',
+            sqrtPriceX96: '6172189216872617862781627',
           },
           initialFeeTier: 100,
           currentFeeTier: 100,
@@ -1518,6 +1531,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 21 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1583,6 +1597,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
@@ -1650,6 +1665,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
@@ -1717,6 +1733,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1784,6 +1801,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1855,6 +1873,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1926,6 +1945,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -1993,6 +2013,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -2060,6 +2081,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -2126,6 +2148,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 70 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(70).toString(),
@@ -2194,6 +2217,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 70 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -2265,6 +2289,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 10 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -2333,6 +2358,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 40 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
@@ -2401,6 +2427,7 @@ describe('PoolsController', () => {
           v3PoolData: {
             tick: '26187',
             tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 100 }, (_, index) => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
