@@ -467,6 +467,7 @@ export class PoolsService {
       if (pool.poolType === 'V3') {
         const v3Pool: V3PoolDTO = {
           ...basePool,
+          latestSqrtPriceX96: pool.v3PoolData!.sqrtPriceX96,
           tickSpacing: pool.v3PoolData!.tickSpacing,
           latestTick: pool.v3PoolData!.tick,
           deployerAddress: pool.algebraPoolData?.deployer,
@@ -485,6 +486,7 @@ export class PoolsService {
           hooksAddress: pool.v4PoolData!.hooks,
           poolManagerAddress: pool.v4PoolData!.poolManager,
           stateViewAddress: pool.v4PoolData!.stateView ?? '',
+          latestSqrtPriceX96: pool.v4PoolData!.sqrtPriceX96,
         };
 
         matchedPools.push(v4Pool);

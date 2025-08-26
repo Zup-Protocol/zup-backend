@@ -6,4 +6,5 @@ export interface V4PoolDTO extends PoolDTO {
   poolManagerAddress: string;
   tickSpacing: number;
   latestTick: string;
+  latestSqrtPriceX96: string;
 }

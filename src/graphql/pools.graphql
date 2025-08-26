@@ -18,6 +18,7 @@ query GetPools(
     }
     v3PoolData {
       tickSpacing
+      sqrtPriceX96
       tick
     }
     v4PoolData {
@@ -26,6 +27,7 @@ query GetPools(
       hooks
       permit2
       stateView
+      sqrtPriceX96
       poolManager
     }
     protocol {
