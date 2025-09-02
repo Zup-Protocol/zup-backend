@@ -2200,4 +2200,28 @@ export const tokenList: TokenDTO[] = [
     },
     logoUrl: 'https://assets.smold.app/api/token/130/0x9151434b16b9763660705744891fa906f660ecc5/logo.svg',
   },
+  {
+    id: '92',
+    name: 'World Liberty Financial',
+    symbol: 'WLFI',
+    addresses: {
+      [Networks.ETHEREUM]: '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: 18,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+
+    logoUrl:
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6/logo.png',
+  },
 ];
