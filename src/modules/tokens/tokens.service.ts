@@ -1,12 +1,10 @@
 import { Inject } from '@nestjs/common';
-import { TokenMetadataResponse } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
-import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { zeroEthereumAddress } from 'src/core/constants';
 import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
-import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
 import { GetTokenDocument, GetTokenQuery, GetTokenQueryVariables } from 'src/gen/graphql.gen';
@@ -14,7 +12,6 @@ import '../../core/extensions/string.extension';
 
 export class TokensService {
   constructor(
-    @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
     @Inject('GraphqlClient')
     private readonly graphqlClient: GraphQLClient,
   ) {}
@@ -77,24 +74,24 @@ export class TokensService {
 
     if (internalTokenMetadata) return internalTokenMetadata;
 
-    const alchemy = this.alchemyFactory(NetworksUtils.getAlchemyNetwork(network));
+    const indexerToken = await this.graphqlClient.request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
+      tokenFilter: {
+        id: {
+          _eq: `${network}-${address}`.toLowerCase(),
+        },
+      },
+    });
 
-    let alchemyTokenMetadata: TokenMetadataResponse | undefined;
-
-    try {
-      alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
-    } catch {
-      // ignore
-    }
+    const token = indexerToken.Token[0];
 
     return {
       addresses: {
         [network]: address,
       } as Record<Networks, string>,
-      name: alchemyTokenMetadata?.name ?? '',
-      symbol: alchemyTokenMetadata?.symbol ?? '',
-      decimals: { [network]: alchemyTokenMetadata?.decimals ?? 18 } as Record<Networks, number>,
-      logoUrl: alchemyTokenMetadata!.logo ?? '',
+      decimals: { [network]: token.decimals } as Record<Networks, number>,
+      name: token.name,
+      symbol: token.symbol,
+      logoUrl: '',
     };
   }
 
