@@ -2234,7 +2234,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0xA99F6e6785Da0F5d6fB42495Fe424BCE029Eeb3E',
       [Networks.UNICHAIN]: null,
-      [Networks.HYPER_EVM]: null,
+      [Networks.HYPER_EVM]: '0xd6eb81136884713e843936843e286fd2a85a205a',
     },
     decimals: {
       [Networks.ETHEREUM]: 18,
@@ -2242,7 +2242,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: 18,
       [Networks.UNICHAIN]: null,
-      [Networks.HYPER_EVM]: null,
+      [Networks.HYPER_EVM]: 18,
     },
 
     logoUrl:
