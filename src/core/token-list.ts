@@ -2224,4 +2224,28 @@ export const tokenList: TokenDTO[] = [
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6/logo.png',
   },
+  {
+    id: '93',
+    name: 'Pendle',
+    symbol: 'PENDLE',
+    addresses: {
+      [Networks.ETHEREUM]: '0x808507121b80c02388fad14726482e061b8da827',
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: '0xA99F6e6785Da0F5d6fB42495Fe424BCE029Eeb3E',
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: 18,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: 18,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+
+    logoUrl:
+      'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x808507121B80c02388fAd14726482e061B8da827/logo.png',
+  },
 ];
