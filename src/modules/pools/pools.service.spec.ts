@@ -1192,7 +1192,7 @@ describe('PoolsController', () => {
     });
   });
 
-  it('Should return zero as yield when there are not at least 20 days of data in the 30d yield', async () => {
+  it('Should return zero as yield when there are not at least 15 days of data in the 30d yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1208,7 +1208,7 @@ describe('PoolsController', () => {
           })),
           initialFeeTier: 100,
           currentFeeTier: 100,
-          hourlyData: Array.from({ length: 24 }, () => ({
+          hourlyData: Array.from({ length: 14 }, () => ({
             feesUSD: '100',
             hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
           })),
@@ -1325,7 +1325,7 @@ describe('PoolsController', () => {
     expect(result.pools[0].yield7d).toBe(0);
   });
 
-  it('Should return zero as yield when there are not at least 10 hours of data in the 24h yield', async () => {
+  it('Should return zero as yield when there are not at least 5 hours of data in the 24h yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1341,7 +1341,7 @@ describe('PoolsController', () => {
           })),
           initialFeeTier: 100,
           currentFeeTier: 100,
-          hourlyData: Array.from({ length: 8 }, () => ({
+          hourlyData: Array.from({ length: 4 }, () => ({
             feesUSD: '100',
             hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
           })),
@@ -1590,7 +1590,7 @@ describe('PoolsController', () => {
     expect(result.pools[0].yield30d).toBe(3650);
   });
 
-  it('Should return zero as yield when there are not at least 70 days of data in the 90d yield', async () => {
+  it('Should return zero as yield when there are not at least 60 days of data in the 90d yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1599,7 +1599,7 @@ describe('PoolsController', () => {
             tickSpacing: 10,
             sqrtPriceX96: '6172189216872617862781627',
           },
-          dailyData: Array.from({ length: 69 }, () => ({
+          dailyData: Array.from({ length: 59 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
 
             feesUSD: '10',

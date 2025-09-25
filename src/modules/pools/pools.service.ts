@@ -531,16 +531,16 @@ export class PoolsService {
       }
 
       const poolYield24h =
-        pool.hourlyData.length < 10 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
+        pool.hourlyData.length < 5 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
 
       const poolYield7d =
         pool7DaysYields.length < 3 ? 0 : trimmedAverage(pool7DaysYields, trimmedAveragePercentage7Days);
 
       const poolYield30d =
-        pool30dYields.length < 20 ? 0 : trimmedAverage(pool30dYields, trimmedAveragePercentage30Days);
+        pool30dYields.length < 15 ? 0 : trimmedAverage(pool30dYields, trimmedAveragePercentage30Days);
 
       const poolYield90d =
-        pool90dYields.length < 70 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
+        pool90dYields.length < 60 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
 
       const basePool: PoolDTO = {
         chainId: pool.chainId,
