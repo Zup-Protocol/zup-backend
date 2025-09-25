@@ -2248,4 +2248,50 @@ export const tokenList: TokenDTO[] = [
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x808507121B80c02388fAd14726482e061B8da827/logo.png',
   },
+  {
+    id: '94',
+    name: 'Metamask USD',
+    symbol: 'mUSD',
+    addresses: {
+      [Networks.ETHEREUM]: '0xacA92E438df0B2401fF60dA7E4337B687a2435DA',
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: 6,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: null,
+    },
+
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/38167.png',
+  },
+  {
+    id: '95',
+    name: 'Hyperliquid USD',
+    symbol: 'USDH',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: '0x111111a1a0667d36bD57c0A9f569b98057111111',
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: null,
+      [Networks.HYPER_EVM]: 6,
+    },
+
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/38331.png',
+  },
 ];

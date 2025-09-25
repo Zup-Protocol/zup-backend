@@ -36,6 +36,8 @@ describe('TokenGroupList', () => {
             '90', // USD+
             '91', // USD₮0
             '20', // USD1
+            '94', // mUSD
+            '95', // USDH
           ]).has(token.id!),
         ),
       },
