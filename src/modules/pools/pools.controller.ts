@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Param, ParseIntPipe, Post, Query, ValidationPipe } from '@nestjs/common';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { tokenGroupList } from 'src/core/token-group-list';
@@ -52,12 +44,8 @@ export class PoolsController {
     @Body('filters', new ValidationPipe({ transform: true }))
     filters: PoolSearchFiltersDTO = new PoolSearchFiltersDTO(),
   ): Promise<MatchedPoolsDTO> {
-    const tokens0: string[] = [
-      ...(token0Address !== undefined ? [token0Address] : []),
-    ];
-    const tokens1: string[] = [
-      ...(token1Address !== undefined ? [token1Address] : []),
-    ];
+    const tokens0: string[] = [...(token0Address !== undefined ? [token0Address] : [])];
+    const tokens1: string[] = [...(token1Address !== undefined ? [token1Address] : [])];
 
     if (group0Id !== undefined) {
       tokens0.push(...this._resolveTokensFromGroupIds(group0Id, chainId));
@@ -75,10 +63,7 @@ export class PoolsController {
     });
   }
 
-  private _resolveTokensFromGroupIds(
-    groupId: string,
-    chainId?: number,
-  ): string[] {
+  private _resolveTokensFromGroupIds(groupId: string, chainId?: number): string[] {
     const tokens: string[] = [];
     const groupTokens = tokenGroupList.find((group) => {
       return group.id === groupId;

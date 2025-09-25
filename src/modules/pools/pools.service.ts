@@ -542,10 +542,6 @@ export class PoolsService {
       const poolYield90d =
         pool90dYields.length < 70 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
 
-      if (poolYield24h === 0 && poolYield7d === 0 && poolYield30d === 0 && poolYield90d === 0) {
-        continue; // skip pool if all yields are 0
-      }
-
       const basePool: PoolDTO = {
         chainId: pool.chainId,
         poolAddress: pool.poolAddress,
