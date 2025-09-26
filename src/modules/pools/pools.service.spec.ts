@@ -15,7 +15,7 @@ import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp 
 import { TokensService } from '../tokens/tokens.service';
 import { PoolsService } from './pools.service';
 
-describe('PoolsController', () => {
+describe('PoolsServiceTest', () => {
   let sut: PoolsService;
   let tokensService: _MockProxy<TokensService> & TokensService;
   let graphqlClient: GraphQLClient;

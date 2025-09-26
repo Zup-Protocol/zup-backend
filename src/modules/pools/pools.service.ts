@@ -489,7 +489,11 @@ export class PoolsService {
       function poolToken0Metadata(): TokenDTO {
         const poolToken0AddressMetadata = tokensMetadata[pool.token0!.tokenAddress.toLowerCase()];
 
-        if (isPoolToken0WrappedNative && !poolToken0AddressMetadata) {
+        if (isPoolToken0WrappedNative && pool.poolType === 'V4') {
+          return poolToken0AddressMetadata;
+        }
+
+        if (isPoolToken0WrappedNative && (!poolToken0AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
           return tokensMetadata[zeroEthereumAddress];
         }
 
@@ -499,7 +503,11 @@ export class PoolsService {
       function poolToken1Metadata(): TokenDTO {
         const poolToken1AddressMetadata = tokensMetadata[pool.token1!.tokenAddress.toLowerCase()];
 
-        if (isPoolToken1WrappedNative && !poolToken1AddressMetadata) {
+        if (isPoolToken1WrappedNative && pool.poolType === 'V4') {
+          return poolToken1AddressMetadata;
+        }
+
+        if (isPoolToken1WrappedNative && (!poolToken1AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
           return tokensMetadata[zeroEthereumAddress];
         }
 

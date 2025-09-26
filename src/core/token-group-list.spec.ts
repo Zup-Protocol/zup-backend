@@ -70,6 +70,7 @@ describe('TokenGroupList', () => {
         tokens: tokenList.filter((token) =>
           new Set([
             '1', // ETH
+            '2', // WETH
             '45', // wstETH
             '46', // WBETH
             '47', // weETH
