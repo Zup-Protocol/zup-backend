@@ -15,7 +15,7 @@ import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp 
 import { TokensService } from '../tokens/tokens.service';
 import { PoolsService } from './pools.service';
 
-describe('PoolsController', () => {
+describe('PoolsServiceTest', () => {
   let sut: PoolsService;
   let tokensService: _MockProxy<TokensService> & TokensService;
   let graphqlClient: GraphQLClient;
@@ -1192,7 +1192,7 @@ describe('PoolsController', () => {
     });
   });
 
-  it('Should return zero as yield when there are not at least 20 days of data in the 30d yield', async () => {
+  it('Should return zero as yield when there are not at least 15 days of data in the 30d yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1208,7 +1208,7 @@ describe('PoolsController', () => {
           })),
           initialFeeTier: 100,
           currentFeeTier: 100,
-          hourlyData: Array.from({ length: 24 }, () => ({
+          hourlyData: Array.from({ length: 14 }, () => ({
             feesUSD: '100',
             hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
           })),
@@ -1325,7 +1325,7 @@ describe('PoolsController', () => {
     expect(result.pools[0].yield7d).toBe(0);
   });
 
-  it('Should return zero as yield when there are not at least 10 hours of data in the 24h yield', async () => {
+  it('Should return zero as yield when there are not at least 5 hours of data in the 24h yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1341,7 +1341,7 @@ describe('PoolsController', () => {
           })),
           initialFeeTier: 100,
           currentFeeTier: 100,
-          hourlyData: Array.from({ length: 8 }, () => ({
+          hourlyData: Array.from({ length: 4 }, () => ({
             feesUSD: '100',
             hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
           })),
@@ -1590,7 +1590,7 @@ describe('PoolsController', () => {
     expect(result.pools[0].yield30d).toBe(3650);
   });
 
-  it('Should return zero as yield when there are not at least 70 days of data in the 90d yield', async () => {
+  it('Should return zero as yield when there are not at least 60 days of data in the 90d yield', async () => {
     const poolsQueryResponse: GetPoolsQuery = {
       Pool: [
         {
@@ -1599,7 +1599,7 @@ describe('PoolsController', () => {
             tickSpacing: 10,
             sqrtPriceX96: '6172189216872617862781627',
           },
-          dailyData: Array.from({ length: 69 }, () => ({
+          dailyData: Array.from({ length: 59 }, () => ({
             dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
 
             feesUSD: '10',
@@ -1656,73 +1656,6 @@ describe('PoolsController', () => {
     });
 
     expect(result.pools[0].yield90d).toBe(0);
-  });
-
-  it('Should not return the pool if all the yields are zero', async () => {
-    const poolsQueryResponse: GetPoolsQuery = {
-      Pool: [
-        {
-          v3PoolData: {
-            tick: '26187',
-            tickSpacing: 10,
-            sqrtPriceX96: '6172189216872617862781627',
-          },
-          dailyData: Array.from({ length: 69 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
-            feesUSD: '0',
-            totalValueLockedUSD: '100',
-          })),
-          initialFeeTier: 100,
-          currentFeeTier: 100,
-          hourlyData: Array.from({ length: 24 }, () => ({
-            feesUSD: '0',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
-          })),
-          id: '0x0000000000000000000000000000000000000001',
-          positionManager: '0x0000000000000000000000000000000000000001',
-          protocol: {
-            id: 'uniswap',
-            logo: 'https://example.com/logo.png',
-            name: 'Uniswap',
-            url: 'https://example.com/uniswap',
-          },
-
-          token0: {
-            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
-            decimals: 18,
-            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
-            name: 'Wrapped Ether',
-            symbol: 'WETH',
-          },
-          token1: {
-            tokenAddress: '0x0000000000000000000000000000000000000002',
-            decimals: 18,
-            id: '0x0000000000000000000000000000000000000002',
-            name: 'Wrapped Ether',
-            symbol: 'WETH',
-          },
-          poolType: PoolType.V3,
-          chainId: Networks.ETHEREUM,
-          poolAddress: '0x0000000000000000000000000000000000000001',
-          totalValueLockedUSD: '216876',
-        },
-      ],
-    };
-
-    graphqlClient = {
-      request: jest.fn().mockReturnValue(poolsQueryResponse),
-    } as unknown as GraphQLClient;
-
-    const sut = new PoolsService(tokensService, graphqlClient);
-
-    const result = await sut.searchPoolsInChain({
-      token0Addresses: ['<token0Address>'],
-      token1Addresses: ['<token1Address>'],
-      network: Networks.ETHEREUM,
-      filters: new PoolSearchFiltersDTO(),
-    });
-
-    expect(result.pools.length).toBe(0);
   });
 
   it('Should return the pool token0 as native if the user searched for native, but the pool token0 is wrapped native', async () => {

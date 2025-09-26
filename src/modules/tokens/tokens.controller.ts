@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  ParseIntPipe,
-  Query,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, ParseIntPipe, Query } from '@nestjs/common';
 
 import { zeroEthereumAddress } from 'src/core/constants';
 import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
@@ -60,20 +54,20 @@ export class TokensController {
     }
 
     if (!query) {
-      throw new BadRequestException(
-        'A query string should be provided in order to perform a search',
-      );
+      throw new BadRequestException('A query string should be provided in order to perform a search');
     }
 
     if (!network && isSearchByAddress) {
-      throw new BadRequestException(
-        'A chain id should be provided to get a token by address',
-      );
+      throw new BadRequestException('A chain id should be provided to get a token by address');
     }
 
-    return !isSearchByAddress
-      ? this.tokensService.searchTokensByNameOrSymbol(query, network)
-      : [await this.tokensService.getTokenByAddress(network!, query)];
+    if (!isSearchByAddress) return this.tokensService.searchTokensByNameOrSymbol(query, network);
+
+    try {
+      return [await this.tokensService.getTokenByAddress(network!, query)];
+    } catch {
+      return [];
+    }
   }
 
   @Get('/price')
@@ -93,14 +87,8 @@ export class TokensController {
 
     const tokenPrice = await this.tokensService.getTokenPrice(address, chainId);
 
-    if (
-      tokenPrice.usdPrice === 0 &&
-      address.lowercasedEquals(zeroEthereumAddress)
-    ) {
-      return await this.tokensService.getTokenPrice(
-        NetworksUtils.wrappedNativeAddress(chainId),
-        chainId,
-      );
+    if (tokenPrice.usdPrice === 0 && address.lowercasedEquals(zeroEthereumAddress)) {
+      return await this.tokensService.getTokenPrice(NetworksUtils.wrappedNativeAddress(chainId), chainId);
     }
 
     return tokenPrice;

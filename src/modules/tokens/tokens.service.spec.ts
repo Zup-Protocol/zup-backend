@@ -1,6 +1,8 @@
-import { Alchemy } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
+import { mock } from 'jest-mock-extended';
+import { _MockProxy } from 'jest-mock-extended/lib/Mock';
 import { zeroEthereumAddress } from 'src/core/constants';
+import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
@@ -9,24 +11,26 @@ import { TokensService } from './tokens.service';
 
 describe('TokensService', () => {
   let tokensService: TokensService;
-  let alchemy: Alchemy;
-
-  const alchemyTokenMetadataWithoutLogo = {
-    name: 'Test Token',
-    symbol: 'TT',
-    decimals: 18,
-  };
+  let graphQlClient: _MockProxy<GraphQLClient> & GraphQLClient;
 
   beforeEach(() => {
-    alchemy = {
-      core: {
-        getTokenMetadata: jest.fn().mockReturnValue(alchemyTokenMetadataWithoutLogo),
-      },
-    } as unknown as Alchemy;
+    const mockGraphQlClient = mock<GraphQLClient>();
+    mockGraphQlClient.request.mockResolvedValue({
+      Token: [
+        <TokenDTO>{
+          addresses: { [Networks.SEPOLIA]: '0x1234567890123456789012345678901234567890' } as Record<Networks, string>,
+          decimals: { [Networks.SEPOLIA]: 18 } as Record<Networks, number>,
+          symbol: 'TEST',
+          name: 'Test Token',
+          usdPrice: 120.312,
+          logoUrl: '',
+        },
+      ],
+    });
 
-    const alchemyFactoryMock = jest.fn().mockReturnValue(alchemy);
+    graphQlClient = mockGraphQlClient;
 
-    tokensService = new TokensService(alchemyFactoryMock, {} as GraphQLClient);
+    tokensService = new TokensService(graphQlClient);
   });
 
   it('should return the token list if no network is provided to the getPopularTokens method', () => {
@@ -76,13 +80,38 @@ describe('TokensService', () => {
     );
   });
 
-  it('should use alchemy to get the token metadata when calling getTokenByAddress method', async () => {
+  it('should use the indexer to get the token metadata when calling getTokenByAddress method', async () => {
     const address = '0x1234567890123456789012345678901234567890';
     const network = Networks.SEPOLIA;
+    const expectedToken = {
+      address: address,
+      decimals: 18,
+      symbol: 'TEST',
+      name: 'Test Token',
+      logoUrl: '',
+    };
 
-    await tokensService.getTokenByAddress(network, address);
+    const expectedRequestDocument = GetTokenDocument;
+    graphQlClient.request.mockResolvedValue({
+      Token: [expectedToken],
+    });
 
-    expect(alchemy.core.getTokenMetadata).toHaveBeenCalledWith(address);
+    const receivedToken = await tokensService.getTokenByAddress(network, address);
+
+    expect(receivedToken).toEqual(<TokenDTO>{
+      addresses: { [network]: address } as Record<Networks, string>,
+      decimals: { [network]: expectedToken.decimals } as Record<Networks, number>,
+      name: expectedToken.name,
+      symbol: expectedToken.symbol,
+      logoUrl: '',
+    });
+    expect(graphQlClient.request).toHaveBeenCalledWith(expectedRequestDocument, <GetTokenQueryVariables>{
+      tokenFilter: {
+        id: {
+          _eq: `${network}-${address}`.toLowerCase(),
+        },
+      },
+    });
   });
 
   it('should request the right query to the GraphQL client when calling getTokenPrice method and return the token price from the response', async () => {
@@ -94,7 +123,7 @@ describe('TokensService', () => {
       request: jest.fn(),
     } as unknown as { request: jest.Mock };
 
-    tokensService = new TokensService(jest.fn(), graphqlClient as unknown as GraphQLClient);
+    tokensService = new TokensService(graphqlClient as unknown as GraphQLClient);
 
     const expectedQuery = GetTokenDocument;
 
@@ -127,7 +156,7 @@ describe('TokensService', () => {
     });
   });
 
-  it('should return the native token metada when calling getTokenByAddress method passing the zero address', async () => {
+  it('should return the native token metadata when calling getTokenByAddress method passing the zero address', async () => {
     const address = zeroEthereumAddress;
     const network = Networks.UNICHAIN;
 
@@ -136,34 +165,26 @@ describe('TokensService', () => {
     expect(result).toEqual(tokenList.find((token) => token.addresses[network] === address));
   });
 
-  it('should return the internal token metadata (if available) before alchemy fetch when calling getTokenByAddress method', async () => {
-    const _alchemy = {
-      core: {
-        getTokenMetadata: jest.fn().mockRejectedValue(new Error()),
-      },
-    };
-    const _sut = new TokensService(jest.fn().mockReturnValue(_alchemy), {} as GraphQLClient);
-
+  it('should return the internal token metadata (if available) before indexer fetch when calling getTokenByAddress method', async () => {
     const address = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
     const network = Networks.SEPOLIA;
     const tokenInList = tokenList.find((token) => token.addresses[network] === address);
 
-    const result = await _sut.getTokenByAddress(network, address);
+    const result = await tokensService.getTokenByAddress(network, address);
 
     expect(result).toEqual(tokenInList);
 
-    expect(_alchemy.core.getTokenMetadata).not.toHaveBeenCalled();
+    expect(graphQlClient.request).not.toHaveBeenCalled();
   });
 
-  // TODO: UNCOMMENT WHEN IMPLEMENT BNB
-  // it(`should return the native token of the network as the
-  //   first token when calling 'getPopularTokens
-  //   with a specified network (BNB Case)`, () => {
-  //   const network = Networks.BNB;
-  //   const tokens = tokensService.getPopularTokens(network);
+  it(`should return the native token of the network as the
+    first token when calling 'getPopularTokens
+    with a specified network (HyperEVM Case)`, () => {
+    const network = Networks.HYPER_EVM;
+    const tokens = tokensService.getPopularTokens(network);
 
-  //   expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
-  // });
+    expect(tokens[0]).toEqual(tokensService._getNativeTokenData(network));
+  });
 
   it(`should return the native token of the network as the
     first token when calling 'getPopularTokens

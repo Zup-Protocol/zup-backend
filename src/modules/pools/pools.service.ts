@@ -259,6 +259,10 @@ export class PoolsService {
             //     _gt: Date.getDaysAgoTimestamp(30).toString(),
             //   },
             // },
+            chainId: {
+              // TODO: REMOVE HOTFIX FOR Ethereum and Base
+              _nin: [Networks.ETHEREUM, Networks.BASE],
+            },
             totalValueLockedUSD: {
               _gt: minTvlUsd.toString(),
               _lt: (1000000000000).toString(), // remove pools with tvl > 1 trillion (which today can be considered an error)
@@ -296,6 +300,110 @@ export class PoolsService {
         },
       },
     });
+
+    // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE ISSUE IS FIXED
+    if (networks.has(Networks.ETHEREUM)) {
+      const ethereumResponse = await new GraphQLClient(
+        'https://indexer.dedicated.hyperindex.xyz/aefe5f4/v1/graphql',
+      ).request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
+        poolsFilter: {
+          _and: [
+            {
+              chainId: {
+                _eq: Networks.ETHEREUM,
+              },
+              totalValueLockedUSD: {
+                _gt: minTvlUsd.toString(),
+                _lt: (1000000000000).toString(), // remove pools with tvl > 1 trillion (which today can be considered an error)
+              },
+              poolType: {
+                _in: typesAllowed,
+              },
+              ...(params.filters.blockedProtocols.length > 0
+                ? {
+                    protocol_id: {
+                      _nin: params.filters.blockedProtocols,
+                    },
+                  }
+                : {}),
+            },
+            {
+              _or: possibleCombinations,
+            },
+          ],
+        },
+        dailyDataFilter: {
+          feesUSD: {
+            _lt: '1000000000', // filter out weird days with very high fees
+          },
+          dayStartTimestamp: {
+            _gt: Date.getDaysAgoTimestamp(100).toString(),
+          },
+        },
+        hourlyDataFilter: {
+          feesUSD: {
+            _lt: '10000000', // filter out weird hours with very high fees
+          },
+          hourStartTimestamp: {
+            _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          },
+        },
+      });
+
+      response.Pool = [...response.Pool, ...ethereumResponse.Pool];
+    }
+
+    // TODO: REMOVE HOTFIX FOR BASE ONCE ISSUE IS FIXED
+    if (networks.has(Networks.BASE)) {
+      const baseResponse = await new GraphQLClient(
+        'https://indexer.dedicated.hyperindex.xyz/0454ac3/v1/graphql',
+      ).request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
+        poolsFilter: {
+          _and: [
+            {
+              chainId: {
+                _eq: Networks.BASE,
+              },
+              totalValueLockedUSD: {
+                _gt: minTvlUsd.toString(),
+                _lt: (1000000000000).toString(), // remove pools with tvl > 1 trillion (which today can be considered an error)
+              },
+              poolType: {
+                _in: typesAllowed,
+              },
+              ...(params.filters.blockedProtocols.length > 0
+                ? {
+                    protocol_id: {
+                      _nin: params.filters.blockedProtocols,
+                    },
+                  }
+                : {}),
+            },
+            {
+              _or: possibleCombinations,
+            },
+          ],
+        },
+        dailyDataFilter: {
+          feesUSD: {
+            _lt: '1000000000', // filter out weird days with very high fees
+          },
+          dayStartTimestamp: {
+            _gt: Date.getDaysAgoTimestamp(100).toString(),
+          },
+        },
+        hourlyDataFilter: {
+          feesUSD: {
+            _lt: '10000000', // filter out weird hours with very high fees
+          },
+          hourStartTimestamp: {
+            _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          },
+        },
+      });
+
+      response.Pool = [...response.Pool, ...baseResponse.Pool];
+    }
 
     return response;
   }
@@ -381,7 +489,11 @@ export class PoolsService {
       function poolToken0Metadata(): TokenDTO {
         const poolToken0AddressMetadata = tokensMetadata[pool.token0!.tokenAddress.toLowerCase()];
 
-        if (isPoolToken0WrappedNative && !poolToken0AddressMetadata) {
+        if (isPoolToken0WrappedNative && pool.poolType === 'V4') {
+          return poolToken0AddressMetadata;
+        }
+
+        if (isPoolToken0WrappedNative && (!poolToken0AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
           return tokensMetadata[zeroEthereumAddress];
         }
 
@@ -391,7 +503,11 @@ export class PoolsService {
       function poolToken1Metadata(): TokenDTO {
         const poolToken1AddressMetadata = tokensMetadata[pool.token1!.tokenAddress.toLowerCase()];
 
-        if (isPoolToken1WrappedNative && !poolToken1AddressMetadata) {
+        if (isPoolToken1WrappedNative && pool.poolType === 'V4') {
+          return poolToken1AddressMetadata;
+        }
+
+        if (isPoolToken1WrappedNative && (!poolToken1AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
           return tokensMetadata[zeroEthereumAddress];
         }
 
@@ -423,20 +539,16 @@ export class PoolsService {
       }
 
       const poolYield24h =
-        pool.hourlyData.length < 10 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
+        pool.hourlyData.length < 5 ? 0 : calculateDayPoolAPR(Number(pool.totalValueLockedUSD), pool24hFees);
 
       const poolYield7d =
         pool7DaysYields.length < 3 ? 0 : trimmedAverage(pool7DaysYields, trimmedAveragePercentage7Days);
 
       const poolYield30d =
-        pool30dYields.length < 20 ? 0 : trimmedAverage(pool30dYields, trimmedAveragePercentage30Days);
+        pool30dYields.length < 15 ? 0 : trimmedAverage(pool30dYields, trimmedAveragePercentage30Days);
 
       const poolYield90d =
-        pool90dYields.length < 70 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
-
-      if (poolYield24h === 0 && poolYield7d === 0 && poolYield30d === 0 && poolYield90d === 0) {
-        continue; // skip pool if all yields are 0
-      }
+        pool90dYields.length < 60 ? 0 : trimmedAverage(pool90dYields, trimmedAveragePercentage90Days);
 
       const basePool: PoolDTO = {
         chainId: pool.chainId,

@@ -1,12 +1,10 @@
 import { Inject } from '@nestjs/common';
-import { TokenMetadataResponse } from 'alchemy-sdk';
 import { GraphQLClient } from 'graphql-request';
-import { AlchemyFactory } from 'src/core/alchemy.factory';
 import { zeroEthereumAddress } from 'src/core/constants';
 import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
-import { Networks, NetworksUtils } from 'src/core/enums/networks';
+import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { tokenList } from 'src/core/token-list';
 import { GetTokenDocument, GetTokenQuery, GetTokenQueryVariables } from 'src/gen/graphql.gen';
@@ -14,7 +12,6 @@ import '../../core/extensions/string.extension';
 
 export class TokensService {
   constructor(
-    @Inject('AlchemyFactory') private readonly alchemyFactory: AlchemyFactory,
     @Inject('GraphqlClient')
     private readonly graphqlClient: GraphQLClient,
   ) {}
@@ -77,28 +74,96 @@ export class TokensService {
 
     if (internalTokenMetadata) return internalTokenMetadata;
 
-    const alchemy = this.alchemyFactory(NetworksUtils.getAlchemyNetwork(network));
+    const indexerToken: () => Promise<GetTokenQuery> = async () => {
+      // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE ISSUE IS FIXED
+      if (network === Networks.ETHEREUM) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/aefe5f4/v1/graphql').request<
+          GetTokenQuery,
+          GetTokenQueryVariables
+        >(GetTokenDocument, {
+          tokenFilter: {
+            id: {
+              _eq: `${network}-${address}`.toLowerCase(),
+            },
+          },
+        });
+      }
 
-    let alchemyTokenMetadata: TokenMetadataResponse | undefined;
+      // TODO: REMOVE HOTFIX FOR BASE ONCE ISSUE IS FIXED
+      if (network === Networks.BASE) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/0454ac3/v1/graphql').request<
+          GetTokenQuery,
+          GetTokenQueryVariables
+        >(GetTokenDocument, {
+          tokenFilter: {
+            id: {
+              _eq: `${network}-${address}`.toLowerCase(),
+            },
+          },
+        });
+      }
 
-    try {
-      alchemyTokenMetadata = await alchemy.core.getTokenMetadata(address);
-    } catch {
-      // ignore
-    }
+      return await this.graphqlClient.request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
+        tokenFilter: {
+          id: {
+            _eq: `${network}-${address}`.toLowerCase(),
+          },
+        },
+      });
+    };
+
+    const token = (await indexerToken()).Token[0];
 
     return {
       addresses: {
         [network]: address,
       } as Record<Networks, string>,
-      name: alchemyTokenMetadata?.name ?? '',
-      symbol: alchemyTokenMetadata?.symbol ?? '',
-      decimals: { [network]: alchemyTokenMetadata?.decimals ?? 18 } as Record<Networks, number>,
-      logoUrl: alchemyTokenMetadata!.logo ?? '',
+      decimals: { [network]: token.decimals } as Record<Networks, number>,
+      name: token.name,
+      symbol: token.symbol,
+      logoUrl: '',
     };
   }
 
   async getTokenPrice(tokenAddress: string, network: Networks): Promise<TokenPriceDTO> {
+    // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE ISSUE IS FIXED
+    if (network == Networks.ETHEREUM) {
+      const tokenPrice = await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/aefe5f4/v1/graphql')
+        .request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
+          tokenFilter: {
+            id: {
+              _eq: `${network}-${tokenAddress}`.toLowerCase(),
+            },
+          },
+        })
+        .then((response) => response.Token[0].usdPrice)
+        .catch(() => 0);
+
+      return {
+        address: tokenAddress,
+        usdPrice: Number.parseFloat(String(tokenPrice ?? 0)),
+      };
+    }
+
+    // TODO: REMOVE HOTFIX FOR BASE ONCE ISSUE IS FIXED
+    if (network == Networks.BASE) {
+      const tokenPrice = await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/0454ac3/v1/graphql')
+        .request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
+          tokenFilter: {
+            id: {
+              _eq: `${network}-${tokenAddress}`.toLowerCase(),
+            },
+          },
+        })
+        .then((response) => response.Token[0].usdPrice)
+        .catch(() => 0);
+
+      return {
+        address: tokenAddress,
+        usdPrice: Number.parseFloat(String(tokenPrice ?? 0)),
+      };
+    }
+
     const tokenPrice = await this.graphqlClient
       .request<GetTokenQuery, GetTokenQueryVariables>(GetTokenDocument, {
         tokenFilter: {

@@ -35,6 +35,9 @@ describe('TokenGroupList', () => {
             '88', // msUSD
             '90', // USD+
             '91', // USD₮0
+            '20', // USD1
+            '94', // mUSD
+            '95', // USDH
           ]).has(token.id!),
         ),
       },
@@ -67,6 +70,7 @@ describe('TokenGroupList', () => {
         tokens: tokenList.filter((token) =>
           new Set([
             '1', // ETH
+            '2', // WETH
             '45', // wstETH
             '46', // WBETH
             '47', // weETH
