@@ -1,26 +1,12 @@
-import { Network as AlchemyNetwork } from 'alchemy-sdk';
 import { Networks, NetworksUtils } from './networks';
 
-describe('Networks', () => {
+describe('NetworksEnumTest', () => {
   it('should return false if the passed chainId is not a valid mapped network', () => {
     expect(NetworksUtils.isValidChainId(907987)).toBe(false);
   });
 
   it('should return true if the passed chainId is not valid & mapped network', () => {
     expect(NetworksUtils.isValidChainId(11155111)).toBe(true);
-  });
-
-  it('should return the alchemy network for a valid mapped network', () => {
-    expect(NetworksUtils.getAlchemyNetwork(Networks.ETHEREUM)).toBe(AlchemyNetwork.ETH_MAINNET);
-    expect(NetworksUtils.getAlchemyNetwork(Networks.SEPOLIA)).toBe(AlchemyNetwork.ETH_SEPOLIA);
-    expect(NetworksUtils.getAlchemyNetwork(Networks.SCROLL)).toBe(AlchemyNetwork.SCROLL_MAINNET);
-    expect(NetworksUtils.getAlchemyNetwork(Networks.BASE)).toBe(AlchemyNetwork.BASE_MAINNET);
-    expect(NetworksUtils.getAlchemyNetwork(Networks.UNICHAIN)).toBe(AlchemyNetwork.UNICHAIN_MAINNET);
-    expect(NetworksUtils.getAlchemyNetwork(Networks.HYPER_EVM)).toBe(AlchemyNetwork.HYPERLIQUID_MAINNET);
-
-    // expect(NetworksUtils.getAlchemyNetwork(Networks.BNB)).toBe(
-    //   AlchemyNetwork.BNB_MAINNET,
-    // );
   });
 
   it('should return the correct indexer url getting it from the env variable', () => {
@@ -36,6 +22,7 @@ describe('Networks', () => {
     expect(NetworksUtils.isValidChainId(130)).toBe(true);
     expect(NetworksUtils.isValidChainId(999)).toBe(true);
     expect(NetworksUtils.isValidChainId(8453)).toBe(true);
+    expect(NetworksUtils.isValidChainId(9745)).toBe(true);
 
     // expect(NetworksUtils.isValidChainId(56)).toBe(true);
   });
@@ -47,6 +34,7 @@ describe('Networks', () => {
     expect(NetworksUtils.networkFromChainId(130)).toBe(Networks.UNICHAIN);
     expect(NetworksUtils.networkFromChainId(999)).toBe(Networks.HYPER_EVM);
     expect(NetworksUtils.networkFromChainId(8453)).toBe(Networks.BASE);
+    expect(NetworksUtils.networkFromChainId(9745)).toBe(Networks.PLASMA);
     // expect(NetworksUtils.networkFromChainId(56)).toBe(Networks.BNB);
   });
 
@@ -65,6 +53,7 @@ describe('Networks', () => {
     expect(NetworksUtils.isTestnet(Networks.BASE)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.HYPER_EVM)).toBe(false);
     expect(NetworksUtils.isTestnet(Networks.UNICHAIN)).toBe(false);
+    expect(NetworksUtils.isTestnet(Networks.PLASMA)).toBe(false);
     // expect(NetworksUtils.isTestnet(Networks.BNB)).toBe(false);
   });
 
@@ -75,6 +64,7 @@ describe('Networks', () => {
     expect(NetworksUtils.wrappedNativeAddress(Networks.BASE)).toBe('0x4200000000000000000000000000000000000006');
     expect(NetworksUtils.wrappedNativeAddress(Networks.HYPER_EVM)).toBe('0x5555555555555555555555555555555555555555');
     expect(NetworksUtils.wrappedNativeAddress(Networks.UNICHAIN)).toBe('0x4200000000000000000000000000000000000006');
+    expect(NetworksUtils.wrappedNativeAddress(Networks.PLASMA)).toBe('0x6100e367285b01f48d07953803a2d8dca5d19873');
     // expect(NetworksUtils.wrappedNativeAddress(Networks.BNB)).toBe(
     //   '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     // );
