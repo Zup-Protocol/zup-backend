@@ -7,7 +7,6 @@ query GetPools(
     id
     poolAddress
     poolType
-    poolType
     totalValueLockedUSD
     currentFeeTier
     initialFeeTier

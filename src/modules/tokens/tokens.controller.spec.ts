@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 
 import { mock } from 'jest-mock-extended';
 import { _MockProxy } from 'jest-mock-extended/lib/Mock';
-import { zeroEthereumAddress } from 'src/core/constants';
+import { ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { TokenListDTO } from 'src/core/dtos/token-list.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
@@ -34,9 +34,7 @@ describe('TokensController', () => {
   it('should call the service method to get popular tokens when calling the /popular passing the chain id from the query', () => {
     sut.getPopularTokens(11155111);
 
-    expect(tokensService.getPopularTokens).toHaveBeenCalledWith(
-      Networks.SEPOLIA,
-    );
+    expect(tokensService.getPopularTokens).toHaveBeenCalledWith(Networks.SEPOLIA);
   });
 
   it('should throw 400 if a chain id is provided to /search and it is not any of the supported chain ids', async () => {
@@ -51,19 +49,13 @@ describe('TokensController', () => {
 
   it('should throw 400 if no query is provided to /search', async () => {
     await expect(sut.searchTokens('', undefined)).rejects.toThrow(
-      new BadRequestException(
-        'A query string should be provided in order to perform a search',
-      ),
+      new BadRequestException('A query string should be provided in order to perform a search'),
     );
   });
 
   it('should throw 400 if no chain id is provided to /search and the query is an address', async () => {
-    await expect(
-      sut.searchTokens('0x1234567890123456789012345678901234567890', undefined),
-    ).rejects.toThrow(
-      new BadRequestException(
-        'A chain id should be provided to get a token by address',
-      ),
+    await expect(sut.searchTokens('0x1234567890123456789012345678901234567890', undefined)).rejects.toThrow(
+      new BadRequestException('A chain id should be provided to get a token by address'),
     );
   });
 
@@ -73,10 +65,7 @@ describe('TokensController', () => {
 
     await sut.searchTokens(query, network);
 
-    expect(tokensService.searchTokensByNameOrSymbol).toHaveBeenCalledWith(
-      query,
-      network,
-    );
+    expect(tokensService.searchTokensByNameOrSymbol).toHaveBeenCalledWith(query, network);
   });
 
   it('should call the correct service method to search tokens by address if the query is an address', async () => {
@@ -85,10 +74,7 @@ describe('TokensController', () => {
 
     await sut.searchTokens(query, network);
 
-    expect(tokensService.getTokenByAddress).toHaveBeenCalledWith(
-      network,
-      query,
-    );
+    expect(tokensService.getTokenByAddress).toHaveBeenCalledWith(network, query);
   });
 
   it('should throw 400 if an invalid address is provided to /price', async () => {
@@ -134,7 +120,7 @@ describe('TokensController', () => {
     const _tokensService = mock<TokensService>();
     const _sut = new TokensController(_tokensService);
 
-    const searchAddress = zeroEthereumAddress;
+    const searchAddress = ZERO_ETHEREUM_ADDRESS;
     const chainId = Networks.SEPOLIA;
     const wrappedNativeAddress = NetworksUtils.wrappedNativeAddress(chainId);
     const expectedReturnedValue = <TokenPriceDTO>{
@@ -142,30 +128,20 @@ describe('TokensController', () => {
       usdPrice: 328769.43,
     };
 
-    _tokensService.getTokenPrice
-      .calledWith(wrappedNativeAddress, chainId)
-      .mockResolvedValue(expectedReturnedValue);
+    _tokensService.getTokenPrice.calledWith(wrappedNativeAddress, chainId).mockResolvedValue(expectedReturnedValue);
 
-    _tokensService.getTokenPrice
-      .calledWith(searchAddress, chainId)
-      .mockResolvedValue(<TokenPriceDTO>{
-        address: searchAddress,
-        usdPrice: 0,
-      });
+    _tokensService.getTokenPrice.calledWith(searchAddress, chainId).mockResolvedValue(<TokenPriceDTO>{
+      address: searchAddress,
+      usdPrice: 0,
+    });
 
     const returnedValue = await _sut.getTokenPrice(searchAddress, chainId);
 
     expect(returnedValue).toEqual(expectedReturnedValue);
 
-    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(
-      wrappedNativeAddress,
-      chainId,
-    );
+    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(wrappedNativeAddress, chainId);
 
-    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(
-      zeroEthereumAddress,
-      chainId,
-    );
+    expect(_tokensService.getTokenPrice).toHaveBeenCalledWith(ZERO_ETHEREUM_ADDRESS, chainId);
   });
 
   it('should call the service method with the passed chainId to get the tokens groups when calling the /groups endpoint', () => {

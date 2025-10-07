@@ -1,3 +1,4 @@
+import { any } from 'jest-mock-extended';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
@@ -12,6 +13,7 @@ describe('PoolsController', () => {
     poolsService = {
       searchPoolsCrossChain: jest.fn(),
       searchPoolsInChain: jest.fn(),
+      getPoolData: jest.fn(),
     } as unknown as PoolsService;
 
     sut = new PoolsController(poolsService);
@@ -24,13 +26,7 @@ describe('PoolsController', () => {
     const group1Id = undefined;
     const filters = new PoolSearchFiltersDTO();
 
-    await sut.searchPoolsAcrossNetworks(
-      token0Id,
-      token1Id,
-      group0Id,
-      group1Id,
-      filters,
-    );
+    await sut.searchPoolsAcrossNetworks(token0Id, token1Id, group0Id, group1Id, filters);
 
     expect(poolsService.searchPoolsCrossChain).toHaveBeenCalledWith({
       token0Ids: [token0Id],
@@ -49,13 +45,7 @@ describe('PoolsController', () => {
       minTvlUsd: 12132876.43,
     };
 
-    await sut.searchPoolsAcrossNetworks(
-      token0Id,
-      token1Id,
-      group0Id,
-      group1Id,
-      filters,
-    );
+    await sut.searchPoolsAcrossNetworks(token0Id, token1Id, group0Id, group1Id, filters);
 
     expect(poolsService.searchPoolsCrossChain).toHaveBeenCalledWith({
       token0Ids: [token0Id],
@@ -162,13 +152,9 @@ describe('PoolsController', () => {
     const group0Id = 'group-1';
     const group1Id = 'group-2';
 
-    const expectedTokens0 = tokenGroupList
-      .find((group) => group.id === group0Id)!
-      .tokens.map((token) => token.id);
+    const expectedTokens0 = tokenGroupList.find((group) => group.id === group0Id)!.tokens.map((token) => token.id);
 
-    const expectedTokens1 = tokenGroupList
-      .find((group) => group.id === group1Id)!
-      .tokens.map((token) => token.id);
+    const expectedTokens1 = tokenGroupList.find((group) => group.id === group1Id)!.tokens.map((token) => token.id);
 
     await sut.searchPoolsAcrossNetworks(token0, token1, group0Id, group1Id);
 
@@ -185,9 +171,7 @@ describe('PoolsController', () => {
     const group0Id = 'group-1';
     const group1Id = undefined;
 
-    const expectedTokens0 = tokenGroupList
-      .find((group) => group.id === group0Id)!
-      .tokens.map((token) => token.id);
+    const expectedTokens0 = tokenGroupList.find((group) => group.id === group0Id)!.tokens.map((token) => token.id);
 
     const expectedTokens1 = [token1];
 
@@ -208,9 +192,7 @@ describe('PoolsController', () => {
 
     const expectedTokens0 = [token0];
 
-    const expectedTokens1 = tokenGroupList
-      .find((group) => group.id === group1Id)!
-      .tokens.map((token) => token.id);
+    const expectedTokens1 = tokenGroupList.find((group) => group.id === group1Id)!.tokens.map((token) => token.id);
 
     await sut.searchPoolsAcrossNetworks(token0, token1, group0Id, group1Id);
 
@@ -219,5 +201,35 @@ describe('PoolsController', () => {
       token1Ids: expectedTokens1,
       filters: new PoolSearchFiltersDTO(),
     });
+  });
+
+  it('Should pass the correct params to the pool service to get a single pool data when calling /pools/:poolAddress/:chainId', async () => {
+    const poolAddress = '0xbbaXabas';
+    const chainId = 1;
+    const parseWrappedToNative = false;
+
+    await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(poolsService.getPoolData).toHaveBeenCalledWith(poolAddress, chainId, parseWrappedToNative);
+  });
+
+  it(`Should pass the parse wrapped native as native true to pool service when calling
+    /pools/:poolAddress/:chainId with parseWrappedToNative true`, async () => {
+    const poolAddress = '0xbbaXabas';
+    const chainId = 1;
+
+    await sut.getPoolData(poolAddress, chainId, true);
+
+    expect(poolsService.getPoolData).toHaveBeenCalledWith(any(), any(), true);
+  });
+
+  it(`Should pass the parse wrapped native as native false to pool service when calling
+    /pools/:poolAddress/:chainId with parseWrappedToNative false`, async () => {
+    const poolAddress = '0xbbaXabas';
+    const chainId = 1;
+
+    await sut.getPoolData(poolAddress, chainId, false);
+
+    expect(poolsService.getPoolData).toHaveBeenCalledWith(any(), any(), false);
   });
 });

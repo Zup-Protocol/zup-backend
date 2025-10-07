@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 import { mock } from 'jest-mock-extended';
 import { _MockProxy } from 'jest-mock-extended/lib/Mock';
-import { zeroEthereumAddress } from 'src/core/constants';
+import { ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { TokenDTO } from 'src/core/dtos/token.dto';
 import { Networks } from 'src/core/enums/networks';
 import { tokenGroupList } from 'src/core/token-group-list';
@@ -157,7 +157,7 @@ describe('TokensService', () => {
   });
 
   it('should return the native token metadata when calling getTokenByAddress method passing the zero address', async () => {
-    const address = zeroEthereumAddress;
+    const address = ZERO_ETHEREUM_ADDRESS;
     const network = Networks.UNICHAIN;
 
     const result = await tokensService.getTokenByAddress(network, address);

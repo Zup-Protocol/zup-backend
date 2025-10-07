@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
-import { zeroEthereumAddress } from 'src/core/constants';
+import { ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
 import { TokenDTO } from 'src/core/dtos/token.dto';
@@ -25,8 +25,8 @@ export class TokensService {
         return tokenAddress !== undefined && tokenAddress !== null;
       })
       .sort((a, b) => {
-        const aIsZero = a.addresses[network] === zeroEthereumAddress;
-        const bIsZero = b.addresses[network] === zeroEthereumAddress;
+        const aIsZero = a.addresses[network] === ZERO_ETHEREUM_ADDRESS;
+        const bIsZero = b.addresses[network] === ZERO_ETHEREUM_ADDRESS;
 
         if (aIsZero && !bIsZero) return -1;
         if (!aIsZero && bIsZero) return 1;
@@ -64,7 +64,7 @@ export class TokensService {
   }
 
   async getTokenByAddress(network: Networks, address: string): Promise<TokenDTO> {
-    if (address === zeroEthereumAddress) {
+    if (address === ZERO_ETHEREUM_ADDRESS) {
       return this._getNativeTokenData(network);
     }
 
@@ -183,7 +183,7 @@ export class TokensService {
 
   _getNativeTokenData(network: Networks): TokenDTO {
     const internalTokenMetadata = tokenList.find((token) => {
-      return token.addresses[network]?.lowercasedEquals(zeroEthereumAddress);
+      return token.addresses[network]?.lowercasedEquals(ZERO_ETHEREUM_ADDRESS);
     });
 
     return internalTokenMetadata!; // Assuming the native token is always present in the tokenList (Should be!)
