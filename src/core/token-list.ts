@@ -2658,4 +2658,29 @@ export const tokenList: TokenDTO[] = [
     logoUrl:
       'https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0x9D39A5DE30e57443BfF2A8307A4256c8797A3497/logo.png',
   },
+  {
+    id: '103',
+    name: 'Wormhole Bridged HYPE',
+    symbol: 'HYPE',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: '0x15d0e0c55a3e7ee67152ad7e89acf164253ff68d',
+      [Networks.HYPER_EVM]: null,
+      [Networks.PLASMA]: null,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: 18,
+      [Networks.HYPER_EVM]: null,
+      [Networks.PLASMA]: null,
+    },
+
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/32196.png',
+  },
 ];
