@@ -2044,7 +2044,7 @@ export const tokenList: TokenDTO[] = [
     id: '78',
     name: 'Hyperbeat USDT',
     symbol: 'hbUSDT',
-    logoUrl: 'https://assets.coingecko.com/coins/images/67161/standard/hyperbeat_usdt.jpg',
+    logoUrl: 'https://static.images.dropstab.com/images/hyperbeat-usdt.jpg',
     addresses: {
       [Networks.ETHEREUM]: null,
       [Networks.BASE]: null,
