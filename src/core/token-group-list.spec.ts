@@ -39,6 +39,15 @@ describe('TokenGroupList', () => {
             '94', // mUSD
             '95', // USDH
             '100', // USDai
+            '110', // USDtb
+            '111', // USDf
+            '112', // USDG
+            '113', // USD0
+            '114', // USR
+            '115', // satUSD
+            '116', // XUSD
+            '117', // reUSD
+            '118', // USDA
           ]).has(token.id!),
         ),
       },
