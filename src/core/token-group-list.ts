@@ -108,6 +108,12 @@ export const tokenGroupList: TokenGroupDTO[] = [
         '74', // kHYPE
         '75', // LHYPE
         '103', // Wormhole Bridged HYPE
+        '104', // beHYPE
+        '105', // vkHYPE
+        '106', // sHYPE
+        '107', // mHYPE
+        '108', // liquidHYPE
+        '109', // hbHYPE
       ]).has(token.id!),
     ),
   },
