@@ -1,16 +1,22 @@
+import { NotFoundException } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { any } from 'jest-mock-extended';
 import mock, { _MockProxy } from 'jest-mock-extended/lib/Mock';
-import { zeroEthereumAddress } from 'src/core/constants';
+import { YIELD_DAILY_DATA_LIMIT, ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
+import { PoolDTO } from 'src/core/dtos/pool.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
+import { TokenDTO } from 'src/core/dtos/token.dto';
+import { V3PoolDTO } from 'src/core/dtos/v3-pool.dto';
 import { V4PoolDTO } from 'src/core/dtos/v4-pool.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
 import { PoolType } from 'src/core/enums/pool-type';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
 import { isArrayEmptyOrUndefined } from 'src/core/utils/array-utils';
+import { getDaysAgoTimestamp, yesterdayStartSecondsTimestamp } from 'src/core/utils/date-utils';
+import { getPoolQueryVariablesForYieldCalculation } from 'src/core/utils/query-utils';
 import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp } from 'src/gen/graphql.gen';
 import { TokensService } from '../tokens/tokens.service';
 import { PoolsService } from './pools.service';
@@ -28,9 +34,60 @@ describe('PoolsServiceTest', () => {
       address: '0x1234567890123456789012345678901234567890',
       usdPrice: 120.312,
     });
+
     tokensService.getTokenByAddress.calledWith(any(), any()).mockResolvedValue(tokenList[0]);
 
-    const graphQLRequestMock = jest.fn().mockReturnValue({ Pool: [] });
+    const poolsQueryResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          v3PoolData: {
+            tick: '26187',
+            tickSpacing: 10,
+            sqrtPriceX96: '6172189216872617862781627',
+          },
+          dailyData: Array.from({ length: 100 }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: index === 3 || index === 10 || index === 60 ? '9889788' : '10',
+            totalValueLockedUSD: index === 3 ? '436782' : '1000000',
+          })),
+          initialFeeTier: 100,
+          currentFeeTier: 100,
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '100',
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
+          })),
+          id: '0x0000000000000000000000000000000000000001',
+          positionManager: '0x0000000000000000000000000000000000000001',
+          protocol: {
+            id: 'uniswap',
+            logo: 'https://example.com/logo.png',
+            name: 'Uniswap',
+            url: 'https://example.com/uniswap',
+          },
+
+          token0: {
+            decimals: 18,
+            tokenAddress: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            id: NetworksUtils.wrappedNativeAddress(Networks.ETHEREUM),
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          token1: {
+            decimals: 18,
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            id: '0x0000000000000000000000000000000000000002',
+            name: 'Wrapped Ether',
+            symbol: 'WETH',
+          },
+          poolType: PoolType.V3,
+          chainId: Networks.ETHEREUM,
+          poolAddress: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '216876',
+        },
+      ],
+    };
+
+    const graphQLRequestMock = jest.fn().mockReturnValue(poolsQueryResponse);
 
     graphqlClient = {
       request: graphQLRequestMock,
@@ -116,13 +173,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -209,13 +266,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -340,13 +397,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -397,7 +454,7 @@ describe('PoolsServiceTest', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 90 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -410,7 +467,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: expectedPoolResult.currentFeeTier,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: expectedPoolResult.poolAddress,
           poolAddress: expectedPoolResult.poolAddress,
@@ -529,7 +586,7 @@ describe('PoolsServiceTest', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 90 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -542,7 +599,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: poolResult1.currentFeeTier,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: poolResult1.poolAddress,
           poolAddress: poolResult1.poolAddress,
@@ -574,7 +631,7 @@ describe('PoolsServiceTest', () => {
         },
         {
           dailyData: Array.from({ length: 90 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -587,7 +644,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: poolResult2.currentFeeTier,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: poolResult2.poolAddress,
           positionManager: poolResult2.positionManagerAddress,
@@ -649,7 +706,7 @@ describe('PoolsServiceTest', () => {
     const token1Address = '0x0000000000000000000000000000000000000001';
 
     await sut.searchPoolsInChain({
-      token0Addresses: [zeroEthereumAddress],
+      token0Addresses: [ZERO_ETHEREUM_ADDRESS],
       token1Addresses: [token1Address],
       network: network,
       filters: new PoolSearchFiltersDTO(),
@@ -681,7 +738,7 @@ describe('PoolsServiceTest', () => {
                       {
                         token0: {
                           tokenAddress: {
-                            _in: [zeroEthereumAddress, NetworksUtils.wrappedNativeAddress(network).toLowerCase()],
+                            _in: [ZERO_ETHEREUM_ADDRESS, NetworksUtils.wrappedNativeAddress(network).toLowerCase()],
                           },
                         },
                         token1: {
@@ -698,7 +755,7 @@ describe('PoolsServiceTest', () => {
                         },
                         token1: {
                           tokenAddress: {
-                            _in: [zeroEthereumAddress, NetworksUtils.wrappedNativeAddress(network).toLowerCase()],
+                            _in: [ZERO_ETHEREUM_ADDRESS, NetworksUtils.wrappedNativeAddress(network).toLowerCase()],
                           },
                         },
                       },
@@ -713,13 +770,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -832,13 +889,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -951,13 +1008,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -972,7 +1029,7 @@ describe('PoolsServiceTest', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 90 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(100).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(100).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -980,7 +1037,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 1079,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0d4a11d5eeaac28ec3f61d1005ee9b9f5060c61a',
           protocol: {
@@ -1180,13 +1237,13 @@ describe('PoolsServiceTest', () => {
       dailyDataFilter: {
         feesUSD: any(),
         dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
+          _gt: getDaysAgoTimestamp(100).toString(),
         },
       },
       hourlyDataFilter: {
         feesUSD: any(),
         hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+          _gt: yesterdayStartSecondsTimestamp().toString(),
         },
       },
     });
@@ -1202,7 +1259,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 10 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(10).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(10).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1210,7 +1267,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 14 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           protocol: {
@@ -1269,7 +1326,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 2 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(10).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(10).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1277,7 +1334,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           protocol: {
@@ -1335,7 +1392,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '871872816287111111111',
           },
           dailyData: Array.from({ length: 10 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1343,7 +1400,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 4 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           protocol: {
@@ -1397,7 +1454,7 @@ describe('PoolsServiceTest', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 10 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1410,7 +1467,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 11 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           protocol: {
@@ -1463,7 +1520,7 @@ describe('PoolsServiceTest', () => {
       Pool: [
         {
           dailyData: Array.from({ length: 10 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '100',
             totalValueLockedUSD: '100',
           })),
@@ -1476,7 +1533,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           protocol: {
@@ -1534,7 +1591,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 21 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -1542,7 +1599,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1600,7 +1657,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 59 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(69).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(69).toString(),
 
             feesUSD: '10',
             totalValueLockedUSD: '100',
@@ -1609,7 +1666,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1669,7 +1726,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -1677,7 +1734,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1717,13 +1774,13 @@ describe('PoolsServiceTest', () => {
     const sut = new PoolsService(tokensService, graphqlClient);
 
     const result = await sut.searchPoolsInChain({
-      token0Addresses: [zeroEthereumAddress],
+      token0Addresses: [ZERO_ETHEREUM_ADDRESS],
       token1Addresses: ['<token1Address>'],
       network: Networks.ETHEREUM,
       filters: new PoolSearchFiltersDTO(),
     });
 
-    expect(result.pools[0].token0.addresses[network]).toBe(zeroEthereumAddress);
+    expect(result.pools[0].token0.addresses[network]).toBe(ZERO_ETHEREUM_ADDRESS);
   });
 
   it('Should return the pool token0 as wrapped native if the user searched for wrapped native', async () => {
@@ -1737,7 +1794,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -1745,7 +1802,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1809,7 +1866,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -1817,7 +1874,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1881,7 +1938,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -1889,7 +1946,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1930,12 +1987,12 @@ describe('PoolsServiceTest', () => {
 
     const result = await sut.searchPoolsInChain({
       token0Addresses: ['<token0Address>'],
-      token1Addresses: [zeroEthereumAddress],
+      token1Addresses: [ZERO_ETHEREUM_ADDRESS],
       network: network,
       filters: new PoolSearchFiltersDTO(),
     });
 
-    expect(result.pools[0].token1.addresses[network]).toBe(zeroEthereumAddress);
+    expect(result.pools[0].token1.addresses[network]).toBe(ZERO_ETHEREUM_ADDRESS);
   });
 
   it('Should skip the pool if the user searched for token1 native, but the pool token1 is V4 with wrapped native', async () => {
@@ -1949,7 +2006,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -1957,7 +2014,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -1998,7 +2055,7 @@ describe('PoolsServiceTest', () => {
 
     const result = await sut.searchPoolsInChain({
       token0Addresses: ['<token0Address>'],
-      token1Addresses: [zeroEthereumAddress],
+      token1Addresses: [ZERO_ETHEREUM_ADDRESS],
       network: network,
       filters: new PoolSearchFiltersDTO(),
     });
@@ -2017,7 +2074,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 69 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '1000',
             totalValueLockedUSD: '100',
           })),
@@ -2025,7 +2082,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '1000',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2065,7 +2122,7 @@ describe('PoolsServiceTest', () => {
     const sut = new PoolsService(tokensService, graphqlClient);
 
     const result = await sut.searchPoolsInChain({
-      token0Addresses: [zeroEthereumAddress],
+      token0Addresses: [ZERO_ETHEREUM_ADDRESS],
       token1Addresses: ['<token1Address>'],
       network: network,
       filters: new PoolSearchFiltersDTO(),
@@ -2084,7 +2141,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 70 }, () => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(70).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(70).toString(),
             feesUSD: '10',
             totalValueLockedUSD: '100',
           })),
@@ -2092,7 +2149,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2153,7 +2210,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 70 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: '10',
             totalValueLockedUSD: (minTvl - 100).toString(),
           })),
@@ -2161,7 +2218,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2225,7 +2282,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 10 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: index === 3 ? '100' : '10',
             totalValueLockedUSD: index === 3 ? '1' : '1000000',
           })),
@@ -2233,7 +2290,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2294,7 +2351,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 40 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: index === 3 || index === 10 ? '127198' : '10',
             totalValueLockedUSD: index === 3 ? '1111' : '1000000',
           })),
@@ -2302,7 +2359,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2363,7 +2420,7 @@ describe('PoolsServiceTest', () => {
             sqrtPriceX96: '6172189216872617862781627',
           },
           dailyData: Array.from({ length: 100 }, (_, index) => ({
-            dayStartTimestamp: Date.getDaysAgoTimestamp(index).toString(),
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
             feesUSD: index === 3 || index === 10 || index === 60 ? '9889788' : '10',
             totalValueLockedUSD: index === 3 ? '436782' : '1000000',
           })),
@@ -2371,7 +2428,7 @@ describe('PoolsServiceTest', () => {
           currentFeeTier: 100,
           hourlyData: Array.from({ length: 24 }, () => ({
             feesUSD: '100',
-            hourStartTimestamp: Date.yesterdayStartSecondsTimestamp().toString(),
+            hourStartTimestamp: yesterdayStartSecondsTimestamp().toString(),
           })),
           id: '0x0000000000000000000000000000000000000001',
           positionManager: '0x0000000000000000000000000000000000000001',
@@ -2515,7 +2572,7 @@ describe('PoolsServiceTest', () => {
   //           poolType: any(),
   //           dailyData: {
   //             dayStartTimestamp: {
-  //               _gt: Date.getDaysAgoTimestamp(30).toString(),
+  //               _gt: getDaysAgoTimestamp(30).toString(),
   //             },
   //           },
   //         },
@@ -2618,5 +2675,518 @@ describe('PoolsServiceTest', () => {
       pools: [],
       filters: any(),
     });
+  });
+
+  it(`should request the graphQL client to get a single pool id when calling 'getPoolData' matching
+the id defined in the indexer (chainId-PoolAddress) with filters to also allow the calculation
+of yields properly`, async () => {
+    const poolAddress = 'Xabas21';
+    const chainId = 1;
+    const parseWrappedToNative = false;
+
+    await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(graphqlClient.request).toHaveBeenCalledWith(GetPoolsDocument, <GetPoolsQueryVariables>{
+      poolsFilter: {
+        id: {
+          _eq: `${chainId}-${poolAddress.toLowerCase()}`,
+        },
+      },
+      ...getPoolQueryVariablesForYieldCalculation(),
+    });
+  });
+
+  it('Should throw bad request exception if the request return an empty array of pools matching', async () => {
+    const poolAddress = 'Xabas21';
+    const chainId = 1;
+    const parseWrappedToNative = false;
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce({
+      Pool: [],
+    });
+
+    await expect(sut.getPoolData(poolAddress, chainId, parseWrappedToNative)).rejects.toThrow(
+      new NotFoundException(`Pool ${poolAddress} at ${chainId} not found; maybe incorrect address or chain?`),
+    );
+  });
+
+  it(`should proccess the data from the first pool returned by the graphql
+    request and return the pool information when
+    calling getPoolData`, async () => {
+    const poolAddress = 'xx1111';
+    const chainId = 8453;
+    const parseWrappedToNative = false;
+
+    const graphQLResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          id: `${chainId}-${poolAddress.toLowerCase()}`,
+          chainId: chainId,
+          currentFeeTier: 3746372,
+          initialFeeTier: 1222,
+          poolAddress: poolAddress,
+          poolType: PoolType.V3,
+          positionManager: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '1000000',
+          v3PoolData: {
+            sqrtPriceX96: '1271902719027111221',
+            tick: '74839',
+            tickSpacing: 60,
+          },
+          protocol: {
+            id: 'protocol-21',
+            name: 'protocol',
+            logo: 'https://example.com/logo.png',
+            url: 'https://example.com',
+          },
+          token0: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000001',
+            tokenAddress: '0x0000000000000000000000000000000000000001',
+            name: 'token0',
+            symbol: 'token0',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            name: 'token1',
+            symbol: 'token1',
+          },
+          dailyData: Array.from({ length: YIELD_DAILY_DATA_LIMIT }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: (0.5 * index + 1).toString(),
+            totalValueLockedUSD: (100 * index + 1).toString(),
+          })),
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '1000000',
+            hourStartTimestamp: '1',
+          })),
+        },
+      ],
+    };
+
+    const token0AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token0!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token0!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token0!.name,
+      symbol: graphQLResponse.Pool[0].token0!.symbol,
+    };
+
+    const token1AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token1!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token1!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token1!.name,
+      symbol: graphQLResponse.Pool[0].token1!.symbol,
+    };
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce(graphQLResponse);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token0!.tokenAddress)
+      .mockResolvedValue(token0AsDto);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token1!.tokenAddress)
+      .mockResolvedValue(token1AsDto);
+
+    const expectedResult: PoolDTO & V3PoolDTO = {
+      chainId: graphQLResponse.Pool[0].chainId,
+      currentFeeTier: graphQLResponse.Pool[0].currentFeeTier,
+      initialFeeTier: graphQLResponse.Pool[0].initialFeeTier,
+      poolAddress: graphQLResponse.Pool[0].poolAddress,
+      poolType: graphQLResponse.Pool[0].poolType,
+      positionManagerAddress: graphQLResponse.Pool[0].positionManager,
+      totalValueLockedUSD: Number.parseFloat(graphQLResponse.Pool[0].totalValueLockedUSD),
+      latestSqrtPriceX96: graphQLResponse.Pool[0].v3PoolData!.sqrtPriceX96,
+      latestTick: graphQLResponse.Pool[0].v3PoolData!.tick,
+      tickSpacing: graphQLResponse.Pool[0].v3PoolData!.tickSpacing,
+      deployerAddress: undefined,
+      yield24h: 876000,
+      yield30d: 215.56306240765795,
+      yield7d: 316.2447670218866,
+      yield90d: 196.62700757186744,
+      protocol: graphQLResponse.Pool[0].protocol!,
+      token0: token0AsDto,
+      token1: token1AsDto,
+    };
+
+    const actualResult = await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(actualResult).toEqual(expectedResult);
+  });
+
+  it(`should parse the token0 metadata as native token when calling getPoolData if the token0 address
+    is the same as the wrapped native for the passed chainId, and the param parseWrappedToNative
+    is true`, async () => {
+    const poolAddress = 'xx1111';
+    const chainId = 8453;
+    const parseWrappedToNative = true;
+
+    const graphQLResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          id: `${chainId}-${poolAddress.toLowerCase()}`,
+          chainId: chainId,
+          currentFeeTier: 3746372,
+          initialFeeTier: 1222,
+          poolAddress: poolAddress,
+          poolType: PoolType.V3,
+          positionManager: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '1000000',
+          v3PoolData: {
+            sqrtPriceX96: '1271902719027111221',
+            tick: '74839',
+            tickSpacing: 60,
+          },
+          protocol: {
+            id: 'protocol-21',
+            name: 'protocol',
+            logo: 'https://example.com/logo.png',
+            url: 'https://example.com',
+          },
+          token0: {
+            decimals: 18,
+            id: '0x',
+            tokenAddress: NetworksUtils.wrappedNativeAddress(chainId),
+            name: 'token0',
+            symbol: 'token0',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            name: 'token1',
+            symbol: 'token1',
+          },
+          dailyData: Array.from({ length: YIELD_DAILY_DATA_LIMIT }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: (0.5 * index + 1).toString(),
+            totalValueLockedUSD: (100 * index + 1).toString(),
+          })),
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '1000000',
+            hourStartTimestamp: '1',
+          })),
+        },
+      ],
+    };
+
+    const token1AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token1!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token1!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token1!.name,
+      symbol: graphQLResponse.Pool[0].token1!.symbol,
+    };
+
+    const token0AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: ZERO_ETHEREUM_ADDRESS,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: 18,
+      } as Record<Networks, number>,
+      name: 'NATIVE ETH',
+      symbol: 'ETH',
+    };
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce(graphQLResponse);
+
+    tokensService.getTokenByAddress.calledWith(any(), ZERO_ETHEREUM_ADDRESS).mockResolvedValue(token0AsDto);
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token1!.tokenAddress)
+      .mockResolvedValue(token1AsDto);
+
+    const actualResult = await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(actualResult.token0).toEqual(token0AsDto);
+  });
+
+  it(`should parse the token1 metadata as native token when calling getPoolData if the token1 address
+    is the same as the wrapped native for the passed chainId, and the param parseWrappedToNative
+    is true`, async () => {
+    const poolAddress = 'xx1111';
+    const chainId = 1;
+    const parseWrappedToNative = true;
+
+    const graphQLResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          id: `${chainId}-${poolAddress.toLowerCase()}`,
+          chainId: chainId,
+          currentFeeTier: 3746372,
+          initialFeeTier: 1222,
+          poolAddress: poolAddress,
+          poolType: PoolType.V3,
+          positionManager: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '1000000',
+          v3PoolData: {
+            sqrtPriceX96: '1271902719027111221',
+            tick: '74839',
+            tickSpacing: 60,
+          },
+          protocol: {
+            id: 'protocol-21',
+            name: 'protocol',
+            logo: 'https://example.com/logo.png',
+            url: 'https://example.com',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x',
+            tokenAddress: NetworksUtils.wrappedNativeAddress(chainId),
+            name: 'token1',
+            symbol: 'token1',
+          },
+          token0: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            name: 'token0',
+            symbol: 'token00',
+          },
+          dailyData: Array.from({ length: YIELD_DAILY_DATA_LIMIT }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: (0.5 * index + 1).toString(),
+            totalValueLockedUSD: (100 * index + 1).toString(),
+          })),
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '1000000',
+            hourStartTimestamp: '1',
+          })),
+        },
+      ],
+    };
+
+    const token0AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token0!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token0!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token0!.name,
+      symbol: graphQLResponse.Pool[0].token0!.symbol,
+    };
+
+    const token1AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: ZERO_ETHEREUM_ADDRESS,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: 18,
+      } as Record<Networks, number>,
+      name: 'NATIVE ETH',
+      symbol: 'ETH',
+    };
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce(graphQLResponse);
+
+    tokensService.getTokenByAddress.calledWith(any(), ZERO_ETHEREUM_ADDRESS).mockResolvedValue(token1AsDto);
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token0!.tokenAddress)
+      .mockResolvedValue(token0AsDto);
+
+    const actualResult = await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(actualResult.token1).toEqual(token1AsDto);
+  });
+
+  it(`should not parse the token1 metadata as native token when calling getPoolData if the token1 address
+    is the same as the wrapped native for the passed chainId, but the param parseWrappedToNative
+    is false`, async () => {
+    const poolAddress = 'xx1111';
+    const chainId = 1;
+    const parseWrappedToNative = false;
+
+    const graphQLResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          id: `${chainId}-${poolAddress.toLowerCase()}`,
+          chainId: chainId,
+          currentFeeTier: 3746372,
+          initialFeeTier: 1222,
+          poolAddress: poolAddress,
+          poolType: PoolType.V3,
+          positionManager: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '1000000',
+          v3PoolData: {
+            sqrtPriceX96: '1271902719027111221',
+            tick: '74839',
+            tickSpacing: 60,
+          },
+          protocol: {
+            id: 'protocol-21',
+            name: 'protocol',
+            logo: 'https://example.com/logo.png',
+            url: 'https://example.com',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x1',
+            tokenAddress: NetworksUtils.wrappedNativeAddress(chainId),
+            name: 'Wrapped ETH',
+            symbol: 'WETH',
+          },
+          token0: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            name: 'token0',
+            symbol: 'token00',
+          },
+          dailyData: Array.from({ length: YIELD_DAILY_DATA_LIMIT }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: (0.5 * index + 1).toString(),
+            totalValueLockedUSD: (100 * index + 1).toString(),
+          })),
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '1000000',
+            hourStartTimestamp: '1',
+          })),
+        },
+      ],
+    };
+
+    const token0AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token0!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token0!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token0!.name,
+      symbol: graphQLResponse.Pool[0].token0!.symbol,
+    };
+
+    const token1AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token1!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token1!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token1!.name,
+      symbol: graphQLResponse.Pool[0].token1!.symbol,
+    };
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce(graphQLResponse);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), NetworksUtils.wrappedNativeAddress(chainId))
+      .mockResolvedValue(token1AsDto);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token0!.tokenAddress)
+      .mockResolvedValue(token0AsDto);
+
+    const actualResult = await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(actualResult.token1).toEqual(token1AsDto);
+  });
+
+  it(`should not parse the token0 metadata as native token when calling getPoolData if the token0 address
+    is the same as the wrapped native for the passed chainId, but the param parseWrappedToNative
+    is false`, async () => {
+    const poolAddress = 'xx1111';
+    const chainId = 999;
+    const parseWrappedToNative = false;
+
+    const graphQLResponse: GetPoolsQuery = {
+      Pool: [
+        {
+          id: `${chainId}-${poolAddress.toLowerCase()}`,
+          chainId: chainId,
+          currentFeeTier: 3746372,
+          initialFeeTier: 1222,
+          poolAddress: poolAddress,
+          poolType: PoolType.V3,
+          positionManager: '0x0000000000000000000000000000000000000001',
+          totalValueLockedUSD: '1000000',
+          v3PoolData: {
+            sqrtPriceX96: '1271902719027111221',
+            tick: '74839',
+            tickSpacing: 60,
+          },
+          protocol: {
+            id: 'protocol-21',
+            name: 'protocol',
+            logo: 'https://example.com/logo.png',
+            url: 'https://example.com',
+          },
+          token0: {
+            decimals: 18,
+            id: '0x1',
+            tokenAddress: NetworksUtils.wrappedNativeAddress(chainId),
+            name: 'Wrapped Hype',
+            symbol: 'WHYPE',
+          },
+          token1: {
+            decimals: 18,
+            id: '0x0000000000000000000000000000000000000002',
+            tokenAddress: '0x0000000000000000000000000000000000000002',
+            name: 'token1',
+            symbol: 'token01',
+          },
+          dailyData: Array.from({ length: YIELD_DAILY_DATA_LIMIT }, (_, index) => ({
+            dayStartTimestamp: getDaysAgoTimestamp(index).toString(),
+            feesUSD: (0.5 * index + 1).toString(),
+            totalValueLockedUSD: (100 * index + 1).toString(),
+          })),
+          hourlyData: Array.from({ length: 24 }, () => ({
+            feesUSD: '1000000',
+            hourStartTimestamp: '1',
+          })),
+        },
+      ],
+    };
+
+    const token0AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token0!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token0!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token0!.name,
+      symbol: graphQLResponse.Pool[0].token0!.symbol,
+    };
+
+    const token1AsDto: TokenDTO = {
+      addresses: {
+        [chainId]: graphQLResponse.Pool[0].token1!.tokenAddress,
+      } as Record<Networks, string>,
+      decimals: {
+        [chainId]: graphQLResponse.Pool[0].token1!.decimals,
+      } as Record<Networks, number>,
+      name: graphQLResponse.Pool[0].token1!.name,
+      symbol: graphQLResponse.Pool[0].token1!.symbol,
+    };
+
+    jest.spyOn(graphqlClient, 'request').mockResolvedValueOnce(graphQLResponse);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), NetworksUtils.wrappedNativeAddress(chainId))
+      .mockResolvedValue(token0AsDto);
+
+    tokensService.getTokenByAddress
+      .calledWith(any(), graphQLResponse.Pool[0].token1!.tokenAddress)
+      .mockResolvedValue(token1AsDto);
+
+    const actualResult = await sut.getPoolData(poolAddress, chainId, parseWrappedToNative);
+
+    expect(actualResult.token1).toEqual(token1AsDto);
   });
 });

@@ -1,4 +1,4 @@
-import { zeroEthereumAddress } from './constants';
+import { ZERO_ETHEREUM_ADDRESS } from './constants';
 import { TokenDTO } from './dtos/token.dto';
 import { Networks } from './enums/networks';
 
@@ -8,11 +8,11 @@ export const tokenList: TokenDTO[] = [
     name: 'Ethereum',
     symbol: 'ETH',
     addresses: {
-      [Networks.ETHEREUM]: zeroEthereumAddress,
-      [Networks.SCROLL]: zeroEthereumAddress,
-      [Networks.SEPOLIA]: zeroEthereumAddress,
-      [Networks.BASE]: zeroEthereumAddress,
-      [Networks.UNICHAIN]: zeroEthereumAddress,
+      [Networks.ETHEREUM]: ZERO_ETHEREUM_ADDRESS,
+      [Networks.SCROLL]: ZERO_ETHEREUM_ADDRESS,
+      [Networks.SEPOLIA]: ZERO_ETHEREUM_ADDRESS,
+      [Networks.BASE]: ZERO_ETHEREUM_ADDRESS,
+      [Networks.UNICHAIN]: ZERO_ETHEREUM_ADDRESS,
       [Networks.HYPER_EVM]: null,
       [Networks.PLASMA]: null,
       // [Networks.BNB]: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
@@ -1818,7 +1818,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: null,
       [Networks.SEPOLIA]: null,
       [Networks.UNICHAIN]: null,
-      [Networks.HYPER_EVM]: zeroEthereumAddress,
+      [Networks.HYPER_EVM]: ZERO_ETHEREUM_ADDRESS,
       [Networks.PLASMA]: null,
     },
     decimals: {
@@ -2493,7 +2493,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.BASE]: null,
       [Networks.UNICHAIN]: null,
       [Networks.HYPER_EVM]: null,
-      [Networks.PLASMA]: zeroEthereumAddress,
+      [Networks.PLASMA]: ZERO_ETHEREUM_ADDRESS,
     },
     decimals: {
       [Networks.ETHEREUM]: null,

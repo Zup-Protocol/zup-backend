@@ -44,9 +44,7 @@ describe('Main ', () => {
     return request(app.getHttpServer() as App)
       .get('/')
       .expect(401)
-      .expect(
-        '{"message":"Origin domain is not allowed to access the API","error":"Unauthorized","statusCode":401}',
-      );
+      .expect('{"message":"Origin domain is not allowed to access the API","error":"Unauthorized","statusCode":401}');
   });
 
   it('Should allow requests from allowed domains if the environment is not development', async () => {

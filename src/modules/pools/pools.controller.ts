@@ -1,12 +1,33 @@
-import { Body, Controller, Param, ParseIntPipe, Post, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseBoolPipe,
+  ParseIntPipe,
+  Post,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
+import { PoolDTO } from 'src/core/dtos/pool.dto';
 import { tokenGroupList } from 'src/core/token-group-list';
 import { PoolsService } from './pools.service';
 
 @Controller('pools')
 export class PoolsController {
   constructor(private readonly poolsService: PoolsService) {}
+  @Get(':poolAddress/:chainId')
+  async getPoolData(
+    @Param('poolAddress') poolAddress: string,
+    @Param('chainId', ParseIntPipe) chainId: number,
+    @Query('parseWrappedToNative', new DefaultValuePipe(true), ParseBoolPipe) parseWrappedToNative: boolean,
+  ): Promise<PoolDTO> {
+    return await this.poolsService.getPoolData(poolAddress, chainId, parseWrappedToNative);
+  }
+
   @Post('/search/all')
   async searchPoolsAcrossNetworks(
     @Query('token0Id') token0Id?: string,

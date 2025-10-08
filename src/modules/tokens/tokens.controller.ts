@@ -1,6 +1,6 @@
 import { BadRequestException, Controller, Get, ParseIntPipe, Query } from '@nestjs/common';
 
-import { zeroEthereumAddress } from 'src/core/constants';
+import { ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { TokenGroupDTO } from 'src/core/dtos/token-group.dto';
 import { TokenListDTO } from 'src/core/dtos/token-list.dto';
 import { TokenPriceDTO } from 'src/core/dtos/token-price-dto';
@@ -87,7 +87,7 @@ export class TokensController {
 
     const tokenPrice = await this.tokensService.getTokenPrice(address, chainId);
 
-    if (tokenPrice.usdPrice === 0 && address.lowercasedEquals(zeroEthereumAddress)) {
+    if (tokenPrice.usdPrice === 0 && address.lowercasedEquals(ZERO_ETHEREUM_ADDRESS)) {
       return await this.tokensService.getTokenPrice(NetworksUtils.wrappedNativeAddress(chainId), chainId);
     }
 

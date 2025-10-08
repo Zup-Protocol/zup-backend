@@ -1,6 +1,6 @@
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
-import { zeroEthereumAddress } from 'src/core/constants';
+import { ZERO_ETHEREUM_ADDRESS } from 'src/core/constants';
 import { MatchedPoolsDTO } from 'src/core/dtos/matched-pools.dto';
 import { PoolSearchFiltersDTO } from 'src/core/dtos/pool-search-filters.dto';
 import { PoolDTO } from 'src/core/dtos/pool.dto';
@@ -8,13 +8,15 @@ import { TokenDTO } from 'src/core/dtos/token.dto';
 import { V3PoolDTO } from 'src/core/dtos/v3-pool.dto';
 import { V4PoolDTO } from 'src/core/dtos/v4-pool.dto';
 import { Networks, NetworksUtils } from 'src/core/enums/networks';
-import 'src/core/extensions/date.extension';
 import { tokenList } from 'src/core/token-list';
 import { SupportedPoolType } from 'src/core/types';
+import { maybeParsePoolWrappedToNativeAddress } from 'src/core/utils/address-utils';
 import { isArrayEmptyOrUndefined } from 'src/core/utils/array-utils';
 import { calculateDayPoolAPR, trimmedAverage } from 'src/core/utils/math-utils';
+import { getPoolQueryVariablesForYieldCalculation } from 'src/core/utils/query-utils';
 import { GetPoolsDocument, GetPoolsQuery, GetPoolsQueryVariables, Pool_Bool_Exp } from 'src/gen/graphql.gen';
 import '../../core/extensions/string.extension';
+import { getDaysAgoTimestamp, yesterdayStartSecondsTimestamp } from '../../core/utils/date-utils';
 import { TokensService } from '../tokens/tokens.service';
 
 export class PoolsService {
@@ -23,6 +25,77 @@ export class PoolsService {
     @Inject('GraphqlClient')
     private readonly graphqlClient: GraphQLClient,
   ) {}
+
+  async getPoolData(poolAddress: string, chainId: number, parseWrappedToNative: boolean): Promise<PoolDTO> {
+    const poolsMatching = async (): Promise<GetPoolsQuery> => {
+      // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE INDEXER USES ONLY ONE DEPLOYMENT
+      if (NetworksUtils.networkFromChainId(chainId) === Networks.ETHEREUM) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/aefe5f4/v1/graphql').request<
+          GetPoolsQuery,
+          GetPoolsQueryVariables
+        >(GetPoolsDocument, {
+          poolsFilter: {
+            id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+          },
+          ...getPoolQueryVariablesForYieldCalculation(),
+        });
+      }
+
+      // TODO: REMOVE HOTFIX FOR BASE ONCE INDEXER USES ONLY ONE DEPLOYMENT
+      if (NetworksUtils.networkFromChainId(chainId) === Networks.BASE) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/0454ac3/v1/graphql').request<
+          GetPoolsQuery,
+          GetPoolsQueryVariables
+        >(GetPoolsDocument, {
+          poolsFilter: {
+            id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+          },
+          ...getPoolQueryVariablesForYieldCalculation(),
+        });
+      }
+
+      return await this.graphqlClient.request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
+        poolsFilter: {
+          id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+        },
+        ...getPoolQueryVariablesForYieldCalculation(),
+      });
+    };
+
+    if ((await poolsMatching()).Pool.length === 0) {
+      throw new NotFoundException(
+        `Pool '${poolAddress}' at '${chainId} chain' not found; maybe incorrect address or chain?`,
+      );
+    }
+
+    const poolsProcessed = await this._processPoolsDataFromQuery({
+      filters: new PoolSearchFiltersDTO(),
+      queryResponse: await poolsMatching(),
+      metadataAddresses: {
+        [NetworksUtils.networkFromChainId(chainId)]: [
+          ...(parseWrappedToNative
+            ? [
+                maybeParsePoolWrappedToNativeAddress(
+                  (await poolsMatching()).Pool[0].token0!.tokenAddress,
+                  (await poolsMatching()).Pool[0].chainId,
+                  (await poolsMatching()).Pool[0].poolType,
+                ),
+                maybeParsePoolWrappedToNativeAddress(
+                  (await poolsMatching()).Pool[0].token1!.tokenAddress,
+                  (await poolsMatching()).Pool[0].chainId,
+                  (await poolsMatching()).Pool[0].poolType,
+                ),
+              ]
+            : [
+                (await poolsMatching()).Pool[0].token0!.tokenAddress,
+                (await poolsMatching()).Pool[0].token1!.tokenAddress,
+              ]),
+        ],
+      } as Record<Networks, string[]>,
+    });
+
+    return poolsProcessed[0];
+  }
 
   async searchPoolsInChain(params: {
     token0Addresses: string[];
@@ -33,11 +106,11 @@ export class PoolsService {
     const search0Addresses = structuredClone(params.token0Addresses);
     const search1Addresses = structuredClone(params.token1Addresses);
 
-    if (params.token0Addresses.includes(zeroEthereumAddress)) {
+    if (params.token0Addresses.includes(ZERO_ETHEREUM_ADDRESS)) {
       search0Addresses.push(NetworksUtils.wrappedNativeAddress(params.network));
     }
 
-    if (params.token1Addresses.includes(zeroEthereumAddress)) {
+    if (params.token1Addresses.includes(ZERO_ETHEREUM_ADDRESS)) {
       search1Addresses.push(NetworksUtils.wrappedNativeAddress(params.network));
     }
 
@@ -54,7 +127,7 @@ export class PoolsService {
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
       filters: params.filters,
-      userInputTokenAddresses: {
+      metadataAddresses: {
         [params.network]: [...params.token0Addresses, ...params.token1Addresses],
       } as Record<Networks, string[]>,
     });
@@ -118,7 +191,7 @@ export class PoolsService {
 
           // include native wrapped tokens in the list if user searched with native token
           // because of v3 and v2 pools being with wrapped native, and v4 being with native/wrapped
-          if (tokenAddress === zeroEthereumAddress) {
+          if (tokenAddress === ZERO_ETHEREUM_ADDRESS) {
             const wrappedNative = NetworksUtils.wrappedNativeAddress(network);
             if (searchToken0AddressesPerChainId[network].includes(wrappedNative)) return;
 
@@ -148,7 +221,7 @@ export class PoolsService {
 
           // include native wrapped tokens in the list if user searched with native token
           // because of v3 and v2 pools being with wrapped native, and v4 being with native/wrapped
-          if (tokenAddress === zeroEthereumAddress) {
+          if (tokenAddress === ZERO_ETHEREUM_ADDRESS) {
             const wrappedNative = NetworksUtils.wrappedNativeAddress(network);
             if (searchToken1AddressesPerChainId[network].includes(wrappedNative)) return;
 
@@ -166,7 +239,7 @@ export class PoolsService {
     const matchedPools = await this._processPoolsDataFromQuery({
       queryResponse: poolsQueryResponse,
       filters: params.filters,
-      userInputTokenAddresses: userInputTokenAddressesPerChainId,
+      metadataAddresses: userInputTokenAddressesPerChainId,
     });
 
     const flatMatchedPools = matchedPools.flat();
@@ -256,7 +329,7 @@ export class PoolsService {
             // dailyData: {
             //   dayStartTimestamp: {
             //     // remove pools that have not been active in the last 20 days
-            //     _gt: Date.getDaysAgoTimestamp(30).toString(),
+            //     _gt: getDaysAgoTimestamp(30).toString(),
             //   },
             // },
             chainId: {
@@ -283,22 +356,7 @@ export class PoolsService {
           },
         ],
       },
-      dailyDataFilter: {
-        feesUSD: {
-          _lt: '1000000000', // filter out weird days with very high fees
-        },
-        dayStartTimestamp: {
-          _gt: Date.getDaysAgoTimestamp(100).toString(),
-        },
-      },
-      hourlyDataFilter: {
-        feesUSD: {
-          _lt: '10000000', // filter out weird hours with very high fees
-        },
-        hourStartTimestamp: {
-          _gt: Date.yesterdayStartSecondsTimestamp().toString(),
-        },
-      },
+      ...getPoolQueryVariablesForYieldCalculation(),
     });
 
     // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE ISSUE IS FIXED
@@ -337,7 +395,7 @@ export class PoolsService {
             _lt: '1000000000', // filter out weird days with very high fees
           },
           dayStartTimestamp: {
-            _gt: Date.getDaysAgoTimestamp(100).toString(),
+            _gt: getDaysAgoTimestamp(100).toString(),
           },
         },
         hourlyDataFilter: {
@@ -345,7 +403,7 @@ export class PoolsService {
             _lt: '10000000', // filter out weird hours with very high fees
           },
           hourStartTimestamp: {
-            _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+            _gt: yesterdayStartSecondsTimestamp().toString(),
           },
         },
       });
@@ -389,7 +447,7 @@ export class PoolsService {
             _lt: '1000000000', // filter out weird days with very high fees
           },
           dayStartTimestamp: {
-            _gt: Date.getDaysAgoTimestamp(100).toString(),
+            _gt: getDaysAgoTimestamp(100).toString(),
           },
         },
         hourlyDataFilter: {
@@ -397,7 +455,7 @@ export class PoolsService {
             _lt: '10000000', // filter out weird hours with very high fees
           },
           hourStartTimestamp: {
-            _gt: Date.yesterdayStartSecondsTimestamp().toString(),
+            _gt: yesterdayStartSecondsTimestamp().toString(),
           },
         },
       });
@@ -446,12 +504,10 @@ export class PoolsService {
 
   private async _processPoolsDataFromQuery(params: {
     queryResponse: GetPoolsQuery;
-    userInputTokenAddresses: Record<Networks, string[]>;
+    metadataAddresses: Record<Networks, string[]>;
     filters: PoolSearchFiltersDTO;
   }): Promise<SupportedPoolType[]> {
-    const tokensMetadata: Record<string, TokenDTO> = await this._getSearchedTokensMetadata(
-      params.userInputTokenAddresses,
-    );
+    const tokensMetadata: Record<string, TokenDTO> = await this._getSearchedTokensMetadata(params.metadataAddresses);
 
     const matchedPools: SupportedPoolType[] = [];
     const trimmedAveragePercentage7Days: number = 0.15;
@@ -464,7 +520,7 @@ export class PoolsService {
       const pool90dYields: number[] = [];
       const pool7DaysYields: number[] = [];
 
-      const didUserSearchForWrappedNativePoolsAtPoolNetwork = params.userInputTokenAddresses[
+      const didUserSearchForWrappedNativePoolsAtPoolNetwork = params.metadataAddresses[
         NetworksUtils.networkFromChainId(pool.chainId)
       ].includes(NetworksUtils.wrappedNativeAddress(pool.chainId));
 
@@ -493,8 +549,8 @@ export class PoolsService {
           return poolToken0AddressMetadata;
         }
 
-        if (isPoolToken0WrappedNative && (!poolToken0AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
-          return tokensMetadata[zeroEthereumAddress];
+        if (isPoolToken0WrappedNative && (!poolToken0AddressMetadata || tokensMetadata[ZERO_ETHEREUM_ADDRESS])) {
+          return tokensMetadata[ZERO_ETHEREUM_ADDRESS];
         }
 
         return poolToken0AddressMetadata;
@@ -507,8 +563,8 @@ export class PoolsService {
           return poolToken1AddressMetadata;
         }
 
-        if (isPoolToken1WrappedNative && (!poolToken1AddressMetadata || tokensMetadata[zeroEthereumAddress])) {
-          return tokensMetadata[zeroEthereumAddress];
+        if (isPoolToken1WrappedNative && (!poolToken1AddressMetadata || tokensMetadata[ZERO_ETHEREUM_ADDRESS])) {
+          return tokensMetadata[ZERO_ETHEREUM_ADDRESS];
         }
 
         return poolToken1AddressMetadata;
@@ -525,15 +581,15 @@ export class PoolsService {
         const dayAPR = calculateDayPoolAPR(Number(dailyData.totalValueLockedUSD), Number(dailyData.feesUSD));
         if (dayAPR === 0 || Number(dailyData.totalValueLockedUSD) < params.filters.minTvlUsd) continue;
 
-        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(7 + trimmedAveragePercentage7Days * 7)) {
+        if (Number(dailyData.dayStartTimestamp) > getDaysAgoTimestamp(7 + trimmedAveragePercentage7Days * 7)) {
           pool7DaysYields.push(dayAPR);
         }
 
-        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(30 + trimmedAveragePercentage30Days * 30)) {
+        if (Number(dailyData.dayStartTimestamp) > getDaysAgoTimestamp(30 + trimmedAveragePercentage30Days * 30)) {
           pool30dYields.push(dayAPR);
         }
 
-        if (Number(dailyData.dayStartTimestamp) > Date.getDaysAgoTimestamp(90 + trimmedAveragePercentage90Days * 90)) {
+        if (Number(dailyData.dayStartTimestamp) > getDaysAgoTimestamp(90 + trimmedAveragePercentage90Days * 90)) {
           pool90dYields.push(dayAPR);
         }
       }
