@@ -2605,7 +2605,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.PLASMA]: 18,
     },
 
-    logoUrl: 'https://assets.coingecko.com/coins/images/55857/standard/USDai_Token_Full_Glyph.png',
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/38562.png',
   },
   {
     id: '101',
