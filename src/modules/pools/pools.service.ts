@@ -27,14 +27,42 @@ export class PoolsService {
   ) {}
 
   async getPoolData(poolAddress: string, chainId: number, parseWrappedToNative: boolean): Promise<PoolDTO> {
-    const poolsMatching = await this.graphqlClient.request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
-      poolsFilter: {
-        id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
-      },
-      ...getPoolQueryVariablesForYieldCalculation(),
-    });
+    const poolsMatching = async (): Promise<GetPoolsQuery> => {
+      // TODO: REMOVE HOTFIX FOR ETHEREUM ONCE INDEXER USES ONLY ONE DEPLOYMENT
+      if (NetworksUtils.networkFromChainId(chainId) === Networks.ETHEREUM) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/aefe5f4/v1/graphql').request<
+          GetPoolsQuery,
+          GetPoolsQueryVariables
+        >(GetPoolsDocument, {
+          poolsFilter: {
+            id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+          },
+          ...getPoolQueryVariablesForYieldCalculation(),
+        });
+      }
 
-    if (poolsMatching.Pool.length === 0) {
+      // TODO: REMOVE HOTFIX FOR BASE ONCE INDEXER USES ONLY ONE DEPLOYMENT
+      if (NetworksUtils.networkFromChainId(chainId) === Networks.BASE) {
+        return await new GraphQLClient('https://indexer.dedicated.hyperindex.xyz/0454ac3/v1/graphql').request<
+          GetPoolsQuery,
+          GetPoolsQueryVariables
+        >(GetPoolsDocument, {
+          poolsFilter: {
+            id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+          },
+          ...getPoolQueryVariablesForYieldCalculation(),
+        });
+      }
+
+      return await this.graphqlClient.request<GetPoolsQuery, GetPoolsQueryVariables>(GetPoolsDocument, {
+        poolsFilter: {
+          id: { _eq: `${chainId}-${poolAddress.toLowerCase()}` },
+        },
+        ...getPoolQueryVariablesForYieldCalculation(),
+      });
+    };
+
+    if ((await poolsMatching()).Pool.length === 0) {
       throw new NotFoundException(
         `Pool '${poolAddress}' at '${chainId} chain' not found; maybe incorrect address or chain?`,
       );
@@ -42,23 +70,26 @@ export class PoolsService {
 
     const poolsProcessed = await this._processPoolsDataFromQuery({
       filters: new PoolSearchFiltersDTO(),
-      queryResponse: poolsMatching,
+      queryResponse: await poolsMatching(),
       metadataAddresses: {
         [NetworksUtils.networkFromChainId(chainId)]: [
           ...(parseWrappedToNative
             ? [
                 maybeParsePoolWrappedToNativeAddress(
-                  poolsMatching.Pool[0].token0!.tokenAddress,
-                  poolsMatching.Pool[0].chainId,
-                  poolsMatching.Pool[0].poolType,
+                  (await poolsMatching()).Pool[0].token0!.tokenAddress,
+                  (await poolsMatching()).Pool[0].chainId,
+                  (await poolsMatching()).Pool[0].poolType,
                 ),
                 maybeParsePoolWrappedToNativeAddress(
-                  poolsMatching.Pool[0].token1!.tokenAddress,
-                  poolsMatching.Pool[0].chainId,
-                  poolsMatching.Pool[0].poolType,
+                  (await poolsMatching()).Pool[0].token1!.tokenAddress,
+                  (await poolsMatching()).Pool[0].chainId,
+                  (await poolsMatching()).Pool[0].poolType,
                 ),
               ]
-            : [poolsMatching.Pool[0].token0!.tokenAddress, poolsMatching.Pool[0].token1!.tokenAddress]),
+            : [
+                (await poolsMatching()).Pool[0].token0!.tokenAddress,
+                (await poolsMatching()).Pool[0].token1!.tokenAddress,
+              ]),
         ],
       } as Record<Networks, string[]>,
     });
