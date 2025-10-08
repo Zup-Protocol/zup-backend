@@ -2070,7 +2070,7 @@ export const tokenList: TokenDTO[] = [
     id: '79',
     name: 'Felix feUSD',
     symbol: 'feUSD',
-    logoUrl: 'https://assets.coingecko.com/coins/images/55068/standard/feusd.jpg',
+    logoUrl: 'https://static.images.dropstab.com/images/felix-feusd.jpg',
     addresses: {
       [Networks.ETHEREUM]: null,
       [Networks.BASE]: null,
@@ -2378,7 +2378,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.HYPER_EVM]: 6,
       [Networks.PLASMA]: 6,
     },
-    logoUrl: 'https://assets.smold.app/api/token/130/0x9151434b16b9763660705744891fa906f660ecc5/logo.svg',
+    logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/38517.png',
   },
   {
     id: '92',
