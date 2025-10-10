@@ -119,7 +119,7 @@ export const tokenList: TokenDTO[] = [
       [Networks.SCROLL]: '0x3c1bca5a656e69edcd0d4e36bebb3fcdaca60cf1',
       [Networks.SEPOLIA]: null,
       [Networks.BASE]: '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c',
-      [Networks.UNICHAIN]: '0x927B51f251480a681271180DA4de28D44EC4AfB8',
+      [Networks.UNICHAIN]: '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c',
       [Networks.HYPER_EVM]: null,
       [Networks.PLASMA]: null,
       // [Networks.BNB]: null,
@@ -3057,5 +3057,29 @@ export const tokenList: TokenDTO[] = [
     },
 
     logoUrl: 'https://s2.coinmarketcap.com/static/img/coins/128x128/35965.png',
+  },
+  {
+    id: '119',
+    name: 'Unichain Bridged WBTC',
+    symbol: 'WBTC',
+    addresses: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: '0x927b51f251480a681271180da4de28d44ec4afb8',
+      [Networks.HYPER_EVM]: null,
+      [Networks.PLASMA]: null,
+    },
+    decimals: {
+      [Networks.ETHEREUM]: null,
+      [Networks.SCROLL]: null,
+      [Networks.SEPOLIA]: null,
+      [Networks.BASE]: null,
+      [Networks.UNICHAIN]: 8,
+      [Networks.HYPER_EVM]: null,
+      [Networks.PLASMA]: null,
+    },
+    logoUrl: 'https://assets.smold.app/api/token/130/0x927b51f251480a681271180da4de28d44ec4afb8/logo.svg',
   },
 ];
